@@ -1,0 +1,6 @@
+{
+  "name": "FlipBook PDF Downloader",
+  "description": "Download any FlipHTML5 book as a high-quality PDF. Simply enter the book URL and get your copy in seconds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
