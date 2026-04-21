@@ -43,13 +43,16 @@ export async function loadBookConfig(
   }
 
   const baseUrl = `https://online.fliphtml5.com/${id1}/${id2}/`;
-  console.log(pageData);
-  debugger;
+//   console.log(pageData);
+//   debugger;
   const imageUrls = pageData.map((p) => {
     const relativePath = p.n[0]
       .replace(/\\/g, "/")
       .replace("files/large/", "")
       .replace("./", "");
+    if (relativePath.indexOf("files/content-page") > -1) {
+      return baseUrl + relativePath;
+    }
     return baseUrl + "files/large/" + relativePath;
   });
 

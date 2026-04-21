@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useBookConfig } from "@/hooks/useBookConfig";
+import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
 
 export default function BookReaderClient({
   dbId,
@@ -46,6 +47,17 @@ export default function BookReaderClient({
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [isDualPageMode, setIsDualPageMode] = useState(false);
   const [isWideScreen, setIsWideScreen] = useState(false);
+
+  // 存储从 ZIP 提取的图片数据
+  const [extractedPages, setExtractedPages] = useState<Map<number, string>>(
+    new Map(),
+  );
+  const [loadingPages, setLoadingPages] = useState<Set<number>>(new Set());
+  
+  // 使用 ref 来跟踪已提取和加载中的页面，避免依赖问题
+  const extractedPagesRef = useRef<Map<number, string>>(new Map());
+  const loadingPagesRef = useRef<Set<number>>(new Set());
+
   const readerRef = useRef<HTMLDivElement>(null);
   const thumbnailPanelRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -54,6 +66,61 @@ export default function BookReaderClient({
   const pages = config?.pages || [];
   const bookUrl = `https://fliphtml5.com/${id1}/${id2}`;
   const downloadUrl = `/?url=${encodeURIComponent(bookUrl)}#downloader-section`;
+
+  // 提取 ZIP 文件中的页面
+  const extractZipPage = useCallback(async (pageIndex: number, pageUrl: string) => {
+    // 使用 ref 检查，避免依赖问题
+    if (extractedPagesRef.current.has(pageIndex) || loadingPagesRef.current.has(pageIndex)) {
+      return;
+    }
+
+    setLoadingPages((prev) => new Set(prev).add(pageIndex));
+    loadingPagesRef.current.add(pageIndex);
+
+    try {
+      const { url: pdfUrl, password } = await getBlob(pageUrl);
+      const pdfPages = await extractPdfPages(pdfUrl, password);
+
+      if (pdfPages.length > 0) {
+        const imageData = pdfPages[0].data;
+        extractedPagesRef.current.set(pageIndex, imageData);
+        setExtractedPages((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(pageIndex, imageData);
+          return newMap;
+        });
+      }
+    } catch (err) {
+      console.error(`Failed to extract page ${pageIndex}:`, err);
+    } finally {
+      loadingPagesRef.current.delete(pageIndex);
+      setLoadingPages((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(pageIndex);
+        return newSet;
+      });
+    }
+  }, []); // 空依赖，因为使用 ref
+
+  // 获取页面的显示 URL
+  const getPageDisplayUrl = useCallback(
+    (pageIndex: number): string | null => {
+      if (pageIndex < 0 || pageIndex >= pages.length) {
+        return null;
+      }
+
+      const pageUrl = pages[pageIndex];
+
+      // 如果是 ZIP 文件，检查是否已提取
+      if (isZipUrl(pageUrl)) {
+        return extractedPages.get(pageIndex) || null;
+      }
+
+      // 否则直接返回原 URL
+      return pageUrl;
+    },
+    [pages, extractedPages],
+  );
 
   // 检测屏幕宽度
   useEffect(() => {
@@ -80,6 +147,53 @@ export default function BookReaderClient({
       setPanPosition({ x: 0, y: 0 });
     }
   }, [isWideScreen]);
+
+  // 预加载当前页和下一页（如果是 ZIP 文件）
+  useEffect(() => {
+    const pagesToLoad = [currentIndex, currentIndex + 1].filter(
+      (idx) => idx < pages.length,
+    );
+  
+    pagesToLoad.forEach((idx) => {
+      const pageUrl = pages[idx];
+      if (isZipUrl(pageUrl)) {
+        extractZipPage(idx, pageUrl);
+      }
+    });
+  }, [currentIndex, pages, extractZipPage]);
+  
+  // 当缩略图面板打开时，批量预加载所有 ZIP 页面
+  useEffect(() => {
+    if (showThumbnails && pages.length > 0) {
+      // 找到所有未加载的 ZIP 页面
+      const zipPagesToLoad = pages
+        .map((url, idx) => ({ url, idx }))
+        .filter(
+          ({ url, idx }) =>
+            isZipUrl(url) &&
+            !extractedPagesRef.current.has(idx) &&
+            !loadingPagesRef.current.has(idx),
+        );
+
+      // 限制并发数量，避免同时加载太多
+      const batchSize = 3;
+      const loadBatch = async (startIndex: number) => {
+        const batch = zipPagesToLoad.slice(startIndex, startIndex + batchSize);
+        await Promise.all(
+          batch.map(({ idx, url }) => extractZipPage(idx, url)),
+        );
+
+        if (startIndex + batchSize < zipPagesToLoad.length) {
+          // 递归加载下一批
+          setTimeout(() => loadBatch(startIndex + batchSize), 100);
+        }
+      };
+
+      if (zipPagesToLoad.length > 0) {
+        loadBatch(0);
+      }
+    }
+  }, [showThumbnails, pages, extractZipPage]);
 
   // 获取当前显示的页面索引数组
   const getCurrentPageIndices = useCallback(() => {
@@ -490,38 +604,50 @@ export default function BookReaderClient({
             {/* Thumbnail Grid */}
             <div className="flex-1 overflow-y-auto p-4">
               <div className="grid grid-cols-2 gap-3">
-                {pages.map((url, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setCurrentIndex(idx);
-                    }}
-                    className={`relative aspect-[3/4] rounded-lg overflow-hidden transition-all duration-300 group ${
-                      idx === currentIndex
-                        ? "ring-2 ring-[var(--color-primary)] scale-[1.02]"
-                        : "opacity-60 hover:opacity-100 hover:scale-[1.02]"
-                    }`}
-                  >
-                    <Image
-                      src={url}
-                      alt={`Page ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      referrerPolicy="no-referrer"
-                      unoptimized
-                    />
-                    {/* Page Number Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
-                      <span className="text-white text-xs font-mono font-bold">
-                        {idx + 1}
-                      </span>
-                    </div>
-                    {/* Current Page Indicator */}
-                    {idx === currentIndex && (
-                      <div className="absolute inset-0 bg-[var(--color-primary)]/10" />
-                    )}
-                  </button>
-                ))}
+                {pages.map((url, idx) => {
+                  const displayUrl = getPageDisplayUrl(idx);
+                  const isZip = isZipUrl(url);
+                  const isLoading = isZip && !displayUrl;
+
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setCurrentIndex(idx);
+                      }}
+                      className={`relative aspect-[3/4] rounded-lg overflow-hidden transition-all duration-300 group ${
+                        idx === currentIndex
+                          ? "ring-2 ring-[var(--color-primary)] scale-[1.02]"
+                          : "opacity-60 hover:opacity-100 hover:scale-[1.02]"
+                      }`}
+                    >
+                      {isLoading ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                          <Loader2 className="w-6 h-6 text-[var(--color-primary)] animate-spin" />
+                        </div>
+                      ) : displayUrl ? (
+                        <Image
+                          src={displayUrl}
+                          alt={`Page ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                          referrerPolicy="no-referrer"
+                          unoptimized
+                        />
+                      ) : null}
+                      {/* Page Number Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
+                        <span className="text-white text-xs font-mono font-bold">
+                          {idx + 1}
+                        </span>
+                      </div>
+                      {/* Current Page Indicator */}
+                      {idx === currentIndex && (
+                        <div className="absolute inset-0 bg-[var(--color-primary)]/10" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -539,45 +665,58 @@ export default function BookReaderClient({
             {/* 双页模式显示 */}
             {isDualPageMode && currentIndex > 0 && pages.length > 1 ? (
               <div className="flex h-full w-full items-center justify-center">
-                {getCurrentPageIndices().map((pageIndex, idx) => (
-                  <div
-                    key={pageIndex}
-                    ref={idx === 0 ? imageContainerRef : undefined}
-                    onWheel={idx === 0 ? handleWheel : undefined}
-                    className="relative h-full shadow-2xl bg-white/5 overflow-hidden"
-                    style={{
-                      width: '50%',
-                      transform:
-                        zoom !== 100
-                          ? `scale(${zoom / 100}) translate(${panPosition.x / (zoom / 100)}px, ${panPosition.y / (zoom / 100)}px)`
-                          : "none",
-                      cursor: isZoomed
-                        ? isPanning
-                          ? "grabbing"
-                          : "grab"
-                        : "default",
-                    }}
-                    onMouseDown={idx === 0 ? handleImageMouseDown : undefined}
-                  >
-                    <Image
-                      src={pages[pageIndex]}
-                      alt={`Page ${pageIndex + 1}`}
-                      fill
-                      className="object-contain"
-                      referrerPolicy="no-referrer"
-                      unoptimized
-                      priority={pageIndex === currentIndex}
-                    />
-                    {/* 中间装订线效果 - 左页右边阴影 */}
-                    {idx === 0 && (
-                      <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/30 to-transparent pointer-events-none" />
-                    )}
-                    {/* 中间装订线效果 - 右页左边阴影 */}
-                    {idx === 1 && (
-                      <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/30 to-transparent pointer-events-none" />
-                    )}
-                  </div>
-                ))}
+                {getCurrentPageIndices().map((pageIndex, idx) => {
+                  const displayUrl = getPageDisplayUrl(pageIndex);
+                  const pageUrl = pages[pageIndex];
+                  const isZip = isZipUrl(pageUrl);
+                  const isLoading = isZip && !displayUrl;
+
+                  return (
+                    <div
+                      key={pageIndex}
+                      ref={idx === 0 ? imageContainerRef : undefined}
+                      onWheel={idx === 0 ? handleWheel : undefined}
+                      className="relative h-full shadow-2xl bg-white/5 overflow-hidden"
+                      style={{
+                        width: "50%",
+                        transform:
+                          zoom !== 100
+                            ? `scale(${zoom / 100}) translate(${panPosition.x / (zoom / 100)}px, ${panPosition.y / (zoom / 100)}px)`
+                            : "none",
+                        cursor: isZoomed
+                          ? isPanning
+                            ? "grabbing"
+                            : "grab"
+                          : "default",
+                      }}
+                      onMouseDown={idx === 0 ? handleImageMouseDown : undefined}
+                    >
+                      {isLoading ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Loader2 className="w-12 h-12 text-[var(--color-primary)] animate-spin" />
+                        </div>
+                      ) : displayUrl ? (
+                        <Image
+                          src={displayUrl}
+                          alt={`Page ${pageIndex + 1}`}
+                          fill
+                          className="object-contain"
+                          referrerPolicy="no-referrer"
+                          unoptimized
+                          priority={pageIndex === currentIndex}
+                        />
+                      ) : null}
+                      {/* 中间装订线效果 - 左页右边阴影 */}
+                      {idx === 0 && (
+                        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/30 to-transparent pointer-events-none" />
+                      )}
+                      {/* 中间装订线效果 - 右页左边阴影 */}
+                      {idx === 1 && (
+                        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/30 to-transparent pointer-events-none" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               /* 单页模式或封面页 */
@@ -595,15 +734,36 @@ export default function BookReaderClient({
                 }}
                 onMouseDown={handleImageMouseDown}
               >
-                <Image
-                  src={pages[currentIndex]}
-                  alt={`Page ${currentIndex + 1}`}
-                  fill
-                  className="object-contain"
-                  referrerPolicy="no-referrer"
-                  unoptimized
-                  priority
-                />
+                {(() => {
+                  const displayUrl = getPageDisplayUrl(currentIndex);
+                  const pageUrl = pages[currentIndex];
+                  const isZip = isZipUrl(pageUrl);
+                  const isLoading = isZip && !displayUrl;
+
+                  if (isLoading) {
+                    return (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="w-12 h-12 text-[var(--color-primary)] animate-spin" />
+                      </div>
+                    );
+                  }
+
+                  if (!displayUrl) {
+                    return null;
+                  }
+
+                  return (
+                    <Image
+                      src={displayUrl}
+                      alt={`Page ${currentIndex + 1}`}
+                      fill
+                      className="object-contain"
+                      referrerPolicy="no-referrer"
+                      unoptimized
+                      priority
+                    />
+                  );
+                })()}
               </div>
             )}
 

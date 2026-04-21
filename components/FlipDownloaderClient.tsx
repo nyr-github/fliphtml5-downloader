@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { decryptPages } from "@/lib/decryption";
+import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
 import {
   useBookConfig,
   extractIdsFromUrl,
@@ -188,26 +189,53 @@ export default function FlipDownloaderClient({
           title: bookTitle,
         });
 
+        let validResults: Array<{ data: string; w: number; h: number }> = [];
         let completed = 0;
-        const results = await asyncPool(5, imageUrls, async (imgUrl) => {
+
+        // 遍历每一页，根据 URL 类型分别处理
+        for (let i = 0; i < imageUrls.length; i++) {
+          const pageUrl = imageUrls[i];
+
           try {
-            const res = await fetchImageWithMeta(imgUrl);
+            if (isZipUrl(pageUrl)) {
+              // 处理 ZIP 文件
+              const { url: pdfUrl, password } = await getBlob(pageUrl);
+
+              const pdfPages = await extractPdfPages(
+                pdfUrl,
+                password,
+                (currentPage, totalPages) => {
+                  // ZIP 文件内部进度（如果 PDF 有多页）
+                  const pageProgress =
+                    ((completed + currentPage / totalPages) /
+                      imageUrls.length) *
+                    100;
+                  updateTask(taskId, {
+                    progress: pageProgress,
+                    currentPage: completed + currentPage,
+                  });
+                },
+              );
+
+              // 将提取的页面添加到结果中
+              validResults.push(...pdfPages);
+            } else {
+              // 处理普通图片
+              const result = await fetchImageWithMeta(pageUrl);
+              validResults.push(result);
+            }
+
             completed++;
             updateTask(taskId, {
-              progress: (completed / pageData.length) * 100,
+              progress: (completed / imageUrls.length) * 100,
               currentPage: completed,
             });
-            return res;
           } catch (err) {
-            return null;
+            console.error(`Failed to process page ${i + 1}:`, err);
+            // 继续处理下一页
           }
-        });
+        }
 
-        const validResults = results.filter((r) => r !== null) as {
-          data: string;
-          w: number;
-          h: number;
-        }[];
         if (validResults.length === 0)
           throw new Error("No pages could be downloaded.");
 
@@ -268,7 +296,15 @@ export default function FlipDownloaderClient({
         updateTask(taskId, { status: "error", errorMessage: err.message });
       }
     },
-    [extractIds, fetchImageWithMeta, recordDownloadSuccess, updateTask],
+    [
+      extractIds,
+      fetchImageWithMeta,
+      recordDownloadSuccess,
+      updateTask,
+      getBlob,
+      extractPdfPages,
+      isZipUrl,
+    ],
   );
 
   useEffect(() => {
