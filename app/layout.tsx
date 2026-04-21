@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="yandex-verification" content="e647953438a9f448" />
+        <meta name="msvalidate.01" content="36F36D784E65ACD735FA9D567AF15F1D" />
       </head>
       <body
         suppressHydrationWarning
