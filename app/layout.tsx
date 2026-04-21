@@ -24,6 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="yandex-verification" content="e647953438a9f448" />
+      </head>
       <body
         suppressHydrationWarning
         className="bg-[var(--color-bg)] font-body antialiased"
@@ -32,7 +35,7 @@ export default function RootLayout({
         <main className="pt-16 sm:pt-20 md:pt-24 min-h-screen mobile-safe-bottom">
           {children}
         </main>
-        <Analytics/>
+        <Analytics />
       </body>
     </html>
   );
