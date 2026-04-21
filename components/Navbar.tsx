@@ -1,10 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { BookOpen, LayoutGrid, Download, Search, Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BookOpen,
+  LayoutGrid,
+  Download,
+  Search,
+  Menu,
+  X,
+  AppWindowIcon,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -13,69 +21,82 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Downloader', href: '/', icon: Download },
-    { name: 'Discovery Square', href: '/explore', icon: LayoutGrid },
+  const navLinks: any[] = [
+    {
+      name: "More apps by AIVaded",
+      href: "https://www.aivaded.com/",
+      icon: AppWindowIcon,
+    },
   ];
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'py-3 bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100' : 'py-6 bg-transparent'
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled
+          ? "py-2 sm:py-3 glass shadow-sm"
+          : "py-4 sm:py-6 bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-[#1A1A1A] rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform">
-            <BookOpen className="w-5 h-5 text-[#FF6B35]" />
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <span className="font-black text-lg tracking-tight hidden sm:block">FlipBook <span className="text-[#FF6B35]">DL</span></span>
+          <div>
+            <span className="font-display text-base sm:text-xl font-bold tracking-tight text-[var(--color-text)]">
+              Fliphtml5
+            </span>
+            <span className="font-display text-base sm:text-xl font-light text-[var(--color-primary)] ml-1">
+              Downloader
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-100/50">
+        <div className="hidden md:flex items-center gap-2">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
-              <Link 
+              <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  isActive 
-                    ? 'bg-white text-[#1A1A1A] shadow-sm' 
-                    : 'text-gray-500 hover:text-[#1A1A1A] hover:bg-white/50'
+                className={`relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                  isActive
+                    ? "text-[var(--color-primary)]"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                 }`}
               >
-                <link.icon className={`w-4 h-4 ${isActive ? 'text-[#FF6B35]' : ''}`} />
-                {link.name}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute inset-0 bg-[var(--color-primary)]/5 rounded-xl"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <link.icon className="w-4 h-4 relative z-10" />
+                <span className="relative z-10">{link.name}</span>
               </Link>
             );
           })}
         </div>
 
-        {/* Action Button (Desktop) */}
-        <div className="hidden md:block" suppressHydrationWarning>
-          <Link 
-            href="/explore" 
-            className="px-6 py-3 bg-[#1A1A1A] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#333] transition-colors active:scale-95 shadow-lg shadow-black/10"
-          >
-            Start Discovery
-          </Link>
-        </div>
-
         {/* Mobile Menu Toggle */}
-        <button 
-          className="md:hidden p-3 bg-white border border-gray-100 rounded-xl text-gray-600 shadow-sm"
+        <button
+          className="md:hidden p-2 sm:p-2.5 glass rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors flex items-center justify-center"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <Menu className="w-5 h-5" />
+          )}
         </button>
       </div>
 
@@ -83,28 +104,30 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 top-[73px] bg-black/20 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 top-[60px] sm:top-[73px] bg-black/20 backdrop-blur-sm z-40 md:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
-              className="absolute top-[73px] left-0 right-0 bg-white border-b border-gray-100 p-6 z-50 md:hidden flex flex-col gap-4 shadow-xl"
+              className="absolute top-[60px] sm:top-[73px] left-0 right-0 glass p-4 sm:p-6 z-50 md:hidden flex flex-col gap-3 shadow-xl"
             >
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link 
+                  <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-4 p-4 rounded-2xl text-base font-bold ${
-                      isActive ? 'bg-[#FF6B35]/10 text-[#FF6B35]' : 'bg-gray-50 text-gray-600'
+                    className={`flex items-center gap-4 p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold transition-colors ${
+                      isActive
+                        ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                        : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-warm)]"
                     }`}
                   >
                     <link.icon className="w-5 h-5" />
@@ -112,13 +135,6 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              <Link 
-                href="/explore" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-4 mt-2 bg-[#1A1A1A] text-white text-center rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl"
-              >
-                Explore Community
-              </Link>
             </motion.div>
           </>
         )}

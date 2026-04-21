@@ -1,1 +1,176 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Sans+3:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
+
+@layer base {
+  :root {
+    --color-primary: #e85d26;
+    --color-primary-light: #ff7a45;
+    --color-primary-dark: #c94a1a;
+    --color-secondary: #1b3a5c;
+    --color-secondary-light: #2a5580;
+    --color-accent: #f4a261;
+    --color-bg: #fafaf9;
+    --color-bg-warm: #f5f3f0;
+    --color-surface: #ffffff;
+    --color-surface-elevated: #ffffff;
+    --color-text: #1c1917;
+    --color-text-secondary: #57534e;
+    --color-text-muted: #a8a29e;
+    --color-border: #e7e5e4;
+    --color-border-light: #f5f5f4;
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "Source Sans 3", -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-md:
+      0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --shadow-lg:
+      0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+    --shadow-xl:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 40px rgba(232, 93, 38, 0.15);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile touch optimizations */
+  @media (max-width: 768px) {
+    button,
+    a,
+    input[type="button"],
+    input[type="submit"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Improve touch targets */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: white;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-dark {
+    background: rgba(28, 25, 23, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(at 0% 0%, rgba(232, 93, 38, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(27, 58, 92, 0.08) 0px, transparent 50%),
+      radial-gradient(
+        at 100% 100%,
+        rgba(244, 162, 97, 0.08) 0px,
+        transparent 50%
+      ),
+      radial-gradient(at 0% 100%, rgba(232, 93, 38, 0.05) 0px, transparent 50%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-lift {
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Mobile-specific utilities */
+  @media (max-width: 768px) {
+    .mobile-safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .mobile-safe-top {
+      padding-top: env(safe-area-inset-top, 0);
+    }
+
+    /* Better mobile scrolling */
+    .mobile-scroll {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    /* Prevent zoom on input focus for iOS */
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}

@@ -22,7 +22,7 @@ export const loadScript = (src: string): Promise<void> => {
 export const decryptPages = async (encrypted: string): Promise<FlipPage[]> => {
   try {
     await loadScript('https://static.fliphtml5.com/resourceFiles/html5_templates/js/jquery-4.0.0.min.js');
-    await loadScript('https://static.fliphtml5.com/resourceFiles/html5_templates/js/deString.js?1773640800');
+    await loadScript('https://static.fliphtml5.com/resourceFiles/html5_templates/js/deString.js');
 
     return new Promise((resolve, reject) => {
       const start = Date.now();
