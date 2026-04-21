@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css"; // Global styles
 import Navbar from "@/components/Navbar";
+import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
   title: "Fliphtml5 Downloader - Premium PDF Conversion",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <main className="pt-16 sm:pt-20 md:pt-24 min-h-screen mobile-safe-bottom">
           {children}
         </main>
+        <Analytics/>
       </body>
     </html>
   );
