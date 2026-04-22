@@ -22,19 +22,10 @@ export default function Analytics() {
             `,
         }}
       /> */}
-      {/* Privacy-friendly analytics by Plausible */}
       <script
         async
-        src="https://plausible.io/js/pa-9NKvhvKGZCJSECTtYokFY.js"
+        src="https://plausible.aivaded.com/api/loader/fliphtml5.js"
       ></script>
-      <Script
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-        plausible.init()`,
-        }}
-      />
     </>
   );
 }
