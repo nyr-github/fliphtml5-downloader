@@ -53,7 +53,7 @@ export default function BookReaderClient({
     new Map(),
   );
   const [loadingPages, setLoadingPages] = useState<Set<number>>(new Set());
-  
+
   // 使用 ref 来跟踪已提取和加载中的页面，避免依赖问题
   const extractedPagesRef = useRef<Map<number, string>>(new Map());
   const loadingPagesRef = useRef<Set<number>>(new Set());
@@ -68,39 +68,45 @@ export default function BookReaderClient({
   const downloadUrl = `/?url=${encodeURIComponent(bookUrl)}#downloader-section`;
 
   // 提取 ZIP 文件中的页面
-  const extractZipPage = useCallback(async (pageIndex: number, pageUrl: string) => {
-    // 使用 ref 检查，避免依赖问题
-    if (extractedPagesRef.current.has(pageIndex) || loadingPagesRef.current.has(pageIndex)) {
-      return;
-    }
+  const extractZipPage = useCallback(
+    async (pageIndex: number, pageUrl: string) => {
+      // 使用 ref 检查，避免依赖问题
+      if (
+        extractedPagesRef.current.has(pageIndex) ||
+        loadingPagesRef.current.has(pageIndex)
+      ) {
+        return;
+      }
 
-    setLoadingPages((prev) => new Set(prev).add(pageIndex));
-    loadingPagesRef.current.add(pageIndex);
+      setLoadingPages((prev) => new Set(prev).add(pageIndex));
+      loadingPagesRef.current.add(pageIndex);
 
-    try {
-      const { url: pdfUrl, password } = await getBlob(pageUrl);
-      const pdfPages = await extractPdfPages(pdfUrl, password);
+      try {
+        const { url: pdfUrl, password } = await getBlob(pageUrl);
+        const pdfPages = await extractPdfPages(pdfUrl, password);
 
-      if (pdfPages.length > 0) {
-        const imageData = pdfPages[0].data;
-        extractedPagesRef.current.set(pageIndex, imageData);
-        setExtractedPages((prev) => {
-          const newMap = new Map(prev);
-          newMap.set(pageIndex, imageData);
-          return newMap;
+        if (pdfPages.length > 0) {
+          const imageData = pdfPages[0].data;
+          extractedPagesRef.current.set(pageIndex, imageData);
+          setExtractedPages((prev) => {
+            const newMap = new Map(prev);
+            newMap.set(pageIndex, imageData);
+            return newMap;
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to extract page ${pageIndex}:`, err);
+      } finally {
+        loadingPagesRef.current.delete(pageIndex);
+        setLoadingPages((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(pageIndex);
+          return newSet;
         });
       }
-    } catch (err) {
-      console.error(`Failed to extract page ${pageIndex}:`, err);
-    } finally {
-      loadingPagesRef.current.delete(pageIndex);
-      setLoadingPages((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(pageIndex);
-        return newSet;
-      });
-    }
-  }, []); // 空依赖，因为使用 ref
+    },
+    [],
+  ); // 空依赖，因为使用 ref
 
   // 获取页面的显示 URL
   const getPageDisplayUrl = useCallback(
@@ -153,7 +159,7 @@ export default function BookReaderClient({
     const pagesToLoad = [currentIndex, currentIndex + 1].filter(
       (idx) => idx < pages.length,
     );
-  
+
     pagesToLoad.forEach((idx) => {
       const pageUrl = pages[idx];
       if (isZipUrl(pageUrl)) {
@@ -161,7 +167,7 @@ export default function BookReaderClient({
       }
     });
   }, [currentIndex, pages, extractZipPage]);
-  
+
   // 当缩略图面板打开时，批量预加载所有 ZIP 页面
   useEffect(() => {
     if (showThumbnails && pages.length > 0) {
