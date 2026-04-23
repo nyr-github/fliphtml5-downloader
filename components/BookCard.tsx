@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Download, Eye, Layers } from "lucide-react";
+import { cleanUrl } from "@/lib/utils";
 
 interface Book {
   id: string;
@@ -27,7 +28,7 @@ export default function BookCard({
 }: BookCardProps) {
   const thumbnailUrl = book.thumbnail.startsWith("http")
     ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${book.thumbnail.replace("./", "")}`;
+    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
   if (variant === "compact") {
     return (

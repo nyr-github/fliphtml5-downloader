@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import FlipDownloaderClient from "@/components/FlipDownloaderClient";
 import BookActions from "@/components/BookActions";
+import { cleanUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 // 动态生成 metadata
@@ -35,7 +36,7 @@ export async function generateMetadata({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
   const thumbnailFull = book.thumbnail.startsWith("http")
     ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${book.thumbnail.replace("./", "")}`;
+    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
   return {
     title: `${book.title} - FlipHTML5 Book | Download PDF`,
@@ -87,8 +88,9 @@ export default async function BookDetailsPage({
   const bookUrl = `https://fliphtml5.com/${book.id1}/${book.id2}`;
   const thumbnailFull = book.thumbnail.startsWith("http")
     ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${book.thumbnail.replace("./", "")}`;
+    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
+  console.log(thumbnailFull);
   // 结构化数据 (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -200,7 +202,13 @@ export default async function BookDetailsPage({
                   directly using our optimized web reader.
                 </p>
 
-                <BookActions id={id} id1={book.id1} id2={book.id2} />
+                <BookActions
+                  id={id}
+                  id1={book.id1}
+                  id2={book.id2}
+                  title={book.title}
+                  pageCount={book.pageCount}
+                />
               </div>
 
               <div className="mt-auto">

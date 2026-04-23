@@ -18,6 +18,7 @@ import {
   RotateCcw,
   BookOpen,
   FileText,
+  Share2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,6 +48,7 @@ export default function BookReaderClient({
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [isDualPageMode, setIsDualPageMode] = useState(false);
   const [isWideScreen, setIsWideScreen] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   // 存储从 ZIP 提取的图片数据
   const [extractedPages, setExtractedPages] = useState<Map<number, string>>(
@@ -66,6 +68,10 @@ export default function BookReaderClient({
   const pages = config?.pages || [];
   const bookUrl = `https://fliphtml5.com/${id1}/${id2}`;
   const downloadUrl = `/?url=${encodeURIComponent(bookUrl)}#downloader-section`;
+  const shareUrl =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/read/${dbId}`;
 
   // 提取 ZIP 文件中的页面
   const extractZipPage = useCallback(
@@ -391,6 +397,33 @@ export default function BookReaderClient({
     window.print();
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: `Read ${title} Online`,
+      text: `Check out "${title}" - ${pages.length} pages available to read online for free.`,
+      url: shareUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          console.error("Error sharing:", err);
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setShowShareMenu(true);
+        setTimeout(() => setShowShareMenu(false), 2000);
+      } catch (err) {
+        console.error("Error copying to clipboard:", err);
+      }
+    }
+  };
+
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressBarRef.current || pages.length === 0) return;
 
@@ -575,6 +608,18 @@ export default function BookReaderClient({
               <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
               <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            )}
+          </button>
+          <button
+            onClick={handleShare}
+            className="p-2 sm:p-3 bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white relative"
+            title="Share this book"
+          >
+            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            {showShareMenu && (
+              <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-[var(--color-primary)] text-white text-xs font-medium rounded-lg shadow-lg whitespace-nowrap animate-in fade-in slide-in-from-top-2">
+                Link copied!
+              </div>
             )}
           </button>
           <Link

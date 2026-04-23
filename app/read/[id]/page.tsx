@@ -2,6 +2,7 @@ import React from "react";
 import { getBookById } from "@/lib/actions";
 import { notFound } from "next/navigation";
 import BookReaderClient from "@/components/BookReaderClient";
+import { cleanUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 // 动态生成 metadata
@@ -23,7 +24,7 @@ export async function generateMetadata({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
   const thumbnailFull = book.thumbnail.startsWith("http")
     ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${book.thumbnail.replace("./", "")}`;
+    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
   return {
     title: `Read ${book.title} Online - Free FlipBook Reader`,
@@ -78,7 +79,7 @@ export default async function ReaderPage({
 
   const thumbnailFull = book.thumbnail.startsWith("http")
     ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${book.thumbnail.replace("./", "")}`;
+    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
   // 结构化数据 (JSON-LD)
   const jsonLd = {
