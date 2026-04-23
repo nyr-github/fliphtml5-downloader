@@ -1,0 +1,14 @@
+{
+  "id": "flipbook-downloader",
+  "name": "FlipHTML5 下载器 - 将翻页电子书转换为PDF",
+  "description": "一款优雅的在线工具，可将FlipHTML5翻页电子书瞬间转换为高质量PDF文件",
+  "coreFeatures": [
+    "链接解析与自动提取",
+    "高质量PDF生成",
+    "批量下载支持",
+    "ZIP资源兼容",
+    "社区发现功能"
+  ],
+  "appUrl": "https://fliphtml5.aivaded.com/",
+  "iconUrl": "https://fliphtml5.aivaded.com/icon-512.png"
+}

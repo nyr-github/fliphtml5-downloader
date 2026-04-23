@@ -1,0 +1,14 @@
+{
+  "id": "flipbook-downloader",
+  "name": "FlipHTML5 Downloader - Convert Flipbook to PDF",
+  "description": "An elegant online tool that converts FlipHTML5 publications into high-quality PDF files instantly",
+  "coreFeatures": [
+    "URL parsing & auto extraction",
+    "High-quality PDF generation",
+    "Batch download support",
+    "ZIP resource compatibility",
+    "Community discovery"
+  ],
+  "appUrl": "https://fliphtml5.aivaded.com/",
+  "iconUrl": "https://fliphtml5.aivaded.com/icon-512.png"
+}

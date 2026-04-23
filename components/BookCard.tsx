@@ -69,7 +69,7 @@ export default function BookCard({
   return (
     <Link
       href={`/book/${book.id}`}
-      className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-[var(--color-border-light)] flex flex-col hover-lift"
+      className="group bg-white rounded-xl  overflow-hidden shadow-md hover:shadow-xl transition-all border border-[var(--color-border-light)] flex flex-col hover-lift"
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-bg-warm)]">
         <Image

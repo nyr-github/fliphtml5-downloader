@@ -37,11 +37,6 @@ export default function Navbar() {
       icon: MessageCircle,
     },
     {
-      name: "More apps by AIVaded",
-      href: "https://www.aivaded.com/",
-      icon: LayoutGrid,
-    },
-    {
       name: "Blog",
       href: "/blog",
       icon: BookText,
