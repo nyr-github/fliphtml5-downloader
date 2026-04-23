@@ -42,6 +42,11 @@ export default function Navbar() {
       icon: BookText,
     },
     {
+      name: "FlipHtml5",
+      href: "https://fliphtml5.com",
+      icon: BookOpen,
+    },
+    {
       name: "FAQ",
       href: "/qa",
       icon: HelpCircle,
