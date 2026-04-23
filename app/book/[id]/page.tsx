@@ -230,7 +230,7 @@ export default async function BookDetailsPage({
                   <span className="hidden sm:inline">
                     Retrieved: {new Date().toLocaleDateString()}
                   </span>
-                  <br className="sm:hidden" />
+                  <br />
                   <span className="sm:hidden">Source: </span>
                   <span className="hidden sm:inline">Book Source: </span>
                   <a href={bookUrl} target="_blank" className="break-all">
