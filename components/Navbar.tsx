@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   AppWindowIcon,
+  MessageCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -29,6 +30,11 @@ export default function Navbar() {
 
   const navLinks: any[] = [
     {
+      name: "Discord Community",
+      href: "https://discord.gg/5EZ3u4pe",
+      icon: MessageCircle,
+    },
+    {
       name: "More apps by AIVaded",
       href: "https://www.aivaded.com/",
       icon: AppWindowIcon,
@@ -46,9 +52,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
-          <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+          {/* <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
             <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-          </div>
+          </div> */}
+          <img
+            src="/icon-512.png"
+            alt="Fliphtml5 Downloader"
+            className="w-9 h-9 sm:w-11 sm:h-11"
+          />
+
           <div>
             <span className="font-display text-base sm:text-xl font-bold tracking-tight text-[var(--color-text)]">
               Fliphtml5

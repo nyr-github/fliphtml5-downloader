@@ -4,9 +4,67 @@ import Navbar from "@/components/Navbar";
 import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
-  title: "Fliphtml5 Downloader - Premium PDF Conversion",
+  title: {
+    default:
+      "FlipHTML5 Downloader - Download Flipbook as PDF | FlipBook Converter",
+    template: "%s | FlipHTML5 Downloader",
+  },
   description:
-    "Download FlipHTML5 publications as high-quality PDF files instantly. Elegant, fast, and reliable.",
+    "Download FlipHTML5 flipbooks as high-quality PDF files instantly. Free online flipbook converter and reader. Extract, convert, and save your favorite flipbooks in seconds.",
+  keywords: [
+    "fliphtml5 downloader",
+    "flipbook converter",
+    "flipbook to pdf",
+    "download flipbook",
+    "fliphtml5 pdf converter",
+    "online flipbook reader",
+    "flipbook extractor",
+  ],
+  authors: [{ name: "FlipBook Downloader Team" }],
+  creator: "FlipBook Downloader",
+  publisher: "FlipBook Downloader",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com",
+    siteName: "FlipHTML5 Downloader",
+    title: "FlipHTML5 Downloader - Convert Flipbooks to PDF",
+    description:
+      "Download FlipHTML5 flipbooks as high-quality PDF files instantly. Free online flipbook converter and reader.",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "FlipHTML5 Downloader - Convert Flipbooks to PDF",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FlipHTML5 Downloader - Convert Flipbooks to PDF",
+    description:
+      "Download FlipHTML5 flipbooks as high-quality PDF files instantly. Free online flipbook converter and reader.",
+    images: [
+      `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/og-image.jpg`,
+    ],
+    creator: "@flipbookdownloader",
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com",
+  },
+  category: "Technology",
 };
 
 export const viewport: Viewport = {

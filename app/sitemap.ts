@@ -18,14 +18,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 获取所有书籍
+  // 限制书籍数量以避免sitemap过大 (最多50000个URL)
   const allBooks = await db
     .select({
       id: books.id,
       updatedAt: books.updatedAt,
     })
     .from(books)
-    .orderBy(sql`${books.downloadCount} DESC`);
+    .orderBy(sql`${books.downloadCount} DESC`)
+    .limit(10000); // 限制查询数量
 
   // 书籍详情页和阅读页
   const bookPages: MetadataRoute.Sitemap = allBooks.map((book) => ({
@@ -42,10 +43,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // 分页页面
+  // 分页页面 (限制最多100页)
   const totalBooks = allBooks.length;
   const pageSize = 24;
-  const totalPages = Math.ceil(totalBooks / pageSize);
+  const totalPages = Math.min(Math.ceil(totalBooks / pageSize), 100);
 
   const paginationPages: MetadataRoute.Sitemap = [];
   for (let page = 1; page <= totalPages; page++) {

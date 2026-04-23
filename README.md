@@ -4,6 +4,8 @@ An elegant online tool that converts FlipHTML5 publications into high-quality PD
 
 **[Try Online](https://fliphtml5.aivaded.com/)**
 
+**[Join Our Discord Community](https://discord.gg/5EZ3u4pe)**
+
 ## Features
 
 - **URL Parsing**: Automatically detect and parse FlipHTML5 links
