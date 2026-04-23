@@ -121,7 +121,7 @@ export const getBookById = unstable_cache(
     }
   },
   ["book-by-id"],
-  { revalidate: 86400 } // 1天缓存
+  { revalidate: 86400 }, // 1天缓存
 );
 
 export interface RelatedBooksResult {
@@ -140,12 +140,12 @@ export const getRelatedBooks = unstable_cache(
   async (
     title: string,
     currentBookId: string,
-    limit: number = 4
+    limit: number = 4,
   ): Promise<RelatedBooksResult> => {
     try {
       // 使用NLP提取第一个主要实体
       const primaryEntity = getPrimaryEntity(title);
-      
+
       if (!primaryEntity) {
         // 如果没有提取到实体，返回最近的书籍（按下载量）
         const results = await db
@@ -154,7 +154,7 @@ export const getRelatedBooks = unstable_cache(
           .where(sql`${books.id} != ${currentBookId}`)
           .orderBy(desc(books.downloadCount))
           .limit(limit + 1); // 多取一个用于判断hasMore
-        
+
         const booksData = results.slice(0, limit).map((b) => ({
           id: b.id,
           title: b.title,
@@ -164,7 +164,7 @@ export const getRelatedBooks = unstable_cache(
           id1: b.id1,
           id2: b.id2,
         }));
-        
+
         return {
           books: booksData,
           total: booksData.length,
@@ -174,15 +174,15 @@ export const getRelatedBooks = unstable_cache(
 
       // 基于实体进行模糊搜索（使用ILIKE进行不区分大小写的匹配）
       const searchPattern = `%${primaryEntity}%`;
-      
+
       // 获取总数（不包括当前书籍）
       const totalResult = await db
         .select({ count: count() })
         .from(books)
         .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`
+          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
         );
-      
+
       const total = totalResult[0]?.count || 0;
 
       // 获取相关书籍（限制数量）
@@ -190,7 +190,7 @@ export const getRelatedBooks = unstable_cache(
         .select()
         .from(books)
         .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`
+          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
         )
         .orderBy(desc(books.downloadCount))
         .limit(limit + 1); // 多取一个用于判断hasMore
@@ -220,7 +220,7 @@ export const getRelatedBooks = unstable_cache(
     }
   },
   ["related-books"],
-  { revalidate: 86400 } // 1天缓存
+  { revalidate: 86400 }, // 1天缓存
 );
 
 /**
@@ -235,21 +235,21 @@ export const getAllRelatedBooks = unstable_cache(
     title: string,
     currentBookId: string,
     page: number = 1,
-    pageSize: number = 24
+    pageSize: number = 24,
   ): Promise<PaginatedBooks> => {
     try {
       const offset = (page - 1) * pageSize;
-      
+
       // 使用NLP提取第一个主要实体
       const primaryEntity = getPrimaryEntity(title);
-      
+
       if (!primaryEntity) {
         // 如果没有提取到实体，返回所有书籍（不包括当前书籍）
         const totalResult = await db
           .select({ count: count() })
           .from(books)
           .where(sql`${books.id} != ${currentBookId}`);
-        
+
         const total = totalResult[0]?.count || 0;
 
         const results = await db
@@ -281,15 +281,15 @@ export const getAllRelatedBooks = unstable_cache(
 
       // 基于实体进行模糊搜索
       const searchPattern = `%${primaryEntity}%`;
-      
+
       // 获取总数（不包括当前书籍）
       const totalResult = await db
         .select({ count: count() })
         .from(books)
         .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`
+          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
         );
-      
+
       const total = totalResult[0]?.count || 0;
 
       // 获取分页的相关书籍
@@ -297,7 +297,7 @@ export const getAllRelatedBooks = unstable_cache(
         .select()
         .from(books)
         .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`
+          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
         )
         .orderBy(desc(books.downloadCount))
         .limit(pageSize)
@@ -332,5 +332,5 @@ export const getAllRelatedBooks = unstable_cache(
     }
   },
   ["all-related-books"],
-  { revalidate: 86400 } // 1天缓存
+  { revalidate: 86400 }, // 1天缓存
 );

@@ -23,6 +23,7 @@ We've enhanced the book discovery experience by integrating Natural Language Pro
 ## Technical Implementation
 
 ### NLP Processing Pipeline
+
 1. Extract proper nouns and noun phrases from book titles
 2. Identify the primary entity for search matching
 3. Perform case-insensitive database search using ILIKE
@@ -30,11 +31,13 @@ We've enhanced the book discovery experience by integrating Natural Language Pro
 5. Cache results for 24 hours to optimize performance
 
 ### New Files
+
 - `lib/nlp-utils.ts`: NLP entity extraction utilities using compromise library
 - `components/RelatedBooks.tsx`: Related books display component with "View All" functionality
 - `app/book/[id]/related/page.tsx`: Full pagination view for related books
 
 ### Enhanced Files
+
 - `lib/actions.ts`: Added `getRelatedBooks()` and `getAllRelatedBooks()` functions with caching
 - `app/book/[id]/page.tsx`: Integrated related books section into book detail page
 - `package.json`: Added `compromise` NLP library dependency

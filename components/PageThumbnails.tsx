@@ -30,6 +30,7 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
     current: number;
     total: number;
   } | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleDownloadImage = async (imageUrl: string, pageIndex: number) => {
     try {
@@ -104,6 +105,10 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
     };
   }, [selectedPageIndex]);
 
+  // Get visible pages based on expanded state
+  const visiblePages = config?.pages.slice(0, isExpanded ? undefined : 6) || [];
+  const hasMorePages = config ? config.pages.length > 6 : false;
+
   // Handle keyboard events (Escape to close modal)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -165,34 +170,59 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
     <>
       {/* Thumbnails Grid */}
       <div className="bg-white rounded-2xl border border-[var(--color-border-light)] shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap">
           <h2 className="text-lg font-display font-bold text-[var(--color-text)]">
             All Pages ({config.pages.length})
           </h2>
-          <button
-            onClick={handleDownloadAllAsZip}
-            disabled={downloadingZip}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-          >
-            {downloadingZip ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>
-                  {zipProgress
-                    ? `Compressing ${zipProgress.current}/${zipProgress.total}`
-                    : "Compressing..."}
-                </span>
-              </>
-            ) : (
-              <>
-                <Package className="w-4 h-4" />
-                <span>Download All</span>
-              </>
+          <div className="flex items-center gap-3">
+            {/* Download All Button */}
+            <button
+              onClick={handleDownloadAllAsZip}
+              disabled={downloadingZip}
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+            >
+              {downloadingZip ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>
+                    {zipProgress
+                      ? `Compressing ${zipProgress.current}/${zipProgress.total}`
+                      : "Compressing..."}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Package className="w-4 h-4" />
+                  <span>Download All</span>
+                </>
+              )}
+            </button>
+            {/* Expand/Collapse Button */}
+            {hasMorePages && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-[var(--color-text)] text-sm font-semibold rounded-lg transition-colors border border-[var(--color-border-light)] shadow-sm"
+              >
+                <span>{isExpanded ? "Show Less" : "Show All"}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
             )}
-          </button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {config.pages.map((url, idx) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {visiblePages.map((url, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedPageIndex(idx)}

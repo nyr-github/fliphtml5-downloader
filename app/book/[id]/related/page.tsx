@@ -108,7 +108,7 @@ export default async function RelatedBooksPage({
         suppressHydrationWarning
       />
 
-      <div className="relative z-[1001] max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
         {/* Back Button */}
         <Link
           href={`/book/${id}`}

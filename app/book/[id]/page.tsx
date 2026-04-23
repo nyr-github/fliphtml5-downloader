@@ -88,7 +88,7 @@ export default async function BookDetailsPage({
   }
 
   // 获取相关书籍（默认4本）
-  const relatedBooksResult = await getRelatedBooks(book.title, id, 4);
+  const relatedBooksResult = await getRelatedBooks(book.title, id, 6);
 
   const bookUrl = `https://fliphtml5.com/${book.id1}/${book.id2}`;
   const thumbnailFull = book.thumbnail.startsWith("http")
@@ -135,20 +135,22 @@ export default async function BookDetailsPage({
           suppressHydrationWarning
         />
 
-        <div className="relative z-[1001] max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
-          {/* Back Button */}
+        <div className="relative max-w-6xl mx-auto px-3 sm:px-6 pt-6 sm:pt-12 pb-12 sm:pb-20">
+          {/* Back Button - More compact on mobile */}
           <Link
             href="/#discovery-square"
-            className="inline-flex items-center gap-2 mb-6 sm:mb-8 text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors group"
+            className="inline-flex items-center gap-1.5 mb-4 sm:mb-8 text-xs sm:text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors group"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Link>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 items-start">
-            {/* Left: Book Cover preview */}
-            <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6">
-              <div className="relative aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white transform transition-transform hover:scale-[1.02] duration-500">
+          {/* Main Content Grid - Optimized for mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-10 lg:gap-12 items-start">
+            {/* Left: Book Cover preview - Full width on mobile, 4 cols on desktop */}
+            <div className="md:col-span-4 flex flex-col gap-3 sm:gap-5">
+              {/* Book Cover - Smaller on mobile */}
+              <div className="relative aspect-[3/4] w-full max-w-[280px] sm:max-w-none mx-auto md:mx-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl border-2 sm:border-4 border-white transform transition-transform hover:scale-[1.02] duration-500">
                 <Image
                   src={thumbnailFull}
                   alt={book.title}
@@ -158,47 +160,51 @@ export default async function BookDetailsPage({
                   referrerPolicy="no-referrer"
                   priority
                 />
-                <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-                  <div className="bg-white/90 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--color-primary)] flex items-center gap-1.5 sm:gap-2 shadow-lg">
-                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                    Popular
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
+                  <div className="bg-white/90 backdrop-blur-md px-2.5 sm:px-4 py-1 sm:py-2 rounded-full text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--color-primary)] flex items-center gap-1 sm:gap-2 shadow-lg">
+                    <Sparkles className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
+                    <span className="hidden xs:inline sm:inline">Popular</span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[var(--color-border-light)] shadow-sm flex flex-col items-center justify-center text-center">
-                  <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--color-text-muted)] mb-2">
-                    Total Pages
-                  </span>
-                  <span className="text-xl sm:text-2xl font-display font-bold text-[var(--color-text)] flex items-center gap-2">
-                    <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-secondary)]" />
+              {/* Stats Cards - Horizontal on mobile, vertical on desktop */}
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+                <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[var(--color-border-light)] shadow-sm flex flex-col items-center justify-center text-center">
+                  <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-secondary)] mb-1.5 sm:mb-2" />
+                  <span className="text-lg sm:text-2xl font-display font-bold text-[var(--color-text)]">
                     {book.pageCount}
                   </span>
-                </div>
-                <div className="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[var(--color-border-light)] shadow-sm flex flex-col items-center justify-center text-center">
-                  <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--color-text-muted)] mb-2">
-                    Downloads
+                  <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--color-text-muted)] mt-0.5 sm:mt-1">
+                    Pages
                   </span>
-                  <span className="text-xl sm:text-2xl font-display font-bold text-[var(--color-text)] flex items-center gap-2">
-                    <Download className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-primary)]" />
+                </div>
+                <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[var(--color-border-light)] shadow-sm flex flex-col items-center justify-center text-center">
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-primary)] mb-1.5 sm:mb-2" />
+                  <span className="text-lg sm:text-2xl font-display font-bold text-[var(--color-text)]">
                     {book.downloadCount}
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--color-text-muted)] mt-0.5 sm:mt-1">
+                    Downloads
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Right: Info and Action */}
-            <div className="md:col-span-8 flex flex-col">
-              <div className="mb-6 sm:mb-8">
+            {/* Right: Info and Action - Full width on mobile */}
+            <div className="md:col-span-8 flex flex-col order-first md:order-last">
+              <div className="mb-5 sm:mb-8">
+                {/* Title - Better mobile typography */}
                 <h1
-                  className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] mb-4 sm:mb-6 text-[var(--color-text)]"
+                  className="font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.15] sm:leading-[1.1] mb-3 sm:mb-6 text-[var(--color-text)] break-words"
                   suppressHydrationWarning
                 >
                   {book.title}
                 </h1>
+
+                {/* Description - Compact on mobile */}
                 <p
-                  className="text-[var(--color-text-secondary)] leading-relaxed max-w-3xl mb-6 sm:mb-8 text-base sm:text-lg font-light px-2"
+                  className="text-[var(--color-text-secondary)] leading-relaxed sm:leading-relaxed max-w-3xl mb-5 sm:mb-8 text-sm sm:text-lg font-light"
                   suppressHydrationWarning
                 >
                   This publication has been indexed by our community. You can
@@ -206,6 +212,7 @@ export default async function BookDetailsPage({
                   directly using our optimized web reader.
                 </p>
 
+                {/* Action Buttons */}
                 <BookActions
                   id={id}
                   id1={book.id1}
@@ -215,15 +222,22 @@ export default async function BookDetailsPage({
                 />
               </div>
 
-              <div className="mt-auto">
+              {/* Source Info - More compact on mobile */}
+              <div className="mt-auto pt-4 sm:pt-0">
                 <p
-                  className="text-[10px] sm:text-[11px] text-[var(--color-text-muted)] font-medium leading-relaxed px-2"
+                  className="text-[9px] sm:text-[11px] text-[var(--color-text-muted)] font-medium leading-relaxed"
                   suppressHydrationWarning
                 >
-                  Retrieved: {new Date().toLocaleDateString()}
-                  <br />
-                  Book Source:{" "}
-                  <a href={bookUrl} target="_blank">
+                  <span className="sm:hidden">
+                    {new Date().toLocaleDateString()}
+                  </span>
+                  <span className="hidden sm:inline">
+                    Retrieved: {new Date().toLocaleDateString()}
+                  </span>
+                  <br className="sm:hidden" />
+                  <span className="sm:hidden">Source: </span>
+                  <span className="hidden sm:inline">Book Source: </span>
+                  <a href={bookUrl} target="_blank" className="break-all">
                     {bookUrl}
                   </a>
                 </p>
