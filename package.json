@@ -20,6 +20,7 @@
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.553.0",
     "marked": "^13.0.3",
     "motion": "^12.23.24",

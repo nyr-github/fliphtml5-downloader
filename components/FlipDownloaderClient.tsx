@@ -4,11 +4,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { jsPDF } from "jspdf";
 import { motion } from "motion/react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { decryptPages } from "@/lib/decryption";
 import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
 import {
-  useBookConfig,
   extractIdsFromUrl,
   loadBookConfig,
 } from "@/hooks/useBookConfig";

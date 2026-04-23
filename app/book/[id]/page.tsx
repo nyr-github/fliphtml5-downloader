@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import FlipDownloaderClient from "@/components/FlipDownloaderClient";
 import BookActions from "@/components/BookActions";
+import PageThumbnails from "@/components/PageThumbnails";
 import { cleanUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
@@ -90,7 +91,6 @@ export default async function BookDetailsPage({
     ? book.thumbnail
     : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
 
-  console.log(thumbnailFull);
   // 结构化数据 (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -131,7 +131,7 @@ export default async function BookDetailsPage({
           suppressHydrationWarning
         />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
+        <div className="relative z-[1001] max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
           {/* Back Button */}
           <Link
             href="/#discovery-square"
@@ -225,6 +225,11 @@ export default async function BookDetailsPage({
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Page Thumbnails Section */}
+          <div className="mt-16 sm:mt-20">
+            <PageThumbnails id1={book.id1} id2={book.id2} />
           </div>
         </div>
       </div>
