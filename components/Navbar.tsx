@@ -12,6 +12,8 @@ import {
   X,
   AppWindowIcon,
   MessageCircle,
+  BookText,
+  HelpCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -37,7 +39,17 @@ export default function Navbar() {
     {
       name: "More apps by AIVaded",
       href: "https://www.aivaded.com/",
-      icon: AppWindowIcon,
+      icon: LayoutGrid,
+    },
+    {
+      name: "Blog",
+      href: "/blog",
+      icon: BookText,
+    },
+    {
+      name: "FAQ",
+      href: "/qa",
+      icon: HelpCircle,
     },
   ];
 

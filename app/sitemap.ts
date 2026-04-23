@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
+import fs from "fs";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/qa`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   ];
 
@@ -43,6 +57,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // 博客文章页面
+  const blogsDir = path.join(process.cwd(), "blogs");
+  const blogFiles = fs.readdirSync(blogsDir).filter((f) => f.endsWith(".md"));
+
+  const blogPages: MetadataRoute.Sitemap = blogFiles.map((file) => {
+    const slug = file.replace(".md", "");
+    const fullPath = path.join(blogsDir, file);
+    const content = fs.readFileSync(fullPath, "utf-8");
+
+    // 解析frontmatter获取日期
+    let lastModified = new Date();
+    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    if (frontmatterMatch) {
+      const frontmatter = frontmatterMatch[1];
+      const dateMatch = frontmatter.match(/^date:\s*(.+)$/m);
+      if (dateMatch) {
+        lastModified = new Date(dateMatch[1].trim());
+      }
+    }
+
+    return {
+      url: `${baseUrl}/blog/${slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    };
+  });
+
   // 分页页面 (限制最多100页)
   const totalBooks = allBooks.length;
   const pageSize = 24;
@@ -58,5 +100,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  return [...staticPages, ...bookPages, ...readPages, ...paginationPages];
+  return [
+    ...staticPages,
+    ...bookPages,
+    ...readPages,
+    ...blogPages,
+    ...paginationPages,
+  ];
 }
