@@ -23,7 +23,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useBookConfig } from "@/hooks/useBookConfig";
-import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
+import { usePageExtractor } from "@/hooks/usePageExtractor";
+import { isZipUrl } from "@/lib/pdf-handler";
 
 export default function BookReaderClient({
   dbId,
@@ -37,6 +38,13 @@ export default function BookReaderClient({
   title: string;
 }) {
   const { config, loading, error } = useBookConfig(id1, id2);
+  const pages = config?.pages || [];
+  const thumbnails = config?.thumbnails || [];
+
+  // 使用页面提取器处理 ZIP 文件
+  const { getPageDisplayUrl, extractZipPage, loadingPages } =
+    usePageExtractor(pages);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
@@ -50,22 +58,11 @@ export default function BookReaderClient({
   const [isWideScreen, setIsWideScreen] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // 存储从 ZIP 提取的图片数据
-  const [extractedPages, setExtractedPages] = useState<Map<number, string>>(
-    new Map(),
-  );
-  const [loadingPages, setLoadingPages] = useState<Set<number>>(new Set());
-
-  // 使用 ref 来跟踪已提取和加载中的页面，避免依赖问题
-  const extractedPagesRef = useRef<Map<number, string>>(new Map());
-  const loadingPagesRef = useRef<Set<number>>(new Set());
-
   const readerRef = useRef<HTMLDivElement>(null);
   const thumbnailPanelRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  const pages = config?.pages || [];
   const bookUrl = `https://fliphtml5.com/${id1}/${id2}`;
   const downloadUrl = `/?url=${encodeURIComponent(bookUrl)}#downloader-section`;
   const shareUrl =
@@ -73,99 +70,11 @@ export default function BookReaderClient({
       ? window.location.href
       : `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/read/${dbId}`;
 
-  // 提取 ZIP 文件中的页面
-  const extractZipPage = useCallback(
-    async (pageIndex: number, pageUrl: string) => {
-      // 使用 ref 检查，避免依赖问题
-      if (
-        extractedPagesRef.current.has(pageIndex) ||
-        loadingPagesRef.current.has(pageIndex)
-      ) {
-        return;
-      }
-
-      setLoadingPages((prev) => new Set(prev).add(pageIndex));
-      loadingPagesRef.current.add(pageIndex);
-
-      try {
-        const { url: pdfUrl, password } = await getBlob(pageUrl);
-        const pdfPages = await extractPdfPages(pdfUrl, password);
-
-        if (pdfPages.length > 0) {
-          const imageData = pdfPages[0].data;
-          extractedPagesRef.current.set(pageIndex, imageData);
-          setExtractedPages((prev) => {
-            const newMap = new Map(prev);
-            newMap.set(pageIndex, imageData);
-            return newMap;
-          });
-        }
-      } catch (err) {
-        console.error(`Failed to extract page ${pageIndex}:`, err);
-      } finally {
-        loadingPagesRef.current.delete(pageIndex);
-        setLoadingPages((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(pageIndex);
-          return newSet;
-        });
-      }
-    },
-    [],
-  ); // 空依赖，因为使用 ref
-
-  // 获取页面的显示 URL
-  const getPageDisplayUrl = useCallback(
-    (pageIndex: number): string | null => {
-      if (pageIndex < 0 || pageIndex >= pages.length) {
-        return null;
-      }
-
-      const pageUrl = pages[pageIndex];
-
-      // 如果是 ZIP 文件，检查是否已提取
-      if (isZipUrl(pageUrl)) {
-        return extractedPages.get(pageIndex) || null;
-      }
-
-      // 否则直接返回原 URL
-      return pageUrl;
-    },
-    [pages, extractedPages],
-  );
-
-  // 检测屏幕宽度
-  useEffect(() => {
-    const checkScreenSize = () => {
-      // 768px 以上视为宽屏
-      setIsWideScreen(window.innerWidth >= 768);
-    };
-
-    // 初始检测
-    checkScreenSize();
-
-    // 监听窗口大小变化
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
-
-  // 根据屏幕宽度自动设置双页模式
-  useEffect(() => {
-    setIsDualPageMode(isWideScreen);
-    // 切换到双页模式时重置缩放
-    if (isWideScreen) {
-      setZoom(100);
-      setIsZoomed(false);
-      setPanPosition({ x: 0, y: 0 });
-    }
-  }, [isWideScreen]);
-
   // 预加载当前页和下一页（如果是 ZIP 文件）
   useEffect(() => {
     const pagesToLoad = [currentIndex, currentIndex + 1].filter(
       (idx) => idx < pages.length,
     );
-
     pagesToLoad.forEach((idx) => {
       const pageUrl = pages[idx];
       if (isZipUrl(pageUrl)) {
@@ -180,12 +89,7 @@ export default function BookReaderClient({
       // 找到所有未加载的 ZIP 页面
       const zipPagesToLoad = pages
         .map((url, idx) => ({ url, idx }))
-        .filter(
-          ({ url, idx }) =>
-            isZipUrl(url) &&
-            !extractedPagesRef.current.has(idx) &&
-            !loadingPagesRef.current.has(idx),
-        );
+        .filter(({ url, idx }) => isZipUrl(url) && !getPageDisplayUrl(idx));
 
       // 限制并发数量，避免同时加载太多
       const batchSize = 3;
@@ -205,7 +109,7 @@ export default function BookReaderClient({
         loadBatch(0);
       }
     }
-  }, [showThumbnails, pages, extractZipPage]);
+  }, [showThumbnails, pages, extractZipPage, getPageDisplayUrl]);
 
   // 获取当前显示的页面索引数组
   const getCurrentPageIndices = useCallback(() => {
@@ -655,9 +559,9 @@ export default function BookReaderClient({
             {/* Thumbnail Grid */}
             <div className="flex-1 overflow-y-auto p-4">
               <div className="grid grid-cols-2 gap-3">
-                {pages.map((url, idx) => {
+                {thumbnails.map((thumbUrl, idx) => {
                   const displayUrl = getPageDisplayUrl(idx);
-                  const isZip = isZipUrl(url);
+                  const isZip = isZipUrl(pages[idx]);
                   const isLoading = isZip && !displayUrl;
 
                   return (
@@ -676,16 +580,16 @@ export default function BookReaderClient({
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                           <Loader2 className="w-6 h-6 text-[var(--color-primary)] animate-spin" />
                         </div>
-                      ) : displayUrl ? (
+                      ) : (
                         <Image
-                          src={displayUrl}
+                          src={thumbUrl}
                           alt={`Page ${idx + 1}`}
                           fill
                           className="object-cover"
                           referrerPolicy="no-referrer"
                           unoptimized
                         />
-                      ) : null}
+                      )}
                       {/* Page Number Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
                         <span className="text-white text-xs font-mono font-bold">

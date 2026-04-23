@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { FlipPage, FlipConfig } from "@/lib/types";
 import { decryptPages } from "@/lib/decryption";
+import { buildThumbnailUrl } from "@/lib/utils";
 
 export interface BookConfig {
-  pages: string[];
+  pages: string[]; // 原图 URL
+  thumbnails: string[]; // 缩略图 URL
   title: string;
   pageCount: number;
   thumbnail?: string;
@@ -21,6 +23,7 @@ export async function loadBookConfig(
   config: FlipConfig;
   pages: FlipPage[];
   imageUrls: string[];
+  thumbnailUrls: string[];
   bookTitle: string;
   firstPageThumb?: string;
 }> {
@@ -43,8 +46,8 @@ export async function loadBookConfig(
   }
 
   const baseUrl = `https://online.fliphtml5.com/${id1}/${id2}/`;
-//   console.log(pageData);
-//   debugger;
+  //   console.log(pageData);
+  //   debugger;
   const imageUrls = pageData.map((p) => {
     const relativePath = p.n[0]
       .replace(/\\/g, "/")
@@ -56,10 +59,16 @@ export async function loadBookConfig(
     return baseUrl + "files/large/" + relativePath;
   });
 
+  // 提取缩略图 URL 并构建完整路径
+  const thumbnailUrls = pageData.map((p) => 
+    buildThumbnailUrl(p.t, id1, id2)
+  );
+
   return {
     config,
     pages: pageData,
     imageUrls,
+    thumbnailUrls,
     bookTitle: config.meta?.title || id2,
     firstPageThumb: pageData[0]?.t,
   };
@@ -79,6 +88,7 @@ export function useBookConfig(id1: string, id2: string) {
 
       setConfig({
         pages: result.imageUrls,
+        thumbnails: result.thumbnailUrls,
         title: result.bookTitle,
         pageCount: result.pages.length,
         thumbnail: result.firstPageThumb,

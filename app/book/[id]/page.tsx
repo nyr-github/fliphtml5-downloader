@@ -16,7 +16,7 @@ import FlipDownloaderClient from "@/components/FlipDownloaderClient";
 import BookActions from "@/components/BookActions";
 import PageThumbnails from "@/components/PageThumbnails";
 import RelatedBooks from "@/components/RelatedBooks";
-import { cleanUrl } from "@/lib/utils";
+import { buildThumbnailUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 // 动态生成 metadata
@@ -36,9 +36,7 @@ export async function generateMetadata({
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
-  const thumbnailFull = book.thumbnail.startsWith("http")
-    ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
+  const thumbnailFull = buildThumbnailUrl(book.thumbnail, book.id1, book.id2);
 
   return {
     title: `${book.title} - FlipHTML5 Book | Download PDF`,
@@ -91,9 +89,7 @@ export default async function BookDetailsPage({
   const relatedBooksResult = await getRelatedBooks(book.title, id, 6);
 
   const bookUrl = `https://fliphtml5.com/${book.id1}/${book.id2}`;
-  const thumbnailFull = book.thumbnail.startsWith("http")
-    ? book.thumbnail
-    : `https://online.fliphtml5.com/${book.id1}/${book.id2}/${cleanUrl(book.thumbnail)}`;
+  const thumbnailFull = buildThumbnailUrl(book.thumbnail, book.id1, book.id2);
 
   // 结构化数据 (JSON-LD)
   const jsonLd = {

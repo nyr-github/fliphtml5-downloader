@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useBookConfig } from "@/hooks/useBookConfig";
+import { usePageExtractor } from "@/hooks/usePageExtractor";
 import {
   Loader2,
   X,
@@ -21,6 +22,12 @@ interface PageThumbnailsProps {
 
 export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
   const { config, loading, error } = useBookConfig(id1, id2);
+  const pages = config?.pages || [];
+
+  // 使用页面提取器处理 ZIP 文件
+  const { getPageDisplayUrl, extractZipPage, loadingPages } =
+    usePageExtractor(pages);
+
   const [selectedPageIndex, setSelectedPageIndex] = useState<number | null>(
     null,
   );
@@ -93,6 +100,16 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
     }
   };
 
+  // 预加载当前选中的页面（如果是 ZIP 文件）
+  useEffect(() => {
+    if (selectedPageIndex !== null && pages.length > 0) {
+      const pageUrl = pages[selectedPageIndex];
+      if (pageUrl.toLowerCase().endsWith(".zip")) {
+        extractZipPage(selectedPageIndex, pageUrl);
+      }
+    }
+  }, [selectedPageIndex, pages, extractZipPage]);
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (selectedPageIndex !== null) {
@@ -107,6 +124,8 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
 
   // Get visible pages based on expanded state
   const visiblePages = config?.pages.slice(0, isExpanded ? undefined : 6) || [];
+  const visibleThumbnails =
+    config?.thumbnails.slice(0, isExpanded ? undefined : 6) || [];
   const hasMorePages = config ? config.pages.length > 6 : false;
 
   // Handle keyboard events (Escape to close modal)
@@ -222,7 +241,7 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {visiblePages.map((url, idx) => (
+          {visibleThumbnails.map((url, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedPageIndex(idx)}
@@ -309,18 +328,39 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
               className="relative w-full h-full max-w-5xl max-h-[80vh] flex items-center justify-center px-4 sm:px-0"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src={config.pages[selectedPageIndex]}
-                  alt={`Page ${selectedPageIndex + 1}`}
-                  fill
-                  className="object-contain"
-                  referrerPolicy="no-referrer"
-                  unoptimized
-                  priority
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 70vw"
-                />
-              </div>
+              {(() => {
+                const displayUrl = getPageDisplayUrl(selectedPageIndex);
+                const pageUrl = config.pages[selectedPageIndex];
+                const isZip = pageUrl.toLowerCase().endsWith(".zip");
+                const isLoading = isZip && !displayUrl;
+
+                if (isLoading) {
+                  return (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Loader2 className="w-12 h-12 text-[var(--color-primary)] animate-spin" />
+                    </div>
+                  );
+                }
+
+                if (!displayUrl) {
+                  return null;
+                }
+
+                return (
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <Image
+                      src={displayUrl}
+                      alt={`Page ${selectedPageIndex + 1}`}
+                      fill
+                      className="object-contain"
+                      referrerPolicy="no-referrer"
+                      unoptimized
+                      priority
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 70vw"
+                    />
+                  </div>
+                );
+              })()}
             </motion.div>
 
             {/* Navigation Buttons */}
