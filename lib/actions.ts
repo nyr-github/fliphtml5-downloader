@@ -60,7 +60,7 @@ export const getBooksPaginated = unstable_cache(
       const results = await db
         .select()
         .from(books)
-        .orderBy(desc(books.downloadCount))
+        .orderBy(desc(books.createdAt))
         .limit(pageSize)
         .offset(offset);
 
@@ -93,7 +93,7 @@ export const getBooksPaginated = unstable_cache(
     }
   },
   ["books-paginated"],
-  { revalidate: 86400 }, // 24 hours
+  { revalidate: 60 * 60 }, // 24 hours
 );
 
 export async function getBookById(id: string): Promise<ExploreBook | null> {

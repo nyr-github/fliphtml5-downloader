@@ -69,7 +69,8 @@ export default function Footer() {
               © {currentYear} aivaded.com. All rights reserved.
             </p>
             <p className="text-gray-400 text-sm mt-2">
-              Reproduction or use of this project code without permission is prohibited.
+              Reproduction or use of this project code without permission is
+              prohibited.
             </p>
           </div>
         </div>
