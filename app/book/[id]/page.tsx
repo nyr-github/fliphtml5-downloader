@@ -1,5 +1,5 @@
 import React from "react";
-import { getBookById } from "@/lib/actions";
+import { getBookById, getRelatedBooks } from "@/lib/actions";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import {
 import FlipDownloaderClient from "@/components/FlipDownloaderClient";
 import BookActions from "@/components/BookActions";
 import PageThumbnails from "@/components/PageThumbnails";
+import RelatedBooks from "@/components/RelatedBooks";
 import { cleanUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
@@ -85,6 +86,9 @@ export default async function BookDetailsPage({
   if (!book) {
     notFound();
   }
+
+  // 获取相关书籍（默认4本）
+  const relatedBooksResult = await getRelatedBooks(book.title, id, 4);
 
   const bookUrl = `https://fliphtml5.com/${book.id1}/${book.id2}`;
   const thumbnailFull = book.thumbnail.startsWith("http")
@@ -231,6 +235,14 @@ export default async function BookDetailsPage({
           <div className="mt-16 sm:mt-20">
             <PageThumbnails id1={book.id1} id2={book.id2} />
           </div>
+
+          {/* Related Books Section */}
+          <RelatedBooks
+            books={relatedBooksResult.books}
+            total={relatedBooksResult.total}
+            hasMore={relatedBooksResult.hasMore}
+            currentBookId={id}
+          />
         </div>
       </div>
     </>

@@ -186,7 +186,7 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
             ) : (
               <>
                 <Package className="w-4 h-4" />
-                <span>Download All as ZIP</span>
+                <span>Download All</span>
               </>
             )}
           </button>
