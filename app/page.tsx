@@ -138,23 +138,6 @@ export default async function FlipDownloader({ searchParams }: PageProps) {
               />
             </Suspense>
           </div>
-
-          <footer className="mt-16 sm:mt-24 pt-6 sm:pt-8 border-t border-[var(--color-border-light)] text-center px-4">
-            <div className="mb-4 sm:mb-6">
-              <a
-                href="https://discord.gg/5EZ3u4pe"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                <MessageCircle className="w-5 h-5" />
-                Join Our Discord Community
-              </a>
-            </div>
-            <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] font-semibold text-[var(--color-text-muted)]">
-              Crafted with Precision • Fast PDF Conversion
-            </p>
-          </footer>
         </div>
       </div>
     </>

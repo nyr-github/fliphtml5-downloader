@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css"; // Global styles
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
@@ -88,12 +89,13 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="bg-[var(--color-bg)] font-body antialiased"
+        className="bg-[var(--color-bg)] font-body antialiased flex flex-col min-h-screen"
       >
         <Navbar />
-        <main className="pt-16 sm:pt-20 md:pt-24 min-h-screen mobile-safe-bottom">
+        <main className="pt-16 sm:pt-20 md:pt-24 flex-grow mobile-safe-bottom">
           {children}
         </main>
+        <Footer />
         <Analytics />
       </body>
     </html>

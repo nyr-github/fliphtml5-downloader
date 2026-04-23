@@ -46,6 +46,11 @@ export default function Navbar() {
       href: "/qa",
       icon: HelpCircle,
     },
+    {
+      name: "All Apps",
+      href: "/all-apps",
+      icon: AppWindowIcon,
+    },
   ];
 
   return (
