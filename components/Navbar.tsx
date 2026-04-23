@@ -43,7 +43,7 @@ export default function Navbar() {
     },
     {
       name: "FlipHtml5",
-      href: "https://fliphtml5.com",
+      href: "https://fliphtml5.com/exploring/",
       icon: BookOpen,
     },
     {
