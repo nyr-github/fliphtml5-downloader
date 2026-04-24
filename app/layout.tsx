@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Toaster } from "sonner";
 import "./globals.css"; // Global styles
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -97,6 +98,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <Analytics />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

@@ -4,11 +4,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { jsPDF } from "jspdf";
 import { motion } from "motion/react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
-import {
-  extractIdsFromUrl,
-  loadBookConfig,
-} from "@/hooks/useBookConfig";
+import { extractIdsFromUrl, loadBookConfig } from "@/hooks/useBookConfig";
 import UrlInput from "./UrlInput";
 import TaskList from "./TaskList";
 
@@ -139,7 +137,9 @@ export default function FlipDownloaderClient({
     async (url: string, existingTaskId?: string) => {
       const ids = extractIds(url);
       if (!ids) {
-        alert("Invalid URL format");
+        toast.error("Invalid URL format", {
+          description: "Please enter a valid FlipHTML5 book URL.",
+        });
         return;
       }
 
@@ -185,6 +185,15 @@ export default function FlipDownloaderClient({
           totalPages: pageData.length,
           title: bookTitle,
         });
+
+        // Record success in DB as soon as config is parsed
+        recordDownloadSuccess(
+          ids.id1,
+          ids.id2,
+          bookTitle,
+          firstPageThumb || "",
+          pageData.length,
+        );
 
         let validResults: Array<{ data: string; w: number; h: number }> = [];
         let completed = 0;
@@ -254,15 +263,6 @@ export default function FlipDownloaderClient({
             pdf.addPage([pWidth, pHeight], pWidth > pHeight ? "l" : "p");
           pdf.addImage(page.data, "JPEG", 0, 0, pWidth, pHeight);
         }
-
-        // Record success in DB
-        recordDownloadSuccess(
-          ids.id1,
-          ids.id2,
-          bookTitle,
-          firstPageThumb || "",
-          pageData.length,
-        );
 
         // Create a blob for manual download support
         const pdfBlob = pdf.output("blob");
