@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { books } from '@/lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { books } from "@/lib/db/schema";
+import { eq, sql } from "drizzle-orm";
+import { submitToSearchEngine } from "@/lib/seo";
 
 export async function POST(req: Request) {
   try {
@@ -13,10 +14,13 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      await db.update(books).set({
-        downloadCount: sql`${books.downloadCount} + 1`,
-        updatedAt: new Date(),
-      }).where(eq(books.id, id));
+      await db
+        .update(books)
+        .set({
+          downloadCount: sql`${books.downloadCount} + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(books.id, id));
     } else {
       await db.insert(books).values({
         id,
@@ -26,11 +30,19 @@ export async function POST(req: Request) {
         thumbnail,
         pageCount,
       });
+
+      // 提交新书籍到搜索引擎进行SEO索引
+      submitToSearchEngine(id1, id2, title).catch((err: unknown) => {
+        console.error("Failed to submit to search engine:", err);
+      });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error recording download:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error("Error recording download:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
