@@ -96,6 +96,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                target={link.href.startsWith("https://") ? "_blank" : "_self"}
                 className={`relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
                   isActive
                     ? "text-[var(--color-primary)]"
@@ -152,6 +153,7 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    target={link.href.startsWith("https://") ? "_blank" : "_self"}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-4 p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold transition-colors ${
                       isActive

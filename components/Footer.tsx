@@ -59,6 +59,14 @@ export default function Footer() {
                   All Apps
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="https://github.com/nyr-github/fliphtml5-downloader"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Github
+                </Link>
+              </li>
             </ul>
           </div>
 
