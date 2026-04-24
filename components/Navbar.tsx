@@ -14,6 +14,7 @@ import {
   MessageCircle,
   BookText,
   HelpCircle,
+  Clock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -40,6 +41,11 @@ export default function Navbar() {
       name: "Blog",
       href: "/blog",
       icon: BookText,
+    },
+    {
+      name: "Reading History",
+      href: "/history",
+      icon: Clock,
     },
     {
       name: "FlipHtml5",
@@ -153,7 +159,9 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    target={link.href.startsWith("https://") ? "_blank" : "_self"}
+                    target={
+                      link.href.startsWith("https://") ? "_blank" : "_self"
+                    }
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-4 p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold transition-colors ${
                       isActive

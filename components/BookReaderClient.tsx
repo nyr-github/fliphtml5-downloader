@@ -25,17 +25,23 @@ import Link from "next/link";
 import { useBookConfig } from "@/hooks/useBookConfig";
 import { usePageExtractor } from "@/hooks/usePageExtractor";
 import { isZipUrl } from "@/lib/pdf-handler";
+import {
+  readingProgressDB,
+  isIndexedDBSupported,
+} from "@/lib/reading-progress-db";
 
 export default function BookReaderClient({
   dbId,
   id1,
   id2,
   title,
+  from,
 }: {
   dbId: string;
   id1: string;
   id2: string;
   title: string;
+  from?: string;
 }) {
   const { config, loading, error } = useBookConfig(id1, id2);
   const pages = config?.pages || [];
@@ -57,6 +63,28 @@ export default function BookReaderClient({
   const [isDualPageMode, setIsDualPageMode] = useState(false);
   const [isWideScreen, setIsWideScreen] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [downloadingPage, setDownloadingPage] = useState(false);
+  const [touchStartDistance, setTouchStartDistance] = useState(0);
+  const [touchStartZoom, setTouchStartZoom] = useState(100);
+  const [isRestoringProgress, setIsRestoringProgress] = useState(true);
+  const [progressEnabled, setProgressEnabled] = useState(false);
+
+  // 触摸滑动相关状态
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  // 检测 IndexedDB 支持情况
+  useEffect(() => {
+    const supported = isIndexedDBSupported();
+    setProgressEnabled(supported);
+    if (!supported) {
+      console.log(
+        "Reading progress feature is disabled: IndexedDB not supported",
+      );
+      setIsRestoringProgress(false);
+    }
+  }, []);
 
   const readerRef = useRef<HTMLDivElement>(null);
   const thumbnailPanelRef = useRef<HTMLDivElement>(null);
@@ -70,8 +98,14 @@ export default function BookReaderClient({
       ? window.location.href
       : `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/read/${dbId}`;
 
+  // 返回链接：如果有 from 参数，返回到对应页面，否则默认返回到书籍详情页
+  const backUrl = from === "history" ? "/history" : `/book/${dbId}`;
+
   // 预加载当前页和下一页（如果是 ZIP 文件）
   useEffect(() => {
+    // 在恢复进度期间不预加载，避免加载错误的页面
+    if (isRestoringProgress) return;
+
     const pagesToLoad = [currentIndex, currentIndex + 1].filter(
       (idx) => idx < pages.length,
     );
@@ -81,7 +115,80 @@ export default function BookReaderClient({
         extractZipPage(idx, pageUrl);
       }
     });
-  }, [currentIndex, pages, extractZipPage]);
+  }, [currentIndex, pages, extractZipPage, isRestoringProgress]);
+
+  // 恢复阅读进度
+  useEffect(() => {
+    // 如果不支持 IndexedDB，跳过进度恢复
+    if (!progressEnabled) {
+      return;
+    }
+
+    const restoreProgress = async () => {
+      if (!dbId || pages.length === 0) {
+        setIsRestoringProgress(false);
+        return;
+      }
+
+      try {
+        const progress = await readingProgressDB.getProgress(dbId);
+        if (
+          progress &&
+          progress.currentPage >= 0 &&
+          progress.currentPage < pages.length
+        ) {
+          setCurrentIndex(progress.currentPage);
+        }
+      } catch (err) {
+        console.error("Failed to restore reading progress:", err);
+      } finally {
+        setIsRestoringProgress(false);
+      }
+    };
+
+    restoreProgress();
+  }, [dbId, pages.length, progressEnabled]);
+
+  // 保存阅读进度（当页面变化时）
+  useEffect(() => {
+    // 如果不支持 IndexedDB，跳过进度保存
+    if (!progressEnabled) {
+      return;
+    }
+
+    if (!dbId || pages.length === 0 || isRestoringProgress) return;
+
+    const saveProgress = async () => {
+      try {
+        await readingProgressDB.saveProgress({
+          bookId: dbId,
+          currentPage: currentIndex,
+          totalPages: pages.length,
+          title: title,
+          id1: id1,
+          id2: id2,
+          thumbnail: thumbnails[0] || "",
+          lastReadAt: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.error("Failed to save reading progress:", err);
+      }
+    };
+
+    // 使用防抖，避免频繁写入
+    const timeoutId = setTimeout(saveProgress, 500);
+    return () => clearTimeout(timeoutId);
+  }, [
+    currentIndex,
+    dbId,
+    pages.length,
+    title,
+    id1,
+    id2,
+    thumbnails,
+    isRestoringProgress,
+    progressEnabled,
+  ]);
 
   // 当缩略图面板打开时，批量预加载所有 ZIP 页面
   useEffect(() => {
@@ -196,6 +303,69 @@ export default function BookReaderClient({
     setPanPosition({ x: 0, y: 0 });
   }, []);
 
+  // 计算两个触摸点之间的距离
+  const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // 处理触摸开始（双指手势）
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const distance = getTouchDistance(e.touches[0], e.touches[1]);
+      setTouchStartDistance(distance);
+      setTouchStartZoom(zoom);
+    } else if (e.touches.length === 1 && !isZoomed) {
+      // 单指触摸且未缩放时，记录起始位置用于滑动
+      setTouchStartX(e.touches[0].clientX);
+      setTouchStartY(e.touches[0].clientY);
+      setIsSwiping(true);
+    }
+  };
+
+  // 处理触摸移动（双指缩放）
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      const scale = currentDistance / touchStartDistance;
+      const newZoom = Math.min(300, Math.max(25, touchStartZoom * scale));
+      setZoom(newZoom);
+      setIsZoomed(newZoom > 100);
+    }
+  };
+
+  // 处理触摸结束（滑动翻页）
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      setTouchStartDistance(0);
+      setTouchStartZoom(100);
+    }
+
+    // 处理滑动翻页
+    if (isSwiping && e.changedTouches.length === 1) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      // 判断是否为水平滑动（水平移动距离大于垂直移动距离）
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        if (deltaX > 0) {
+          // 向右滑动，上一页
+          prevPage();
+        } else {
+          // 向左滑动，下一页
+          nextPage();
+        }
+      }
+
+      setIsSwiping(false);
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") nextPage();
@@ -243,6 +413,8 @@ export default function BookReaderClient({
 
   const handleImageMouseDown = (e: React.MouseEvent) => {
     if (isZoomed && e.button === 0) {
+      e.preventDefault();
+      e.stopPropagation();
       setIsPanning(true);
       setPanStart({
         x: e.clientX - panPosition.x,
@@ -251,13 +423,38 @@ export default function BookReaderClient({
     }
   };
 
+  // 触摸拖动（单指）
+  const handleTouchStartPan = (e: React.TouchEvent) => {
+    if (isZoomed && e.touches.length === 1) {
+      e.preventDefault();
+      setIsPanning(true);
+      setPanStart({
+        x: e.touches[0].clientX - panPosition.x,
+        y: e.touches[0].clientY - panPosition.y,
+      });
+    }
+  };
+
+  const handleTouchMovePan = (e: React.TouchEvent) => {
+    if (isPanning && e.touches.length === 1) {
+      e.preventDefault();
+      const newX = e.touches[0].clientX - panStart.x;
+      const newY = e.touches[0].clientY - panStart.y;
+      setPanPosition({ x: newX, y: newY });
+    }
+  };
+
+  const handleTouchEndPan = () => {
+    setIsPanning(false);
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isPanning) {
-        setPanPosition({
-          x: e.clientX - panStart.x,
-          y: e.clientY - panStart.y,
-        });
+        e.preventDefault();
+        const newX = e.clientX - panStart.x;
+        const newY = e.clientY - panStart.y;
+        setPanPosition({ x: newX, y: newY });
       }
     };
 
@@ -266,15 +463,19 @@ export default function BookReaderClient({
     };
 
     if (isPanning) {
-      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mousemove", handleMouseMove, {
+        passive: false,
+      });
       document.addEventListener("mouseup", handleMouseUp);
       document.body.style.cursor = "grabbing";
+      document.body.style.userSelect = "none";
     }
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       document.body.style.cursor = "";
+      document.body.style.userSelect = "";
     };
   }, [isPanning, panStart]);
 
@@ -328,6 +529,36 @@ export default function BookReaderClient({
     }
   };
 
+  const handleDownloadCurrentPage = async () => {
+    try {
+      setDownloadingPage(true);
+
+      // 获取当前页的所有索引（双页模式下可能有两个页面）
+      const pageIndices = getCurrentPageIndices();
+
+      for (const pageIndex of pageIndices) {
+        const pageUrl = pages[pageIndex];
+        const displayUrl = getPageDisplayUrl(pageIndex);
+        const urlToDownload = displayUrl || pageUrl;
+
+        const response = await fetch(urlToDownload);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `page-${pageIndex + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("Failed to download page:", err);
+    } finally {
+      setDownloadingPage(false);
+    }
+  };
+
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressBarRef.current || pages.length === 0) return;
 
@@ -344,6 +575,25 @@ export default function BookReaderClient({
   const handleProgressMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsDragging(true);
     handleProgressClick(e);
+  };
+
+  const handleProgressTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    handleProgressTouchMove(e);
+  };
+
+  const handleProgressTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current || pages.length === 0) return;
+
+    const touch = e.touches[0];
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const clickX = touch.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+    const newIndex = Math.min(
+      pages.length - 1,
+      Math.max(0, Math.floor(percentage * pages.length)),
+    );
+    setCurrentIndex(newIndex);
   };
 
   useEffect(() => {
@@ -364,14 +614,20 @@ export default function BookReaderClient({
       setIsDragging(false);
     };
 
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchend", handleTouchEnd);
     }
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [isDragging, pages.length]);
 
@@ -404,19 +660,27 @@ export default function BookReaderClient({
       <div className="h-14 sm:h-16 px-4 sm:px-6 flex items-center justify-between glass-dark z-20">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
-            href={`/book/${dbId}`}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
+            href={backUrl}
+            className="p-2 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </Link>
           <div className="hidden sm:block">
-            <h2 className="text-white font-display font-bold text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[300px]">
-              {title}
-            </h2>
+            <Link href={`/book/${dbId}`} className="block group">
+              <h2 className="text-white font-display font-bold text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[300px] group-hover:text-[var(--color-primary)] transition-colors">
+                {title}
+              </h2>
+            </Link>
             <p className="text-[10px] sm:text-[11px] text-white/50 font-mono">
-              {isDualPageMode && currentIndex > 0
-                ? `Pages ${getCurrentPageIndices().join("-")} of ${pages.length}`
-                : `Page ${currentIndex + 1} of ${pages.length}`}
+              {isRestoringProgress ? (
+                <span className="text-[var(--color-primary)]">
+                  恢复阅读进度...
+                </span>
+              ) : isDualPageMode && currentIndex > 0 ? (
+                `Pages ${getCurrentPageIndices().join("-")} of ${pages.length}`
+              ) : (
+                `Page ${currentIndex + 1} of ${pages.length}`
+              )}
             </p>
           </div>
         </div>
@@ -427,7 +691,7 @@ export default function BookReaderClient({
             <button
               onClick={handleZoomOut}
               disabled={zoom <= 25 || (isDualPageMode && currentIndex > 0)}
-              className="p-1.5 sm:p-2 hover:bg-white/10 rounded-md transition-colors text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 flex items-center justify-center hover:bg-white/10 rounded-md transition-colors text-white disabled:opacity-30 disabled:cursor-not-allowed"
               title={
                 isDualPageMode && currentIndex > 0
                   ? "双页模式下不支持缩放，请切换到单页模式"
@@ -451,7 +715,7 @@ export default function BookReaderClient({
             <button
               onClick={handleZoomIn}
               disabled={zoom >= 300 || (isDualPageMode && currentIndex > 0)}
-              className="p-1.5 sm:p-2 hover:bg-white/10 rounded-md transition-colors text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 flex items-center justify-center hover:bg-white/10 rounded-md transition-colors text-white disabled:opacity-30 disabled:cursor-not-allowed"
               title={
                 isDualPageMode && currentIndex > 0
                   ? "双页模式下不支持缩放，请切换到单页模式"
@@ -472,7 +736,7 @@ export default function BookReaderClient({
                 setPanPosition({ x: 0, y: 0 });
               }
             }}
-            className={`hidden md:block p-2 sm:p-3 rounded-lg sm:rounded-xl transition-colors text-white ${
+            className={`hidden md:block p-2 sm:p-3 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors text-white ${
               isDualPageMode
                 ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]"
                 : "bg-white/5 hover:bg-white/10"
@@ -487,7 +751,7 @@ export default function BookReaderClient({
           </button>
           <button
             onClick={() => setShowThumbnails(!showThumbnails)}
-            className={`p-2 sm:p-3 rounded-lg sm:rounded-xl transition-colors text-white ${
+            className={`p-2 sm:p-3 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors text-white ${
               showThumbnails
                 ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]"
                 : "bg-white/5 hover:bg-white/10"
@@ -505,7 +769,7 @@ export default function BookReaderClient({
           </button> */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 sm:p-3 bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white"
+            className="p-2 sm:p-3 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white"
             title="Toggle Fullscreen"
           >
             {isFullscreen ? (
@@ -515,8 +779,24 @@ export default function BookReaderClient({
             )}
           </button>
           <button
+            onClick={handleDownloadCurrentPage}
+            disabled={downloadingPage}
+            className="p-2 sm:p-3 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            title={
+              isDualPageMode && currentIndex > 0
+                ? "下载当前两页图片"
+                : "下载当前页图片"
+            }
+          >
+            {downloadingPage ? (
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+            )}
+          </button>
+          <button
             onClick={handleShare}
-            className="p-2 sm:p-3 bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white relative"
+            className="p-2 sm:p-3 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white relative"
             title="Share this book"
           >
             <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -538,7 +818,12 @@ export default function BookReaderClient({
       </div>
 
       {/* Main Reader Stage */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden p-2 sm:p-4 md:p-8">
+      <div
+        className="flex-1 relative flex items-center justify-center overflow-hidden p-0"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Thumbnail Sidebar */}
         {showThumbnails && (
           <div
@@ -616,6 +901,9 @@ export default function BookReaderClient({
             exit={{ opacity: 0, x: -20, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="relative h-full w-full max-w-5xl flex items-center justify-center group"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {/* 双页模式显示 */}
             {isDualPageMode && currentIndex > 0 && pages.length > 1 ? (
@@ -678,9 +966,11 @@ export default function BookReaderClient({
               <div
                 ref={imageContainerRef}
                 onWheel={handleWheel}
-                className="relative h-full w-full shadow-2xl rounded-sm overflow-hidden bg-white/5 border border-white/10 transition-transform duration-200"
+                className="relative h-full w-full shadow-2xl rounded-sm overflow-hidden"
                 style={{
-                  transform: `scale(${zoom / 100}) translate(${panPosition.x / (zoom / 100)}px, ${panPosition.y / (zoom / 100)}px)`,
+                  transform: `translate(${panPosition.x}px, ${panPosition.y}px) scale(${zoom / 100})`,
+                  transition: isPanning ? "none" : "transform duration-200",
+                  touchAction: "none",
                   cursor: isZoomed
                     ? isPanning
                       ? "grabbing"
@@ -688,6 +978,9 @@ export default function BookReaderClient({
                     : "default",
                 }}
                 onMouseDown={handleImageMouseDown}
+                onTouchStart={handleTouchStartPan}
+                onTouchMove={handleTouchMovePan}
+                onTouchEnd={handleTouchEndPan}
               >
                 {(() => {
                   const displayUrl = getPageDisplayUrl(currentIndex);
@@ -735,14 +1028,14 @@ export default function BookReaderClient({
         <button
           onClick={prevPage}
           disabled={currentIndex === 0}
-          className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 p-2 sm:p-3 md:p-4 glass hover:bg-white/15 rounded-full text-white/50 hover:text-white disabled:opacity-0 transition-all z-10"
+          className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 p-2 sm:p-3 md:p-4 glass hover:bg-white/15 rounded-full text-black/50 hover:text-white disabled:opacity-0 transition-all z-10"
         >
           <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
         </button>
         <button
           onClick={nextPage}
           disabled={currentIndex === pages.length - 1}
-          className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 p-2 sm:p-3 md:p-4 glass hover:bg-white/15 rounded-full text-white/50 hover:text-white disabled:opacity-0 transition-all z-10"
+          className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 p-2 sm:p-3 md:p-4 glass hover:bg-white/15 rounded-full text-black/50 hover:text-white disabled:opacity-0 transition-all z-10"
         >
           <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
         </button>
@@ -755,6 +1048,8 @@ export default function BookReaderClient({
           className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden relative cursor-pointer group"
           onClick={handleProgressClick}
           onMouseDown={handleProgressMouseDown}
+          onTouchStart={handleProgressTouchStart}
+          onTouchMove={handleProgressTouchMove}
         >
           <motion.div
             className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] shadow-[0_0_10px_var(--color-primary)]"

@@ -65,10 +65,13 @@ export async function generateMetadata({
 
 export default async function ReaderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { id } = await params;
+  const { from } = await searchParams;
   const book = await getBookById(id);
 
   if (!book) {
@@ -110,6 +113,7 @@ export default async function ReaderPage({
           id1={book.id1}
           id2={book.id2}
           title={book.title}
+          from={from}
         />
       </div>
     </>

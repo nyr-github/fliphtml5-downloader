@@ -13,6 +13,8 @@ An elegant online tool that converts FlipHTML5 publications into high-quality PD
 - **Batch Support**: Handle multiple download tasks simultaneously
 - **ZIP Compatibility**: Support for ZIP-compressed page resources
 - **Discovery**: Browse popular publications downloaded by the community
+- **Reading Progress**: Automatically save and restore your reading position using IndexedDB
+- **Reading History**: Track and manage all your recently read books with progress indicators
 
 ## Tech Stack
 
@@ -82,6 +84,7 @@ The encryption uses byte-inversion algorithms in the WASM module. Decrypted data
 │   ├── decryption.ts      # Page decryption
 │   ├── pdf-handler.ts    # PDF handling
 │   ├── actions.ts        # Server actions
+│   ├── reading-progress-db.ts  # IndexedDB for reading progress
 │   └── db/               # Database configuration
 ├── hooks/                 # Custom Hooks
 └── public/                # Static assets
