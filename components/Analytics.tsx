@@ -22,10 +22,7 @@ export default function Analytics() {
             `,
         }}
       /> */}
-      <script
-        async
-        src="https://plausible.aivaded.com/api/loader/fliphtml5.js"
-      ></script>
+      <script async src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL}></script>
     </>
   );
 }
