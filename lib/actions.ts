@@ -93,7 +93,7 @@ export const getBooksPaginated = unstable_cache(
       };
     }
   },
-  ["books-paginated"],
+  ["books-paginated-"],
   { revalidate: 60 * 60 }, // 24 hours
 );
 
