@@ -58,7 +58,8 @@ export default function QAPage() {
             </h1>
             <p className="text-base sm:text-lg text-[var(--color-text-secondary)] font-light max-w-2xl mx-auto">
               Everything you need to know about FlipHTML5 Downloader. Can&apos;t
-              find what you&apos;re looking for? Join our Discord community.
+              find what you&apos;re looking for? Leave a comment on our X post
+              or join our Discord community.
             </p>
           </div>
 
@@ -73,19 +74,29 @@ export default function QAPage() {
             ))}
           </div>
 
-          {/* Discord CTA */}
+          {/* Community CTA */}
           <div className="mt-12 sm:mt-16 text-center">
             <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mb-4">
               Still have questions?
             </p>
-            <a
-              href="https://discord.gg/5EZ3u4pe"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              Join Our Discord Community
-            </a>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <a
+                href="https://x.com/aivaded/status/2046677803987517552"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                Leave a Comment on X
+              </a>
+              <a
+                href="https://discord.gg/5EZ3u4pe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                Join Our Discord Community
+              </a>
+            </div>
           </div>
         </div>
       </div>

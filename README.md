@@ -4,7 +4,7 @@ An elegant online tool that converts FlipHTML5 publications into high-quality PD
 
 **[Try Online](https://fliphtml5.aivaded.com/)**
 
-**[Join Our Discord Community](https://discord.gg/5EZ3u4pe)**
+**[Leave a Comment on X](https://x.com/aivaded/status/2046677803987517552)**
 
 ## Features
 

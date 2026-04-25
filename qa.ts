@@ -67,7 +67,7 @@ export const qaData: QAItem[] = [
   {
     question: "What if the download fails or gets stuck?",
     answer:
-      "Check your network connection and try again. Some publications may have server-side protections. You can also join our Discord for support.",
+      "Check your network connection and try again. Some publications may have server-side protections. You can also leave a comment on our X post for support.",
   },
   {
     question: "Do you support other flipbook platforms besides FlipHTML5?",

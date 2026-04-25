@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--color-secondary)] text-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Developer Info */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Developer</h3>
@@ -66,6 +66,35 @@ export default function Footer() {
                 >
                   Github
                 </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Community */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Community</h3>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="https://x.com/aivaded/status/2046677803987517552"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <span className="w-2 h-2 bg-white rounded-full" />
+                  Leave a Comment on X
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://discord.gg/5EZ3u4pe"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <span className="w-2 h-2 bg-[#5865F2] rounded-full" />
+                  Join Discord Community
+                </a>
               </li>
             </ul>
           </div>

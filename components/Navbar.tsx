@@ -15,6 +15,7 @@ import {
   BookText,
   HelpCircle,
   Clock,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -22,6 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [communityDropdownOpen, setCommunityDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,11 +34,6 @@ export default function Navbar() {
   }, []);
 
   const navLinks: any[] = [
-    {
-      name: "Discord Community",
-      href: "https://discord.gg/5EZ3u4pe",
-      icon: MessageCircle,
-    },
     {
       name: "Blog",
       href: "/blog",
@@ -96,6 +93,55 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-2">
+          {/* Community Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setCommunityDropdownOpen(!communityDropdownOpen)}
+              onMouseEnter={() => setCommunityDropdownOpen(true)}
+              className={`relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]`}
+            >
+              <MessageCircle className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">Community</span>
+              <ChevronDown
+                className={`w-3 h-3 relative z-10 transition-transform duration-200 ${
+                  communityDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {communityDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  onMouseLeave={() => setCommunityDropdownOpen(false)}
+                  className="absolute top-full left-0 mt-2 w-56 glass rounded-xl shadow-xl overflow-hidden z-50"
+                >
+                  <a
+                    href="https://x.com/aivaded/status/2046677803987517552"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-primary)]/5 transition-colors"
+                  >
+                    <span className="w-2 h-2 bg-black rounded-full" />
+                    Leave a Comment on X
+                  </a>
+                  <a
+                    href="https://discord.gg/5EZ3u4pe"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-primary)]/5 transition-colors"
+                  >
+                    <span className="w-2 h-2 bg-[#5865F2] rounded-full" />
+                    Join Discord Community
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -153,6 +199,28 @@ export default function Navbar() {
               exit={{ y: -20, opacity: 0 }}
               className="absolute top-[60px] sm:top-[73px] left-0 right-0 glass p-4 sm:p-6 z-50 md:hidden flex flex-col gap-3 shadow-xl"
             >
+              {/* Mobile Community Links */}
+              <a
+                href="https://x.com/aivaded/status/2046677803987517552"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-4 p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-warm)] transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Leave a Comment on X
+              </a>
+              <a
+                href="https://discord.gg/5EZ3u4pe"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-4 p-3 sm:p-4 rounded-xl text-sm sm:text-base font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-warm)] transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Join Discord Community
+              </a>
+
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
