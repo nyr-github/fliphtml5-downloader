@@ -26,6 +26,7 @@ export async function loadBookConfig(
   thumbnailUrls: string[];
   bookTitle: string;
   firstPageThumb?: string;
+  isEncryptionBook: boolean;
 }> {
   const configUrl = `https://online.fliphtml5.com/${id1}/${id2}/javascript/config.js`;
   const res = await fetch(configUrl);
@@ -49,20 +50,28 @@ export async function loadBookConfig(
   //   console.log(pageData);
   //   debugger;
   const imageUrls = pageData.map((p) => {
+    // debugger;
     const relativePath = p.n[0]
       .replace(/\\/g, "/")
       .replace("files/large/", "")
       .replace("./", "");
     if (relativePath.indexOf("files/content-page") > -1) {
       return baseUrl + relativePath;
+    } else {
+      if (relativePath.endsWith(".zip")) {
+        return baseUrl + "files/content-page/" + relativePath;
+      }
     }
     return baseUrl + "files/large/" + relativePath;
   });
 
   // 提取缩略图 URL 并构建完整路径
-  const thumbnailUrls = pageData.map((p) => 
-    buildThumbnailUrl(p.t, id1, id2)
-  );
+  const thumbnailUrls = pageData.map((p) => buildThumbnailUrl(p.t, id1, id2));
+
+  // 检查是否为加密书籍
+  const isEncryptionBook =
+    config.isEncryptionBook === true ||
+    config.loadingConfig?.isEncryptionBook === true;
 
   return {
     config,
@@ -71,6 +80,7 @@ export async function loadBookConfig(
     thumbnailUrls,
     bookTitle: config.meta?.title || id2,
     firstPageThumb: pageData[0]?.t,
+    isEncryptionBook,
   };
 }
 

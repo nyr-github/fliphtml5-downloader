@@ -171,7 +171,22 @@ export default function FlipDownloaderClient({
           imageUrls,
           bookTitle,
           firstPageThumb,
+          isEncryptionBook,
         } = await loadBookConfig(ids.id1, ids.id2);
+
+        // 检查是否为加密书籍（私有书籍）
+        if (isEncryptionBook) {
+          updateTask(taskId, {
+            status: "error",
+            errorMessage:
+              "This is a private book and is not available for download.",
+          });
+          toast.error("Private Book", {
+            description:
+              "This is a private book and is not available for download.",
+          });
+          return;
+        }
 
         const metaWidth = config.meta?.pageWidth
           ? Number(config.meta.pageWidth)

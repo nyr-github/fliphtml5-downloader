@@ -10,6 +10,10 @@ export interface FlipConfig {
     pageWidth?: number;
     pageHeight?: number;
   };
+  loadingConfig?: {
+    isEncryptionBook?: boolean;
+  };
+  isEncryptionBook?: boolean;
 }
 
 declare global {
