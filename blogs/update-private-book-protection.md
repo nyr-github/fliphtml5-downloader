@@ -20,6 +20,7 @@ We've enhanced the download system to respect book privacy settings. This update
 ## How to Use
 
 When you attempt to download a private book, the system will:
+
 1. Detect the encryption flag during configuration loading
 2. Display an error message: "This is a private book and is not available for download"
 3. Stop the download process immediately

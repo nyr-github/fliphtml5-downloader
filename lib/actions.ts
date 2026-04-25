@@ -93,36 +93,59 @@ export const getBooksPaginated = unstable_cache(
       };
     }
   },
-  ["books-paginated-"],
+  ["books-paginated"],
   { revalidate: 60 * 60 }, // 24 hours
 );
 
-export const getBookById = unstable_cache(
-  async (id: string): Promise<ExploreBook | null> => {
-    try {
-      const result = await db.query.books.findFirst({
-        where: eq(books.id, id),
-      });
+/**
+ * 从数据库获取单个书籍（无缓存）
+ * @param id 书籍ID
+ */
+export async function getBookByIdDB(id: string): Promise<ExploreBook | null> {
+  try {
+    const result = await db.query.books.findFirst({
+      where: eq(books.id, id),
+    });
 
-      if (!result) return null;
+    if (!result) return null;
 
-      return {
-        id: result.id,
-        title: result.title,
-        thumbnail: result.thumbnail,
-        pageCount: result.pageCount,
-        downloadCount: result.downloadCount,
-        id1: result.id1,
-        id2: result.id2,
-      };
-    } catch (error) {
-      console.error("Error fetching book by id:", error);
-      return null;
-    }
-  },
-  ["book-by-id"],
-  { revalidate: 86400 }, // 1天缓存
-);
+    return {
+      id: result.id,
+      title: result.title,
+      thumbnail: result.thumbnail,
+      pageCount: result.pageCount,
+      downloadCount: result.downloadCount,
+      id1: result.id1,
+      id2: result.id2,
+    };
+  } catch (error) {
+    console.error("Error fetching book by id:", error);
+    return null;
+  }
+}
+
+/**
+ * 获取单个书籍（带缓存）
+ * 缓存key包含书籍ID，以便在创建/更新时可以针对性清理
+ */
+export function getBookById(id: string) {
+  return unstable_cache(
+    async (): Promise<ExploreBook | null> => {
+      return getBookByIdDB(id);
+    },
+    [`book-by-id-${id}`], // 缓存key包含书籍ID
+    { revalidate: 86400 }, // 1天缓存
+  )();
+}
+
+/**
+ * 清理特定书籍的缓存
+ * @param id 书籍ID
+ */
+export async function revalidateBookCache(id: string) {
+  const { revalidateTag } = await import("next/cache");
+  revalidateTag(`book-by-id-${id}`);
+}
 
 export interface RelatedBooksResult {
   books: ExploreBook[];

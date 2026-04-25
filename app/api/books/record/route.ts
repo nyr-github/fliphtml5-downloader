@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { submitBookToSearchEngine } from "@/lib/seo";
+import { revalidateBookCache } from "@/lib/actions";
 
 export async function POST(req: Request) {
   try {
@@ -36,6 +37,9 @@ export async function POST(req: Request) {
         console.error("Failed to submit to search engine:", err);
       });
     }
+
+    // 清理该书籍的缓存，确保下次访问时获取最新数据
+    await revalidateBookCache(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

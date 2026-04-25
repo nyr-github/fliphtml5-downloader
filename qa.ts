@@ -15,6 +15,12 @@ export const qaData: QAItem[] = [
       "Paste the FlipHTML5 URL into the input box on the homepage and click download. The PDF will be generated and downloaded automatically.",
   },
   {
+    question:
+      "How can I quickly convert a FlipHTML5 URL to download using your service?",
+    answer:
+      "Simply edit the URL directly in your browser's address bar! Replace 'fliphtml5.com' with 'fliphtml5.aivaded.com' and press Enter.",
+  },
+  {
     question: "Is this service completely free?",
     answer:
       "Yes, 100% free with no limitations. No hidden fees, no premium tiers, no watermarks on your PDFs.",
