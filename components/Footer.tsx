@@ -67,6 +67,15 @@ export default function Footer() {
                   Github
                 </Link>
               </li>
+              <li>
+                <a
+                  href="https://aibesttop.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Listed on AIBestTop
+                </a>
+              </li>
             </ul>
           </div>
 
