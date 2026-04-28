@@ -110,6 +110,14 @@ export default function Footer() {
                   Join Discord Community
                 </a>
               </li>
+              <li>
+                <a href="https://www.aidirectori.es" target="_blank">
+                  <img
+                    src="https://cdn.aidirectori.es/ai-tools/badges/no-background.png"
+                    alt="Featured on AI Directories"
+                  />
+                </a>
+              </li>
             </ul>
           </div>
 
