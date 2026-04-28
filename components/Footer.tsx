@@ -76,6 +76,11 @@ export default function Footer() {
                   Listed on AIBestTop
                 </a>
               </li>
+              <li>
+                <a href="https://seojuice.com" target="_blank">
+                  SEOJuice
+                </a>
+              </li>
             </ul>
           </div>
 
