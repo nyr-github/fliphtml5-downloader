@@ -1,0 +1,5 @@
+I created this project because I kept encountering a frustrating problem: finding valuable educational content on FlipHTML5 but being unable to save it for offline use. As a developer and lifelong learner, I needed a reliable way to convert these flipbooks into standard PDF files that I could read anywhere, print, or archive.
+
+Existing solutions were either expensive commercial services with hidden fees, browser extensions that collected user data, or complex tools requiring technical expertise. None offered a simple, transparent, and free alternative that everyday users could trust.
+
+So I built an open-source FlipHTML5 downloader that anyone can use without registration or payment. The core motivation was democratizing access to knowledge - if content creators publish materials online, users should have the right to save them for personal use. By reverse-engineering FlipHTML5's encryption and making the code publicly auditable, I wanted to prove that privacy-respecting, user-first tools can exist in a market dominated by subscription-based services.

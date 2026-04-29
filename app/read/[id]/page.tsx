@@ -26,7 +26,9 @@ export async function generateMetadata({
 
   return {
     title: `Read ${book.title} Online - Free FlipBook Reader`,
-    description: `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available. Free online flipbook viewer.`,
+    description:
+      book.description ||
+      `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available. Free online flipbook viewer.`,
     keywords: [
       book.title,
       "online flipbook reader",
@@ -36,7 +38,9 @@ export async function generateMetadata({
     ],
     openGraph: {
       title: `Read ${book.title} Online - Free FlipBook Reader`,
-      description: `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
+      description:
+        book.description ||
+        `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
       type: "article",
       images: [
         {
@@ -50,7 +54,9 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: `Read ${book.title} Online - Free FlipBook Reader`,
-      description: `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
+      description:
+        book.description ||
+        `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
       images: [thumbnailFull],
     },
     alternates: {
@@ -85,7 +91,9 @@ export default async function ReaderPage({
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: `Read ${book.title} Online`,
-    description: `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
+    description:
+      book.description ||
+      `Read "${book.title}" online with our optimized flipbook reader. ${book.pageCount} pages available.`,
     url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/read/${id}`,
     isPartOf: {
       "@type": "WebSite",
@@ -95,6 +103,7 @@ export default async function ReaderPage({
     about: {
       "@type": "Book",
       name: book.title,
+      description: book.description,
       numberOfPages: book.pageCount,
       image: thumbnailFull,
     },

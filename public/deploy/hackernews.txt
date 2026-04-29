@@ -1,0 +1,20 @@
+=== Hacker News ===
+
+title: Show HN: FlipHTML5 pdf Downloader - Convert flipbooks to PDF with one click
+Project URL: https://fliphtml5.aivaded.com/
+
+Description:
+I built this tool after struggling to download FlipHTML5 books for offline reading. Browser extensions require flipping through dozens of pages manually and only capture rendered content at reduced quality. Commercial services charge subscription fees.
+
+This open-source web tool directly accesses FlipHTML5's original resources and converts them to high-quality PDFs automatically. No installation needed - just paste the URL and get your PDF.
+
+Key technical details:
+- Decrypts FlipHTML5's WASM-encrypted page configuration using byte-inversion algorithms
+- Handles ZIP-compressed page resources automatically
+- Uses concurrent download pool for batch processing
+- Built with Next.js 15, jsPDF, and Neon PostgreSQL
+- Reading progress saved via IndexedDB
+
+The decryption process loads FlipHTML5's own jQuery and deString.js scripts, then uses their WASM module's _DeString function to decrypt the page configuration. This gives us access to original image URLs rather than screen captures.
+
+I'd love feedback from the HN community. What features would you find most useful? Any concerns about the approach?

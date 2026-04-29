@@ -1,0 +1,3 @@
+url: https://fliphtml5.aivaded.com/
+opensource: https://github.com/nyr-github/flipbook-downloader
+备案：粤ICP备2024248114号

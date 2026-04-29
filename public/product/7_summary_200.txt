@@ -1,0 +1,1 @@
+Created to solve the frustration of not being able to save FlipHTML5 flipbooks for offline reading. Students, researchers, and professionals often find valuable content on FlipHTML5 but have no way to access it without internet. This open-source tool decrypts and converts any publication to high-quality PDF instantly, completely free with no signup required.

@@ -29,6 +29,7 @@ interface DownloadTask {
   pdfBlobUrl?: string;
   id1?: string;
   id2?: string;
+  canReadOnline?: boolean;
 }
 
 interface TaskCardProps {
@@ -128,6 +129,7 @@ export default function TaskCard({
             </button>
             <Link
               href={`/read/${extractIds(task.url)?.id1}_${extractIds(task.url)?.id2}`}
+              target="_blank"
               className="flex-1 lg:flex-initial min-w-[150px] sm:min-w-[140px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
             >
               <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -135,6 +137,20 @@ export default function TaskCard({
             </Link>
           </div>
         )}
+
+        {(task.status === "processing" || task.status === "loading") &&
+          task.canReadOnline && (
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 lg:flex-shrink-0 lg:w-auto">
+              <Link
+                href={`/read/${task.id1}_${task.id2}`}
+                target="_blank"
+                className="flex-1 lg:flex-initial min-w-[150px] sm:min-w-[140px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
+              >
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                Read Online
+              </Link>
+            </div>
+          )}
 
         {task.status === "done" && (
           <div className="flex  items-stretch sm:items-center gap-2 sm:gap-3 lg:flex-shrink-0 lg:w-auto">
@@ -147,6 +163,7 @@ export default function TaskCard({
             </button>
             <Link
               href={`/read/${task.id1}_${task.id2}`}
+              target="_blank"
               className="flex-1 lg:flex-initial min-w-[120px] sm:min-w-[120px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
             >
               <Eye className="w-4 h-4" />

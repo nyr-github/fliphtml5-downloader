@@ -1,5 +1,20 @@
 [
   {
+    "slug": "quick-url-conversion-trick",
+    "date": "2026-04-25T00:00:00.000Z",
+    "title": "Quick URL Trick: Convert Any FlipHTML5 Link to Download in Seconds"
+  },
+  {
+    "slug": "update-private-book-protection",
+    "date": "2026-04-25T00:00:00.000Z",
+    "title": "Private Book Download Protection"
+  },
+  {
+    "slug": "update-url-conversion-caching",
+    "date": "2026-04-25T00:00:00.000Z",
+    "title": "Quick URL Conversion & Enhanced Book Caching"
+  },
+  {
     "slug": "best-fliphtml5-downloaders-2026",
     "date": "2026-04-24T00:00:00.000Z",
     "title": "4 Best FlipHTML5 Downloaders to Convert Flipbooks to PDF (2026)"
@@ -38,6 +53,11 @@
     "slug": "update-page-thumbnails-feature",
     "date": "2026-04-24T00:00:00.000Z",
     "title": "Page Thumbnails Feature Enhancement"
+  },
+  {
+    "slug": "update-reading-progress-history",
+    "date": "2026-04-24T00:00:00.000Z",
+    "title": "Reading Progress & History Feature"
   },
   {
     "slug": "update-sitemap-vercel-fix",
@@ -128,10 +148,5 @@
     "slug": "why-download-button-missing",
     "date": "2026-04-23T00:00:00.000Z",
     "title": "Why is the Download Button Missing on Some FlipHTML5 Publications?"
-  },
-  {
-    "slug": "quick-url-conversion-trick",
-    "date": "2026-04-25T00:00:00.000Z",
-    "title": "Quick URL Trick: Convert Any FlipHTML5 Link to Download in Seconds"
   }
 ]

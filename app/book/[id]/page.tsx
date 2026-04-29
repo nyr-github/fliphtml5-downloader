@@ -203,9 +203,8 @@ export default async function BookDetailsPage({
                   className="text-[var(--color-text-secondary)] leading-relaxed sm:leading-relaxed max-w-3xl mb-5 sm:mb-8 text-sm sm:text-lg font-light"
                   suppressHydrationWarning
                 >
-                  This publication has been indexed by our community. You can
-                  now process it for high-quality PDF conversion or read it
-                  directly using our optimized web reader.
+                  {book.description ||
+                    "This publication has been indexed by our community. You can now process it for high-quality PDF conversion or read it directly using our optimized web reader."}
                 </p>
 
                 {/* Action Buttons */}

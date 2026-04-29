@@ -1,0 +1,49 @@
+=== Peerlist ===
+
+Project name: FlipHTML5 pdf Downloader - Convert Flipbook to PDF
+Project URL: https://fliphtml5.aivaded.com/
+Tagline: Download FlipHTML5 flipbooks as high-quality PDFs instantly
+Category: Developer Tools, Productivity, Open Source
+
+Description:
+FlipHTML5 pdf Downloader is an elegant online tool that converts FlipHTML5 publications into high-quality PDF files with just one click.
+
+## Core Features
+
+- **One-Click PDF Conversion**: Paste a FlipHTML5 URL and get a beautifully formatted PDF in seconds
+- **Batch Download Support**: Handle multiple download tasks simultaneously with queue management
+- **ZIP Resource Compatibility**: Automatically handles ZIP-compressed page resources
+- **Community Discovery**: Browse popular publications downloaded by the global community
+- **Reading Progress Tracking**: Automatically save and restore your reading position using IndexedDB
+- **Reading History**: Track and manage all recently read books with progress indicators
+- **Mobile-Friendly**: Works seamlessly on phones, tablets, and desktops
+
+## How It Works
+
+The tool decrypts FlipHTML5's encrypted configuration data through a sophisticated three-phase process:
+
+1. **Script Loading**: Loads FlipHTML5's official jQuery and decryption engine scripts
+2. **Engine Initialization**: Waits for WASM module global variables via polling
+3. **Decryption Execution**: Uses byte-inversion algorithms to decrypt `fliphtml5_pages` configuration with page URLs and metadata
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, Tailwind CSS 4, Framer Motion, jsPDF
+- **Backend**: Neon (Serverless PostgreSQL), Drizzle ORM
+- **Key Features**: ZIP support, concurrent download pool, CORS handling
+
+## Why We Built This
+
+Many users struggle with downloading FlipHTML5 books for offline reading. Browser extensions require manual page-flipping and capture only rendered pages at lower quality. Commercial services charge subscription fees. We created a free, no-installation solution that directly accesses original high-quality resources and converts them to PDF format automatically.
+
+## Use Cases
+
+- Download textbooks and tutorials for offline study
+- Archive important publications before they're removed
+- Batch download entire book series
+- Access content on devices without internet connection
+- Print physical copies of digital flipbooks
+
+## Try It Now
+
+Visit https://fliphtml5.aivaded.com/ and paste any FlipHTML5 URL to get started. No installation, no registration, completely free.

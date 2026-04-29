@@ -1,0 +1,7 @@
+This project was born from a core belief: digital content should be accessible on the user's terms, not just the platform's terms. FlipHTML5 hosts millions of publications - textbooks, manuals, portfolios, magazines - but treats them as rental content rather than owned materials. You can view, but never possess.
+
+As someone who values digital ownership and privacy, this model felt fundamentally wrong. What happens when the platform goes down? When subscriptions expire? When you need access in areas with poor connectivity? Users lose everything.
+
+I built this downloader to restore balance between content consumption and user rights. The technical challenge was significant - FlipHTML5 uses WASM-based encryption and dynamic resource loading to prevent extraction. But reverse-engineering this wasn't about circumventing protection; it was about enabling legitimate personal use cases: offline reading for travelers, printing for classrooms, archiving for researchers, and format conversion for accessibility tools.
+
+The project is open-source because transparency builds trust. Every line of decryption code is visible, every data flow is documented, and no user information is ever collected. I wanted to prove that sustainable tools don't need surveillance capitalism or subscription traps - they just need to solve real problems elegantly and give the community ownership over the solutions.

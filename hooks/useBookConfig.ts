@@ -25,6 +25,7 @@ export async function loadBookConfig(
   imageUrls: string[];
   thumbnailUrls: string[];
   bookTitle: string;
+  bookDescription?: string;
   firstPageThumb?: string;
   isEncryptionBook: boolean;
 }> {
@@ -69,9 +70,7 @@ export async function loadBookConfig(
   const thumbnailUrls = pageData.map((p) => buildThumbnailUrl(p.t, id1, id2));
 
   // 检查是否为加密书籍
-  const isEncryptionBook =
-    config.isEncryptionBook === true ||
-    config.loadingConfig?.isEncryptionBook === true;
+  const isEncryptionBook = config.loadingConfig?.isEncryptionBook === true;
 
   return {
     config,
@@ -79,6 +78,7 @@ export async function loadBookConfig(
     imageUrls,
     thumbnailUrls,
     bookTitle: config.meta?.title || id2,
+    bookDescription: config.meta?.description,
     firstPageThumb: pageData[0]?.t,
     isEncryptionBook,
   };

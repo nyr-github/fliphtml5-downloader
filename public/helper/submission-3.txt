@@ -1,0 +1,26 @@
+FlipHTML5 Downloader reverse-engineers FlipHTML5's proprietary format for PDF extraction. Demonstrates advanced web decryption with user-friendly interface.
+
+Tech Stack:
+• Next.js 15 with App Router
+• WASM-based decryption engine
+• jsPDF for client-side PDF generation
+• Neon PostgreSQL + Drizzle ORM
+• IndexedDB for progress tracking
+• Tailwind CSS 4
+
+Decryption Process:
+1. Loads FlipHTML5's official decryption scripts
+2. Initializes WebAssembly module
+3. Executes byte-inversion decryption
+4. Extracts page URLs and metadata
+5. Handles images and ZIP resources
+
+Optimizations:
+• Concurrent downloading with async pool
+• Progressive progress tracking
+• CORS-compliant image loading
+• Auto PDF orientation detection
+
+Advanced browser-based decryption solving real data access challenges.
+
+Try: https://fliphtml5.aivaded.com/

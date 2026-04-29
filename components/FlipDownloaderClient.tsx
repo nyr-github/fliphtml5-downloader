@@ -24,6 +24,7 @@ interface DownloadTask {
   pdfBlobUrl?: string;
   id1?: string;
   id2?: string;
+  canReadOnline?: boolean;
 }
 
 // Helper for concurrency
@@ -119,12 +120,20 @@ export default function FlipDownloaderClient({
       title: string,
       thumbnail: string,
       pageCount: number,
+      description?: string,
     ) => {
       try {
         await fetch("/api/books/record", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id1, id2, title, thumbnail, pageCount }),
+          body: JSON.stringify({
+            id1,
+            id2,
+            title,
+            thumbnail,
+            pageCount,
+            description,
+          }),
         });
       } catch (e) {
         console.error("Failed to record download in database");
@@ -170,6 +179,7 @@ export default function FlipDownloaderClient({
           pages: pageData,
           imageUrls,
           bookTitle,
+          bookDescription,
           firstPageThumb,
           isEncryptionBook,
         } = await loadBookConfig(ids.id1, ids.id2);
@@ -202,13 +212,17 @@ export default function FlipDownloaderClient({
         });
 
         // Record success in DB as soon as config is parsed
-        recordDownloadSuccess(
+        await recordDownloadSuccess(
           ids.id1,
           ids.id2,
           bookTitle,
           firstPageThumb || "",
           pageData.length,
+          bookDescription,
         );
+
+        // 记录成功后，启用在线阅读按钮
+        updateTask(taskId, { canReadOnline: true });
 
         let validResults: Array<{ data: string; w: number; h: number }> = [];
         let completed = 0;
@@ -371,6 +385,27 @@ export default function FlipDownloaderClient({
       </motion.div>
 
       {/* Dynamic Task List */}
+      {tasks.length > 0 && (
+        <div className="text-xs sm:text-sm text-[var(--color-text-muted)] mb-4 flex items-center gap-2">
+          <svg
+            className="w-4 h-4 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>
+            You can add new tasks without waiting for current downloads to
+            complete.
+          </span>
+        </div>
+      )}
       <TaskList
         tasks={tasks}
         onRemove={removeTask}

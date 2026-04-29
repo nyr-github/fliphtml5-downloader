@@ -1,0 +1,19 @@
+=== SourceForge ===
+
+Name: FlipHTML5 pdf Downloader - Flipbook to PDF Converter
+Short Summary: Free online tool to convert FlipHTML5 flipbooks into high-quality PDF files
+
+Full Description:
+FlipHTML5 pdf Downloader is an elegant web-based tool that converts FlipHTML5 publications into high-quality PDF files instantly. Simply paste a FlipHTML5 URL and get your PDF download automatically. No software installation required.
+
+Features:
+- One-click URL to PDF conversion with original quality
+- Batch download support with task queue management
+- ZIP-compressed page resource compatibility
+- Community discovery of popular publications
+- Reading progress tracking with IndexedDB
+- Reading history with progress indicators
+- Cross-platform: works on mobile, tablet, and desktop
+- Free and open source, no registration required
+- Concurrent download pool for faster processing
+- Automatic metadata extraction (title, author, page count)

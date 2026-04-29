@@ -1,0 +1,17 @@
+Finding a great flipbook but can't save it? No download button. No export option. Just content trapped behind a proprietary viewer.
+
+FlipHTML5 Downloader transforms any FlipHTML5 flipbook into downloadable PDF instantly.
+
+User Benefits:
+✓ No registration - paste and download
+✓ Preserves original quality
+✓ Works with ZIP-compressed flipbooks
+✓ Automatic reading progress tracking
+✓ Batch processing support
+✓ Community flipbook discovery
+
+Built with Next.js 15. Handles complex decryption behind the scenes. Simple interface that just works.
+
+Access should be frictionless. We remove barriers between users and valuable content.
+
+Add to your directory: https://fliphtml5.aivaded.com/

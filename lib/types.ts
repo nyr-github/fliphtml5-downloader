@@ -7,13 +7,13 @@ export interface FlipConfig {
   fliphtml5_pages: FlipPage[] | string;
   meta?: {
     title?: string;
+    description?: string;
     pageWidth?: number;
     pageHeight?: number;
   };
   loadingConfig?: {
     isEncryptionBook?: boolean;
   };
-  isEncryptionBook?: boolean;
 }
 
 declare global {

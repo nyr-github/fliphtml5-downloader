@@ -7,6 +7,7 @@ import { getPrimaryEntity } from "./nlp-utils";
 export interface ExploreBook {
   id: string;
   title: string;
+  description?: string;
   thumbnail: string;
   pageCount: number;
   downloadCount: number;
@@ -112,6 +113,7 @@ export async function getBookByIdDB(id: string): Promise<ExploreBook | null> {
     return {
       id: result.id,
       title: result.title,
+      description: result.description ?? undefined,
       thumbnail: result.thumbnail,
       pageCount: result.pageCount,
       downloadCount: result.downloadCount,

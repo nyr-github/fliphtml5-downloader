@@ -1,0 +1,28 @@
+=== Product Hunt ===
+
+Name of the launch: FlipHTML5 pdf Downloader
+Tagline: Convert FlipHTML5 flipbooks to high-quality PDFs instantly
+Description: One-click tool to download FlipHTML5 publications as PDF. No installation, no subscription. Batch download support, ZIP compatibility, and community discovery. Works on all devices.
+
+tags: Productivity, Developer Tools, PDF, FlipHTML5
+
+First Comment:
+Hey Product Hunt community! 👋
+
+I'm excited to share FlipHTML5 pdf Downloader - a tool I built to solve a real problem I faced.
+
+The Problem: I needed to download FlipHTML5 books for offline reading, but found:
+- Browser extensions require manual page-flipping (so tedious for 100+ page books!)
+- Screen captures lose quality and miss original resolution
+- Commercial services charge monthly subscriptions
+
+The Solution: A free web tool that:
+✅ Pastes URL → Gets PDF in seconds
+✅ Accesses original high-quality resources, not screen captures
+✅ Handles batch downloads with queue management
+✅ Works on mobile, tablet, and desktop
+✅ No installation or registration required
+
+Technical highlight: It decrypts FlipHTML5's WASM-encrypted configuration to get original page URLs, then assembles them into a properly formatted PDF.
+
+Would love to hear your feedback and use cases! What features would make this more useful for you?
