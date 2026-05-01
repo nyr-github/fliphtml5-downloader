@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
 import "./globals.css"; // Global styles
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import LayoutShell from "@/components/LayoutShell";
 import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
@@ -92,11 +91,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className="bg-[var(--color-bg)] font-body antialiased flex flex-col min-h-screen"
       >
-        <Navbar />
-        <main className="pt-16 sm:pt-20 md:pt-24 flex-grow mobile-safe-bottom">
-          {children}
-        </main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
         <Analytics />
         <Toaster position="top-center" richColors />
       </body>

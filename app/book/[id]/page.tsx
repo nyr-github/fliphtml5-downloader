@@ -214,6 +214,7 @@ export default async function BookDetailsPage({
                   id2={book.id2}
                   title={book.title}
                   pageCount={book.pageCount}
+                  thumbnail={thumbnailFull}
                 />
               </div>
 

@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  ExternalLink,
   Maximize2,
   Minimize2,
   Loader2,
@@ -29,6 +30,7 @@ import {
   readingProgressDB,
   isIndexedDBSupported,
 } from "@/lib/reading-progress-db";
+import ShareModal from "@/components/ShareModal";
 
 export default function BookReaderClient({
   dbId,
@@ -36,12 +38,21 @@ export default function BookReaderClient({
   id2,
   title,
   from,
+  initialPage,
+  initialDualPage,
+  hideThumbnailsButton,
 }: {
   dbId: string;
   id1: string;
   id2: string;
   title: string;
   from?: string;
+  /** 起始页（0-based）；iframe 嵌入时由宿主制定，提供时跳过阅读进度恢复 */
+  initialPage?: number;
+  /** 默认是否双页模式 */
+  initialDualPage?: boolean;
+  /** 是否隐藏缩略图切换按钮 */
+  hideThumbnailsButton?: boolean;
 }) {
   const { config, loading, error } = useBookConfig(id1, id2);
   const pages = config?.pages || [];
@@ -51,7 +62,7 @@ export default function BookReaderClient({
   const { getPageDisplayUrl, extractZipPage, loadingPages } =
     usePageExtractor(pages);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialPage ?? 0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -60,9 +71,9 @@ export default function BookReaderClient({
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
-  const [isDualPageMode, setIsDualPageMode] = useState(false);
+  const [isDualPageMode, setIsDualPageMode] = useState(!!initialDualPage);
   const [isWideScreen, setIsWideScreen] = useState(false);
-  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [downloadingPage, setDownloadingPage] = useState(false);
   const [touchStartDistance, setTouchStartDistance] = useState(0);
   const [touchStartZoom, setTouchStartZoom] = useState(100);
@@ -124,6 +135,12 @@ export default function BookReaderClient({
       return;
     }
 
+    // 如果宿主明确指定了起始页（iframe 嵌入场景），不恢复进度避免被覆盖
+    if (initialPage !== undefined) {
+      setIsRestoringProgress(false);
+      return;
+    }
+
     const restoreProgress = async () => {
       if (!dbId || pages.length === 0) {
         setIsRestoringProgress(false);
@@ -147,7 +164,7 @@ export default function BookReaderClient({
     };
 
     restoreProgress();
-  }, [dbId, pages.length, progressEnabled]);
+  }, [dbId, pages.length, progressEnabled, initialPage]);
 
   // 保存阅读进度（当页面变化时）
   useEffect(() => {
@@ -502,32 +519,20 @@ export default function BookReaderClient({
     window.print();
   };
 
-  const handleShare = async () => {
-    const shareData = {
-      title: `Read ${title} Online`,
-      text: `Check out "${title}" - ${pages.length} pages available to read online for free.`,
-      url: shareUrl,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        if ((err as Error).name !== "AbortError") {
-          console.error("Error sharing:", err);
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setShowShareMenu(true);
-        setTimeout(() => setShowShareMenu(false), 2000);
-      } catch (err) {
-        console.error("Error copying to clipboard:", err);
-      }
-    }
-  };
+  // 分享弹框所需数据（与 BookActions 保持一致）
+  const embedUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/read/iframe/${dbId}`
+      : `${process.env.NEXT_PUBLIC_BASE_URL || ""}/read/iframe/${dbId}`;
+  const shareTitle = title
+    ? `${title} - FlipHTML5 Book can be downloaded now`
+    : "FlipHTML5 Book can be downloaded now";
+  const shareDescription = title
+    ? `Check out "${title}"${
+        pages.length ? ` - ${pages.length} pages` : ""
+      } available to download and read online for free.`
+    : "Check out this FlipHTML5 book available to download and read online for free.";
+  const shareThumbnail = thumbnails[0];
 
   const handleDownloadCurrentPage = async () => {
     try {
@@ -659,12 +664,25 @@ export default function BookReaderClient({
       {/* Top Bar */}
       <div className="h-14 sm:h-16 px-4 sm:px-6 flex items-center justify-between glass-dark z-20">
         <div className="flex items-center gap-2 sm:gap-4">
-          <Link
-            href={backUrl}
-            className="p-2 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
-          >
-            <X className="w-5 h-5 sm:w-6 sm:h-6" />
-          </Link>
+          {from === "iframe" ? (
+            <a
+              href={`/read/${dbId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-2 sm:px-3 sm:py-2 inline-flex items-center gap-1.5 rounded-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-[11px] sm:text-xs font-semibold transition-colors shadow-sm justify-center"
+              title="Open full reader in a new tab"
+            >
+              <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline sm:inline">Open on site</span>
+            </a>
+          ) : (
+            <Link
+              href={backUrl}
+              className="p-2 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
+            >
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+            </Link>
+          )}
           <div className="hidden sm:block">
             <Link href={`/book/${dbId}`} className="block group">
               <h2 className="text-white font-display font-bold text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[300px] group-hover:text-[var(--color-primary)] transition-colors">
@@ -751,7 +769,9 @@ export default function BookReaderClient({
           </button>
           <button
             onClick={() => setShowThumbnails(!showThumbnails)}
-            className={`p-2 sm:p-3 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors text-white ${
+            className={`${
+              hideThumbnailsButton ? "hidden" : ""
+            } p-2 sm:p-3 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors text-white ${
               showThumbnails
                 ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]"
                 : "bg-white/5 hover:bg-white/10"
@@ -795,16 +815,12 @@ export default function BookReaderClient({
             )}
           </button>
           <button
-            onClick={handleShare}
+            onClick={() => setShareOpen(true)}
             className="p-2 sm:p-3 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors text-white relative"
             title="Share this book"
+            type="button"
           >
             <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            {showShareMenu && (
-              <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-[var(--color-primary)] text-white text-xs font-medium rounded-lg shadow-lg whitespace-nowrap animate-in fade-in slide-in-from-top-2">
-                Link copied!
-              </div>
-            )}
           </button>
           <Link
             href={downloadUrl}
@@ -1084,6 +1100,18 @@ export default function BookReaderClient({
           />
         ))}
       </div>
+
+      {/* Share Modal - 与 BookActions 保持一致 */}
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        url={shareUrl}
+        title={shareTitle}
+        description={shareDescription}
+        image={shareThumbnail}
+        embedUrl={embedUrl}
+        totalPages={pages.length}
+      />
     </div>
   );
 }
