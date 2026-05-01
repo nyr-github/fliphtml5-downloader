@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
-import { desc, eq, count, like, or, sql } from "drizzle-orm";
+import { desc, eq, count, like, or, sql, asc } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getPrimaryEntity } from "./nlp-utils";
 
@@ -261,12 +261,19 @@ export const getAllRelatedBooks = unstable_cache(
     currentBookId: string,
     page: number = 1,
     pageSize: number = 24,
+    sortBy: "name" | "downloads" = "name",
+    sortOrder: "asc" | "desc" = "asc",
   ): Promise<PaginatedBooks> => {
     try {
       const offset = (page - 1) * pageSize;
 
       // 使用NLP提取第一个主要实体
       const primaryEntity = getPrimaryEntity(title);
+
+      // 确定排序字段和顺序
+      const orderByColumn =
+        sortBy === "name" ? books.title : books.downloadCount;
+      const orderByDirection = sortOrder === "asc" ? "asc" : "desc";
 
       if (!primaryEntity) {
         // 如果没有提取到实体，返回所有书籍（不包括当前书籍）
@@ -281,7 +288,11 @@ export const getAllRelatedBooks = unstable_cache(
           .select()
           .from(books)
           .where(sql`${books.id} != ${currentBookId}`)
-          .orderBy(desc(books.downloadCount))
+          .orderBy(
+            orderByDirection === "asc"
+              ? asc(orderByColumn)
+              : desc(orderByColumn),
+          )
           .limit(pageSize)
           .offset(offset);
 
@@ -324,7 +335,9 @@ export const getAllRelatedBooks = unstable_cache(
         .where(
           sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
         )
-        .orderBy(desc(books.downloadCount))
+        .orderBy(
+          orderByDirection === "asc" ? asc(orderByColumn) : desc(orderByColumn),
+        )
         .limit(pageSize)
         .offset(offset);
 

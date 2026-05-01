@@ -1,0 +1,4 @@
+Title: Quick FlipHTML5 to PDF Tool
+Description: Found a flipbook you wanted to save but couldn't download? I built this simple tool to convert FlipHTML5 links to PDF. Just paste and convert. Hope it helps.
+Tags: FlipHTML5,PDF converter,ebook download,online tool,learning resources
+Message: I kept running into great flipbooks I couldn't download. So I built this tool to convert FlipHTML5 links to PDF instantly. Supports batch downloads too. Give it a try!

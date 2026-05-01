@@ -18,7 +18,7 @@ interface Book {
 interface BookCardProps {
   book: Book;
   index?: number;
-  variant?: "grid" | "compact";
+  variant?: "grid" | "compact" | "list";
 }
 
 export default function BookCard({
@@ -65,45 +65,85 @@ export default function BookCard({
   }
 
   // Grid variant (for Explore page)
-  return (
-    <Link
-      href={`/book/${book.id}`}
-      className="group bg-white rounded-xl  overflow-hidden shadow-md hover:shadow-xl transition-all border border-[var(--color-border-light)] flex flex-col hover-lift"
-    >
-      <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-bg-warm)]">
-        <Image
-          src={thumbnailUrl}
-          alt={book.title}
-          fill
-          unoptimized={true}
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          referrerPolicy="no-referrer"
-        />
-        {index !== undefined && (
-          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-[10px] sm:text-xs font-bold text-[var(--color-primary)]">
-              #{index + 1}
-            </span>
+  if (variant === "grid") {
+    return (
+      <Link
+        href={`/book/${book.id}`}
+        className="group bg-white rounded-xl  overflow-hidden shadow-md hover:shadow-xl transition-all border border-[var(--color-border-light)] flex flex-col hover-lift"
+      >
+        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-bg-warm)]">
+          <Image
+            src={thumbnailUrl}
+            alt={book.title}
+            fill
+            unoptimized={true}
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            referrerPolicy="no-referrer"
+          />
+          {index !== undefined && (
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-[10px] sm:text-xs font-bold text-[var(--color-primary)]">
+                #{index + 1}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="p-2 sm:p-4 flex-1 flex flex-col">
+          <h3 className="font-display font-bold text-sm  mb-2 sm:mb-3 line-clamp-2 leading-tight group-hover:text-[var(--color-primary)] transition-colors">
+            {book.title}
+          </h3>
+          <div className="mt-auto flex items-center justify-between text-[10px] sm:text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="flex items-center gap-1.5">
+                <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                {book.pageCount}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                {book.downloadCount}
+              </span>
+            </div>
           </div>
-        )}
-      </div>
-      <div className="p-2 sm:p-4 flex-1 flex flex-col">
-        <h3 className="font-display font-bold text-sm  mb-2 sm:mb-3 line-clamp-2 leading-tight group-hover:text-[var(--color-primary)] transition-colors">
-          {book.title}
-        </h3>
-        <div className="mt-auto flex items-center justify-between text-[10px] sm:text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="flex items-center gap-1.5">
-              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              {book.pageCount}
+        </div>
+      </Link>
+    );
+  }
+
+  // List variant (for Related Books page)
+  if (variant === "list") {
+    return (
+      <Link
+        href={`/book/${book.id}`}
+        className="group flex gap-3 sm:gap-4 md:gap-6 p-3 sm:p-4 bg-white rounded-xl shadow-md border border-[var(--color-border-light)] hover:shadow-xl transition-all hover-lift"
+      >
+        <div className="relative w-20 h-28 sm:w-28 sm:h-36 md:w-32 md:h-40 flex-shrink-0 rounded-lg overflow-hidden bg-[var(--color-bg-warm)]">
+          <Image
+            src={thumbnailUrl}
+            alt={book.title}
+            fill
+            unoptimized={true}
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="flex-1 flex flex-col justify-center min-w-0">
+          <h3 className="font-display font-bold text-sm sm:text-base md:text-lg mb-1.5 sm:mb-2 line-clamp-2 leading-tight group-hover:text-[var(--color-primary)] transition-colors">
+            {book.title}
+          </h3>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 md:gap-6 text-[10px] sm:text-xs md:text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+              <span className="whitespace-nowrap">{book.pageCount} pages</span>
             </span>
-            <span className="flex items-center gap-1.5">
-              <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              {book.downloadCount}
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+              <span className="whitespace-nowrap">
+                {book.downloadCount} downloads
+              </span>
             </span>
           </div>
         </div>
-      </div>
-    </Link>
-  );
+      </Link>
+    );
+  }
 }

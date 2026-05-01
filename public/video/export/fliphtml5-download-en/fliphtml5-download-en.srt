@@ -1,0 +1,140 @@
+1
+00:00:00,033 --> 00:00:03,633
+Have you ever come across an amazing eBook on FlipHTML5
+
+2
+00:00:04,200 --> 00:00:06,566
+Only to find there's no download button in sight?
+
+3
+00:00:07,333 --> 00:00:09,200
+That's exactly why I built this tool
+
+4
+00:00:09,866 --> 00:00:12,633
+Just paste any FlipHTML5 link
+
+5
+00:00:13,000 --> 00:00:13,933
+Hit convert
+
+6
+00:00:14,266 --> 00:00:15,566
+Wait a few seconds
+
+7
+00:00:15,733 --> 00:00:18,633
+And a high-quality PDF downloads automatically
+
+8
+00:00:19,333 --> 00:00:21,400
+Whether it's a beautifully designed magazine
+
+9
+00:00:21,766 --> 00:00:23,233
+An important business report
+
+10
+00:00:23,833 --> 00:00:25,500
+Or even a complete textbook
+
+11
+00:00:25,800 --> 00:00:27,900
+You can queue up multiple downloads at once
+
+12
+00:00:28,400 --> 00:00:31,133
+No need to wait for one to finish before starting the next
+
+13
+00:00:31,833 --> 00:00:36,000
+The tool automatically decrypts FlipHTML5's encrypted configuration
+
+14
+00:00:36,466 --> 00:00:38,500
+Extracts the real page resources
+
+15
+00:00:39,233 --> 00:00:40,933
+Scroll down and you'll discover
+
+16
+00:00:41,566 --> 00:00:43,833
+What other users around the world are downloading
+
+17
+00:00:44,466 --> 00:00:46,733
+See what's trending in the global reading community
+
+18
+00:00:47,433 --> 00:00:49,100
+Click the online reader button
+
+19
+00:00:49,366 --> 00:00:51,100
+And read directly in your browser
+
+20
+00:00:51,733 --> 00:00:54,600
+Switch between single-page and two-page layouts
+
+21
+00:00:54,933 --> 00:00:56,766
+Just like flipping through a real book
+
+22
+00:00:57,633 --> 00:00:59,833
+Your reading progress saves automatically
+
+23
+00:01:00,400 --> 00:01:02,333
+Pick up right where you left off next time
+
+24
+00:01:03,000 --> 00:01:05,366
+Plus zoom, fullscreen
+
+25
+00:01:05,366 --> 00:01:06,766
+and thumbnail navigation
+
+26
+00:01:07,566 --> 00:01:10,000
+Works perfectly on both mobile and desktop
+
+27
+00:01:10,800 --> 00:01:13,766
+The reading history feature keeps track of everything you've read
+
+28
+00:01:14,233 --> 00:01:15,100
+Study materials
+
+29
+00:01:15,100 --> 00:01:15,766
+interesting magazines
+
+30
+00:01:15,766 --> 00:01:16,633
+Everything's just a click away
+
+31
+00:01:16,633 --> 00:01:17,000
+Ultimately
+
+32
+00:01:17,000 --> 00:01:17,800
+I hope this tool makes it easier for you
+
+33
+00:01:17,800 --> 00:01:20,033
+To access and save the content you care about
+
+34
+00:01:20,866 --> 00:01:28,900
+Because getting your hands on great reading material
+
+35
+00:01:29,200 --> 00:01:30,100
+Should be simple
+
