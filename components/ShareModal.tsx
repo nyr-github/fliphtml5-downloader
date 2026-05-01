@@ -347,234 +347,236 @@ export default function ShareModal({
                 aria-modal="true"
                 aria-label="Share"
               >
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100 shrink-0">
-                <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-                  {showEmbed ? "Embed" : "Share"}
-                </h2>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                  aria-label="Close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Body */}
-              {!showEmbed ? (
-                <div className="px-5 sm:px-6 pt-4 pb-5 overflow-y-auto">
-                  {/* Channels scroller */}
-                  <div className="overflow-x-auto -mx-1 pb-2">
-                    <div className="flex items-start gap-4 px-1 min-w-max">
-                      {channels.map((c) => (
-                        <button
-                          key={c.key}
-                          type="button"
-                          onClick={c.onClick}
-                          className="flex flex-col items-center gap-2 w-16 group focus:outline-none"
-                        >
-                          <span
-                            className={`w-14 h-14 rounded-full ${c.bg} ${
-                              c.color || "text-white"
-                            } flex items-center justify-center shadow-sm group-hover:scale-105 group-active:scale-95 transition-transform`}
-                          >
-                            {c.icon}
-                          </span>
-                          <span className="text-[11px] font-medium text-gray-700 truncate w-full text-center">
-                            {c.label}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Link row */}
-                  <div className="mt-5 flex items-center gap-2 rounded-full bg-gray-100 border border-gray-200 pl-4 pr-1.5 py-1.5 w-full overflow-hidden">
-                    <LinkIcon className="w-4 h-4 text-gray-500 shrink-0" />
-                    <input
-                      type="text"
-                      readOnly
-                      value={url}
-                      onFocus={(e) => e.currentTarget.select()}
-                      className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 outline-none truncate"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCopyLink}
-                      className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
-                        linkCopied
-                          ? "bg-green-600 text-white"
-                          : "bg-[var(--color-primary)] text-white hover:opacity-90"
-                      }`}
-                    >
-                      {linkCopied ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100 shrink-0">
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                    {showEmbed ? "Embed" : "Share"}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    aria-label="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-              ) : (
-                /* Embed view */
-                <>
-                  <div className="px-5 sm:px-6 pt-4 pb-4 overflow-y-auto flex-1 min-h-0">
-                    <p className="text-sm text-gray-600 mb-3">
-                      Customize how the reader opens, then paste this HTML
-                      into your website:
-                    </p>
 
-                    {/* 左右布局：左=预览、右=代码块+设置项；移动端单列堆叠 */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Live preview (移动端放在最后让内容更多一坡就被看见) */}
-                      <div className="order-2 md:order-1 flex flex-col">
-                        <div className="text-xs font-medium text-gray-600 mb-1 flex items-center justify-between">
-                          <span>Preview</span>
-                          <span className="text-[10px] text-gray-400">Live</span>
-                        </div>
-                        <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-black aspect-[4/3]">
-                          {embedSrc ? (
-                            <iframe
-                              key={embedSrc}
-                              src={embedSrc}
-                              title="Embed preview"
-                              className="absolute inset-0 w-full h-full"
-                              loading="lazy"
-                              allowFullScreen
-                            />
-                          ) : null}
-                        </div>
+                {/* Body */}
+                {!showEmbed ? (
+                  <div className="px-5 sm:px-6 pt-4 pb-5">
+                    {/* Channels scroller */}
+                    <div className="-mx-1 pb-2">
+                      <div className="flex items-start justify-around md:justify-start gap-4 px-1 flex-wrap ">
+                        {channels.map((c) => (
+                          <button
+                            key={c.key}
+                            type="button"
+                            onClick={c.onClick}
+                            className="flex flex-col items-center gap-2 w-16 group focus:outline-none"
+                          >
+                            <span
+                              className={`w-14 h-14 rounded-full ${c.bg} ${
+                                c.color || "text-white"
+                              } flex items-center justify-center shadow-sm group-hover:scale-105 group-active:scale-95 transition-transform`}
+                            >
+                              {c.icon}
+                            </span>
+                            <span className="text-[11px] font-medium text-gray-700 truncate w-full text-center">
+                              {c.label}
+                            </span>
+                          </button>
+                        ))}
                       </div>
+                    </div>
 
-                      {/* 右列：代码块 + 设置项 */}
-                      <div className="order-1 md:order-2 flex flex-col gap-3">
-                        {/* Code block */}
-                        <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-600 mb-1">
-                            HTML
+                    {/* Link row */}
+                    <div className="mt-5 flex items-center gap-2 rounded-full bg-gray-100 border border-gray-200 pl-4 pr-1.5 py-1.5 w-full overflow-hidden">
+                      <LinkIcon className="w-4 h-4 text-gray-500 shrink-0" />
+                      <input
+                        type="text"
+                        readOnly
+                        value={url}
+                        onFocus={(e) => e.currentTarget.select()}
+                        className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 outline-none truncate"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
+                          linkCopied
+                            ? "bg-green-600 text-white"
+                            : "bg-[var(--color-primary)] text-white hover:opacity-90"
+                        }`}
+                      >
+                        {linkCopied ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Embed view */
+                  <>
+                    <div className="px-5 sm:px-6 pt-4 pb-4 overflow-y-auto flex-1 min-h-0">
+                      <p className="text-sm text-gray-600 mb-3">
+                        Customize how the reader opens, then paste this HTML
+                        into your website:
+                      </p>
+
+                      {/* 左右布局：左=预览、右=代码块+设置项；移动端单列堆叠 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Live preview (移动端放在最后让内容更多一坡就被看见) */}
+                        <div className="order-2 md:order-1 flex flex-col">
+                          <div className="text-xs font-medium text-gray-600 mb-1 flex items-center justify-between">
+                            <span>Preview</span>
+                            <span className="text-[10px] text-gray-400">
+                              Live
+                            </span>
                           </div>
-                          <textarea
-                            readOnly
-                            value={embedCode}
-                            onFocus={(e) => e.currentTarget.select()}
-                            rows={5}
-                            className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 outline-none focus:border-[var(--color-primary)]"
-                          />
+                          <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-black aspect-[4/3]">
+                            {embedSrc ? (
+                              <iframe
+                                key={embedSrc}
+                                src={embedSrc}
+                                title="Embed preview"
+                                className="absolute inset-0 w-full h-full"
+                                loading="lazy"
+                                allowFullScreen
+                              />
+                            ) : null}
+                          </div>
                         </div>
 
-                        {/* Embed config */}
-                        <div className="grid grid-cols-1 gap-2.5">
-                          {/* Start page */}
-                          <label className="flex flex-col gap-1">
-                            <span className="text-xs font-medium text-gray-600">
-                              Start page
-                              {totalPages ? (
-                                <span className="text-gray-400">
-                                  {" "}
-                                  (1–{totalPages})
-                                </span>
-                              ) : null}
-                            </span>
-                            <input
-                              type="number"
-                              min={1}
-                              max={totalPages || undefined}
-                              placeholder="1"
-                              value={
-                                embedStartPage === "" ? "" : embedStartPage
-                              }
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                if (v === "") {
-                                  setEmbedStartPage("");
-                                  return;
+                        {/* 右列：代码块 + 设置项 */}
+                        <div className="order-1 md:order-2 flex flex-col gap-3">
+                          {/* Code block */}
+                          <div className="flex flex-col">
+                            <div className="text-xs font-medium text-gray-600 mb-1">
+                              HTML
+                            </div>
+                            <textarea
+                              readOnly
+                              value={embedCode}
+                              onFocus={(e) => e.currentTarget.select()}
+                              rows={5}
+                              className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 outline-none focus:border-[var(--color-primary)]"
+                            />
+                          </div>
+
+                          {/* Embed config */}
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {/* Start page */}
+                            <label className="flex flex-col gap-1">
+                              <span className="text-xs font-medium text-gray-600">
+                                Start page
+                                {totalPages ? (
+                                  <span className="text-gray-400">
+                                    {" "}
+                                    (1–{totalPages})
+                                  </span>
+                                ) : null}
+                              </span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={totalPages || undefined}
+                                placeholder="1"
+                                value={
+                                  embedStartPage === "" ? "" : embedStartPage
                                 }
-                                const n = parseInt(v, 10);
-                                if (!Number.isFinite(n)) return;
-                                const max =
-                                  totalPages || Number.MAX_SAFE_INTEGER;
-                                setEmbedStartPage(
-                                  Math.min(Math.max(n, 1), max),
-                                );
-                              }}
-                              className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-800 outline-none focus:border-[var(--color-primary)]"
-                            />
-                          </label>
+                                onChange={(e) => {
+                                  const v = e.target.value;
+                                  if (v === "") {
+                                    setEmbedStartPage("");
+                                    return;
+                                  }
+                                  const n = parseInt(v, 10);
+                                  if (!Number.isFinite(n)) return;
+                                  const max =
+                                    totalPages || Number.MAX_SAFE_INTEGER;
+                                  setEmbedStartPage(
+                                    Math.min(Math.max(n, 1), max),
+                                  );
+                                }}
+                                className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-800 outline-none focus:border-[var(--color-primary)]"
+                              />
+                            </label>
 
-                          {/* Two-page mode */}
-                          <label className="flex items-center gap-2 h-10 px-3 rounded-lg border border-gray-200 bg-white cursor-pointer select-none">
-                            <input
-                              type="checkbox"
-                              checked={embedDualPage}
-                              onChange={(e) =>
-                                setEmbedDualPage(e.target.checked)
-                              }
-                              className="w-4 h-4 accent-[var(--color-primary)]"
-                            />
-                            <span className="text-sm text-gray-800">
-                              Two-page mode
-                            </span>
-                          </label>
+                            {/* Two-page mode */}
+                            <label className="flex items-center gap-2 h-10 px-3 rounded-lg border border-gray-200 bg-white cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={embedDualPage}
+                                onChange={(e) =>
+                                  setEmbedDualPage(e.target.checked)
+                                }
+                                className="w-4 h-4 accent-[var(--color-primary)]"
+                              />
+                              <span className="text-sm text-gray-800">
+                                Two-page mode
+                              </span>
+                            </label>
 
-                          {/* Thumbnails toggle button */}
-                          <label className="flex items-center gap-2 h-10 px-3 rounded-lg border border-gray-200 bg-white cursor-pointer select-none">
-                            <input
-                              type="checkbox"
-                              checked={embedShowThumbnails}
-                              onChange={(e) =>
-                                setEmbedShowThumbnails(e.target.checked)
-                              }
-                              className="w-4 h-4 accent-[var(--color-primary)]"
-                            />
-                            <span className="text-sm text-gray-800">
-                              Thumbnails button
-                            </span>
-                          </label>
+                            {/* Thumbnails toggle button */}
+                            <label className="flex items-center gap-2 h-10 px-3 rounded-lg border border-gray-200 bg-white cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={embedShowThumbnails}
+                                onChange={(e) =>
+                                  setEmbedShowThumbnails(e.target.checked)
+                                }
+                                className="w-4 h-4 accent-[var(--color-primary)]"
+                              />
+                              <span className="text-sm text-gray-800">
+                                Thumbnails button
+                              </span>
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Footer bar (不随内容滚动、始终可点) */}
-                  <div className="shrink-0 px-5 sm:px-6 py-3 border-t border-gray-100 flex items-center justify-between gap-3 bg-white">
-                    <button
-                      type="button"
-                      onClick={() => setShowEmbed(false)}
-                      className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCopyEmbed}
-                      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-                        embedCopied
-                          ? "bg-green-600 text-white"
-                          : "bg-[var(--color-primary)] text-white hover:opacity-90"
-                      }`}
-                    >
-                      {embedCopied ? (
-                        <>
-                          <Check className="w-4 h-4" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" /> Copy code
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </>
-              )}
-            </motion.div>
+                    {/* Footer bar (不随内容滚动、始终可点) */}
+                    <div className="shrink-0 px-5 sm:px-6 py-3 border-t border-gray-100 flex items-center justify-between gap-3 bg-white">
+                      <button
+                        type="button"
+                        onClick={() => setShowEmbed(false)}
+                        className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        ← Back
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCopyEmbed}
+                        className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          embedCopied
+                            ? "bg-green-600 text-white"
+                            : "bg-[var(--color-primary)] text-white hover:opacity-90"
+                        }`}
+                      >
+                        {embedCopied ? (
+                          <>
+                            <Check className="w-4 h-4" /> Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" /> Copy code
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </motion.div>
             </div>
           </div>
         </>

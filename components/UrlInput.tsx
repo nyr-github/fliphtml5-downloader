@@ -27,7 +27,7 @@ export default function UrlInput({ value, onChange, onSubmit }: UrlInputProps) {
         <button
           onClick={onSubmit}
           disabled={!value}
-          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 aspect-square bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white rounded-lg sm:rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale disabled:hover:scale-100"
+          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2   md:bg-gradient-to-br md:from-[var(--color-primary)] md:to-[var(--color-primary-dark)] text-[var(--color-primary)] md:text-white rounded-full sm:rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale disabled:hover:scale-100 w-12 aspect-square"
         >
           <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
@@ -36,8 +36,12 @@ export default function UrlInput({ value, onChange, onSubmit }: UrlInputProps) {
         Example:{" "}
         <button
           type="button"
-          onClick={() => onChange("https://fliphtml5.com/REZIDE/The-Glasshouse_merged/The_Glasshouse/")}
-          className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] hover:underline transition-colors cursor-pointer"
+          onClick={() =>
+            onChange(
+              "https://fliphtml5.com/REZIDE/The-Glasshouse_merged/The_Glasshouse/",
+            )
+          }
+          className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] hover:underline transition-colors cursor-pointer break-all"
         >
           https://fliphtml5.com/REZIDE/The-Glasshouse_merged/The_Glasshouse/
         </button>
