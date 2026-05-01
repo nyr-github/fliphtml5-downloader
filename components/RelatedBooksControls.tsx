@@ -106,8 +106,12 @@ export default function RelatedBooksControls({
           <SelectContent>
             <SelectItem value="name-asc">Name (A-Z)</SelectItem>
             <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-            <SelectItem value="downloads-desc">Downloads (High to Low)</SelectItem>
-            <SelectItem value="downloads-asc">Downloads (Low to High)</SelectItem>
+            <SelectItem value="downloads-desc">
+              Downloads (High to Low)
+            </SelectItem>
+            <SelectItem value="downloads-asc">
+              Downloads (Low to High)
+            </SelectItem>
           </SelectContent>
         </Select>
 
