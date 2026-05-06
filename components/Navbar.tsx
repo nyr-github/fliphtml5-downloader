@@ -104,7 +104,10 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-2">
           {/* Community Dropdown */}
-          <div className="relative">
+          <div
+            className="relative"
+            onMouseLeave={() => setCommunityDropdownOpen(false)}
+          >
             <button
               onClick={() => {
                 setCommunityDropdownOpen(!communityDropdownOpen);
@@ -132,7 +135,6 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  onMouseLeave={() => setCommunityDropdownOpen(false)}
                   className="absolute top-full left-0 mt-2 w-56 glass rounded-xl shadow-xl overflow-hidden z-50"
                 >
                   <a
@@ -159,7 +161,10 @@ export default function Navbar() {
           </div>
 
           {/* Resources Dropdown */}
-          <div className="relative">
+          <div
+            className="relative"
+            onMouseLeave={() => setResourcesDropdownOpen(false)}
+          >
             <button
               onClick={() => {
                 setResourcesDropdownOpen(!resourcesDropdownOpen);
@@ -187,7 +192,6 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  onMouseLeave={() => setResourcesDropdownOpen(false)}
                   className="absolute top-full left-0 mt-2 w-56 glass rounded-xl shadow-xl overflow-hidden z-50"
                 >
                   {resourceLinks.map((link) => {
