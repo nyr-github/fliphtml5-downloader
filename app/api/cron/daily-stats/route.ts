@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
       .select({ count: sql<number>`count(*)` })
       .from(books)
       .where(
-        sql`${books.createdAt} >= ${yesterday} AND ${books.createdAt} <= ${yesterdayEnd}`,
+        sql`${books.createdAt} >= ${yesterday.toISOString()} AND ${books.createdAt} <= ${yesterdayEnd.toISOString()}`,
       );
 
     const newBooksCount = result[0]?.count || 0;
