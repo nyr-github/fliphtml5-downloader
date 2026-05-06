@@ -3,11 +3,13 @@ import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 import blogList from "@/lib/blog-list.json";
+import { getExternalBlogs } from "@/lib/blog-utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+  const projectId = process.env.EXTERNAL_BLOG_PROJECT_ID;
 
   // 静态页面
   const staticPages: MetadataRoute.Sitemap = [
@@ -72,6 +74,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
+  // 外部博客页面
+  let externalBlogPages: MetadataRoute.Sitemap = [];
+  if (projectId) {
+    const externalBlogs = await getExternalBlogs(projectId);
+    externalBlogPages = externalBlogs.map((blog) => ({
+      url: `${baseUrl}/blog/${blog.slug}`,
+      lastModified: new Date(blog.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    }));
+  }
+
   // 分页页面 (限制最多100页)
   const totalBooks = allBooks.length;
   const pageSize = 24;
@@ -92,6 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...bookPages,
     ...readPages,
     ...blogPages,
+    ...externalBlogPages,
     ...paginationPages,
   ];
 }

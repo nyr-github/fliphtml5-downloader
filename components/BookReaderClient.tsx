@@ -112,7 +112,7 @@ export default function BookReaderClient({
   // 返回链接：如果有 from 参数，返回到对应页面，否则默认返回到书籍详情页
   const backUrl = from === "history" ? "/history" : `/book/${dbId}`;
 
-  // 预加载当前页和下一页（如果是 ZIP 文件）
+  // 预加载当前页和Next（如果是 ZIP 文件）
   useEffect(() => {
     // 在恢复进度期间不预加载，避免加载错误的页面
     if (isRestoringProgress) return;
@@ -247,10 +247,10 @@ export default function BookReaderClient({
     // currentIndex 是奇数时，显示 currentIndex 和 currentIndex+1
     // currentIndex 是偶数时，显示 currentIndex-1 和 currentIndex
     if (currentIndex % 2 === 1) {
-      // 奇数索引：显示当前页和下一页
+      // 奇数索引：显示当前页和Next
       return [currentIndex, Math.min(currentIndex + 1, pages.length - 1)];
     } else {
-      // 偶数索引：显示上一页和当前页
+      // 偶数索引：显示Previous 和当前页
       return [currentIndex - 1, currentIndex];
     }
   }, [currentIndex, isDualPageMode, pages.length]);
@@ -371,10 +371,10 @@ export default function BookReaderClient({
       // 判断是否为水平滑动（水平移动距离大于垂直移动距离）
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
         if (deltaX > 0) {
-          // 向右滑动，上一页
+          // 向右滑动，Previous
           prevPage();
         } else {
-          // 向左滑动，下一页
+          // 向左滑动，Next
           nextPage();
         }
       }

@@ -267,7 +267,7 @@ export default function FlipDownloaderClient({
             });
           } catch (err) {
             console.error(`Failed to process page ${i + 1}:`, err);
-            // 继续处理下一页
+            // 继续处理Next
           }
         }
 

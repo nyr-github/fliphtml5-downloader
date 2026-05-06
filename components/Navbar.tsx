@@ -135,6 +135,8 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
+                  onMouseEnter={() => setCommunityDropdownOpen(true)}
+                  onMouseLeave={() => setCommunityDropdownOpen(false)}
                   className="absolute top-full left-0 mt-2 w-56 glass rounded-xl shadow-xl overflow-hidden z-50"
                 >
                   <a
@@ -192,6 +194,8 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
+                  onMouseEnter={() => setResourcesDropdownOpen(true)}
+                  onMouseLeave={() => setResourcesDropdownOpen(false)}
                   className="absolute top-full left-0 mt-2 w-56 glass rounded-xl shadow-xl overflow-hidden z-50"
                 >
                   {resourceLinks.map((link) => {
