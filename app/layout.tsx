@@ -45,9 +45,9 @@ export const metadata: Metadata = {
       "Download FlipHTML5 flipbooks as high-quality PDF files instantly. Free online flipbook converter and reader.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/og-image.jpg`,
-        width: 1200,
-        height: 630,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/icon-512.png`,
+        width: 51,
+        height: 512,
         alt: "FlipHTML5 Downloader - Convert Flipbooks to PDF",
       },
     ],
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     description:
       "Download FlipHTML5 flipbooks as high-quality PDF files instantly. Free online flipbook converter and reader.",
     images: [
-      `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/og-image.jpg`,
+      `${process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"}/icon-512.png`,
     ],
-    creator: "@flipbookdownloader",
+    creator: "@aivaded",
   },
   alternates: {
     canonical: process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com",
@@ -86,6 +86,10 @@ export default function RootLayout({
       <head>
         <meta name="yandex-verification" content="e647953438a9f448" />
         <meta name="msvalidate.01" content="36F36D784E65ACD735FA9D567AF15F1D" />
+        <meta
+          name="impact-site-verification"
+          content="2c7610d2-20d5-4076-a41b-53e2718927f6"
+        />
       </head>
       <body
         suppressHydrationWarning

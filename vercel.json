@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/daily-stats",
       "schedule": "30 0 * * *"
+    },
+    {
+      "path": "/api/cron/tag-books",
+      "schedule": "0 1 * * *"
     }
   ]
 }

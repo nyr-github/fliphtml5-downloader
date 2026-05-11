@@ -8,6 +8,7 @@ export interface ExploreBook {
   id: string;
   title: string;
   description?: string;
+  tags?: string[];
   thumbnail: string;
   pageCount: number;
   downloadCount: number;
@@ -34,6 +35,8 @@ export const getExploreBooks = unstable_cache(
       return results.map((b) => ({
         id: b.id,
         title: b.title,
+        description: b.description ?? undefined,
+        tags: b.tags ?? [],
         thumbnail: b.thumbnail,
         pageCount: b.pageCount,
         downloadCount: b.downloadCount,
@@ -69,6 +72,8 @@ export const getBooksPaginated = unstable_cache(
       const booksData = results.map((b) => ({
         id: b.id,
         title: b.title,
+        description: b.description ?? undefined,
+        tags: b.tags ?? [],
         thumbnail: b.thumbnail,
         pageCount: b.pageCount,
         downloadCount: b.downloadCount,
@@ -114,6 +119,7 @@ export async function getBookByIdDB(id: string): Promise<ExploreBook | null> {
       id: result.id,
       title: result.title,
       description: result.description ?? undefined,
+      tags: result.tags ?? [],
       thumbnail: result.thumbnail,
       pageCount: result.pageCount,
       downloadCount: result.downloadCount,
@@ -183,6 +189,8 @@ export const getRelatedBooks = unstable_cache(
         const booksData = results.slice(0, limit).map((b) => ({
           id: b.id,
           title: b.title,
+          description: b.description ?? undefined,
+          tags: b.tags ?? [],
           thumbnail: b.thumbnail,
           pageCount: b.pageCount,
           downloadCount: b.downloadCount,
@@ -223,6 +231,8 @@ export const getRelatedBooks = unstable_cache(
       const booksData = results.slice(0, limit).map((b) => ({
         id: b.id,
         title: b.title,
+        description: b.description ?? undefined,
+        tags: b.tags ?? [],
         thumbnail: b.thumbnail,
         pageCount: b.pageCount,
         downloadCount: b.downloadCount,
@@ -371,4 +381,65 @@ export const getAllRelatedBooks = unstable_cache(
   },
   ["all-related-books"],
   { revalidate: 86400 }, // 1天缓存
+);
+
+// 按标签查询书籍
+export const getBooksByTag = unstable_cache(
+  async (
+    tag: string,
+    page: number = 1,
+    pageSize: number = 12,
+  ): Promise<PaginatedBooks> => {
+    try {
+      const offset = (page - 1) * pageSize;
+
+      // 获取总数
+      const totalResult = await db
+        .select({ count: count() })
+        .from(books)
+        .where(sql`${books.tags} @> ARRAY[${tag}]::varchar[]`);
+
+      const total = totalResult[0]?.count || 0;
+
+      // 获取分页数据
+      const results = await db
+        .select()
+        .from(books)
+        .where(sql`${books.tags} @> ARRAY[${tag}]::varchar[]`)
+        .orderBy(desc(books.downloadCount))
+        .limit(pageSize)
+        .offset(offset);
+
+      const booksData = results.map((b) => ({
+        id: b.id,
+        title: b.title,
+        description: b.description ?? undefined,
+        tags: b.tags ?? [],
+        thumbnail: b.thumbnail,
+        pageCount: b.pageCount,
+        downloadCount: b.downloadCount,
+        id1: b.id1,
+        id2: b.id2,
+      }));
+
+      return {
+        books: booksData,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    } catch (error) {
+      console.error("Error fetching books by tag:", error);
+      return {
+        books: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 0,
+      };
+    }
+  },
+  ["books-by-tag"],
+  { revalidate: 86400 }, // 24 hours
 );

@@ -16,8 +16,11 @@ import {
   HelpCircle,
   Clock,
   ChevronDown,
+  Calendar,
+  Tag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { BOOK_TAGS, tagToSlug } from "@/lib/constants";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -47,7 +50,23 @@ export default function Navbar() {
     },
   ];
 
+  const browseTagsLinks = BOOK_TAGS.map((tag) => ({
+    name: tag,
+    href: `/books/${tagToSlug(tag)}`,
+    icon: Tag,
+  }));
+
   const resourceLinks = [
+    {
+      name: "Browse by Date",
+      href: "/books/date",
+      icon: Calendar,
+    },
+    {
+      name: "Browse by Tag",
+      href: "/books",
+      icon: Tag,
+    },
     {
       name: "Blog",
       href: "/blog",
@@ -305,6 +324,33 @@ export default function Navbar() {
                   <MessageCircle className="w-5 h-5" />
                   Join Discord Community
                 </a>
+              </div>
+
+              {/* Mobile Browse Links */}
+              <div className="px-2 py-1">
+                <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                  Browse by Tag
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {browseTagsLinks.map((link) => {
+                    const isActive = pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-2 p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
+                          isActive
+                            ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                            : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-warm)]"
+                        }`}
+                      >
+                        <link.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="truncate">{link.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Mobile Resources Links */}

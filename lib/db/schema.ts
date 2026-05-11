@@ -1,4 +1,10 @@
-import { pgTable, text, timestamp, integer } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const books = pgTable("books", {
   id: text("id").primaryKey(), // Using id1_id2 as unique identifier
@@ -6,6 +12,7 @@ export const books = pgTable("books", {
   id2: text("id2").notNull(),
   title: text("title").notNull(),
   description: text("description"),
+  tags: varchar("tags").array().default([]),
   thumbnail: text("thumbnail").notNull(),
   pageCount: integer("page_count").notNull().default(0),
   downloadCount: integer("download_count").notNull().default(1),

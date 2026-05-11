@@ -10,14 +10,23 @@ import {
   Layers,
   ShieldCheck,
   Sparkles,
-  ArrowLeft,
+  Home,
 } from "lucide-react";
 import FlipDownloaderClient from "@/components/FlipDownloaderClient";
 import BookActions from "@/components/BookActions";
 import PageThumbnails from "@/components/PageThumbnails";
 import RelatedBooks from "@/components/RelatedBooks";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { buildThumbnailUrl } from "@/lib/utils";
 import { Metadata } from "next";
+import { tagToSlug } from "@/lib/constants";
 
 // 动态生成 metadata
 export async function generateMetadata({
@@ -132,14 +141,37 @@ export default async function BookDetailsPage({
         />
 
         <div className="relative max-w-6xl mx-auto px-3 sm:px-6 pt-6 sm:pt-12 pb-12 sm:pb-20">
-          {/* Back Button - More compact on mobile */}
-          <Link
-            href="/#discovery-square"
-            className="inline-flex items-center gap-1.5 mb-4 sm:mb-8 text-xs sm:text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Link>
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb className="mb-4 sm:mb-8">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="flex items-center gap-1">
+                    <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Home</span>
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {book.tags && book.tags.length > 0 && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link href={`/books/${tagToSlug(book.tags[0])}`}>
+                        {book.tags[0]}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              )}
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="max-w-[200px] sm:max-w-none truncate">
+                  {book.title}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           {/* Main Content Grid - Optimized for mobile */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-10 lg:gap-12 items-start">

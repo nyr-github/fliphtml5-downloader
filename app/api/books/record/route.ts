@@ -7,7 +7,7 @@ import { revalidateBookCache } from "@/lib/actions";
 
 export async function POST(req: Request) {
   try {
-    const { id1, id2, title, thumbnail, pageCount, description } =
+    const { id1, id2, title, thumbnail, pageCount, description, tags } =
       await req.json();
     const id = `${id1}_${id2}`;
 
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
           downloadCount: sql`${books.downloadCount} + 1`,
           updatedAt: new Date(),
           ...(description && { description }),
+          ...(tags && { tags }),
         })
         .where(eq(books.id, id));
     } else {
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
         thumbnail,
         pageCount,
         description,
+        tags: tags || [],
       });
 
       // 提交新书籍到搜索引擎进行SEO索引
