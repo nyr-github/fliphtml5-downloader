@@ -9,6 +9,7 @@ import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
 import { extractIdsFromUrl, loadBookConfig } from "@/hooks/useBookConfig";
 import UrlInput from "./UrlInput";
 import TaskList from "./TaskList";
+import { getAndClearPendingDownloadUrl } from "@/lib/download-storage";
 
 interface DownloadTask {
   id: string;
@@ -58,11 +59,17 @@ export default function FlipDownloaderClient({
   initialUrl?: string;
   autoStart?: boolean;
 }) {
+  // Read pending URL from localStorage IMMEDIATELY (before first render)
+  // This ensures we catch it even on client-side navigation
+  const pendingUrlFromStorage =
+    typeof window !== "undefined" ? getAndClearPendingDownloadUrl() : null;
+
   const [mounted, setMounted] = useState(false);
-  const [urlInput, setUrlInput] = useState("");
+  const [urlInput, setUrlInput] = useState(pendingUrlFromStorage || "");
   const [tasks, setTasks] = useState<DownloadTask[]>([]);
   const searchParams = useSearchParams();
   const initialUrlProcessed = React.useRef(false);
+  const pendingUrlRef = React.useRef<string | null>(pendingUrlFromStorage);
 
   const updateTask = useCallback(
     (id: string, updates: Partial<DownloadTask>) => {
@@ -334,21 +341,29 @@ export default function FlipDownloaderClient({
   );
 
   useEffect(() => {
+    // Priority 1: localStorage pending URL (already read during component init)
+    const pendingUrl = pendingUrlRef.current;
+
+    // Priority 2: URL searchParams (for backward compatibility)
     const urlParam = searchParams.get("url") || initialUrl;
-    if (urlParam && mounted && !initialUrlProcessed.current) {
+
+    // Use pending URL from localStorage if available, otherwise use URL param
+    const finalUrl = pendingUrl || urlParam;
+
+    if (finalUrl && mounted && !initialUrlProcessed.current) {
       initialUrlProcessed.current = true;
-      setUrlInput(urlParam);
+      setUrlInput(finalUrl);
 
       if (autoStart) {
-        setTimeout(() => startDownload(urlParam), 0);
+        setTimeout(() => startDownload(finalUrl), 0);
       } else {
         // Create idle task
-        const ids = extractIds(urlParam);
+        const ids = extractIds(finalUrl);
         if (ids) {
           const taskId = `${Date.now()}`;
           const idleTask: DownloadTask = {
             id: taskId,
-            url: urlParam,
+            url: finalUrl,
             status: "idle",
             progress: 0,
             currentPage: 0,

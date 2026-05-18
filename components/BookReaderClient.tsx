@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useBookConfig } from "@/hooks/useBookConfig";
 import { usePageExtractor } from "@/hooks/usePageExtractor";
 import { isZipUrl } from "@/lib/pdf-handler";
@@ -31,6 +32,7 @@ import {
   isIndexedDBSupported,
 } from "@/lib/reading-progress-db";
 import ShareModal from "@/components/ShareModal";
+import { setPendingDownloadUrl } from "@/lib/download-storage";
 
 export default function BookReaderClient({
   dbId,
@@ -54,6 +56,7 @@ export default function BookReaderClient({
   /** 是否隐藏缩略图切换按钮 */
   hideThumbnailsButton?: boolean;
 }) {
+  const router = useRouter();
   const { config, loading, error } = useBookConfig(id1, id2);
   const pages = config?.pages || [];
   const thumbnails = config?.thumbnails || [];
@@ -822,15 +825,20 @@ export default function BookReaderClient({
           >
             <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-          <Link
-            href={downloadUrl}
-            prefetch={false}
+          <button
+            onClick={() => {
+              // Store URL in localStorage instead of URL params to avoid SSR trigger
+              const bookUrl = `https://fliphtml5.com/${id1}/${id2}/`;
+              setPendingDownloadUrl(bookUrl);
+              // Navigate to homepage without any search params
+              router.push("/");
+            }}
             className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl uppercase tracking-wider shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
           >
             <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">Download PDF</span>
+            <span className="hidden sm:inline">Download as PDF</span>
             <span className="sm:hidden">PDF</span>
-          </Link>
+          </button>
         </div>
       </div>
 

@@ -2,8 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Download, Eye, Share2 } from "lucide-react";
 import ShareModal from "@/components/ShareModal";
+import { setPendingDownloadUrl } from "@/lib/download-storage";
 
 interface BookActionsProps {
   id: string;
@@ -23,8 +25,8 @@ export default function BookActions({
   pageCount,
   thumbnail,
 }: BookActionsProps) {
+  const router = useRouter();
   const bookUrl = `https://fliphtml5.com/${id1}/${id2}`;
-  const downloadUrl = `/?url=${encodeURIComponent(bookUrl)}`;
   const [shareOpen, setShareOpen] = React.useState(false);
 
   // 分享所需的链接：当前页面地址；服务端渲染阶段回退为可预测值
@@ -58,14 +60,18 @@ export default function BookActions({
           <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>Read Online Now</span>
         </Link>
-        <Link
-          href={downloadUrl}
-          prefetch={false}
+        <button
+          onClick={() => {
+            // Store URL in localStorage instead of URL params to avoid SSR trigger
+            setPendingDownloadUrl(bookUrl);
+            // Navigate to homepage without any search params
+            router.push("/");
+          }}
           className="group px-6 sm:px-8 py-3.5 sm:py-4 bg-white border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 shadow-md hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-lg transition-all active:scale-95 text-sm sm:text-base"
         >
           <Download className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>Download as PDF</span>
-        </Link>
+        </button>
         <button
           onClick={() => setShareOpen(true)}
           className="group px-6 sm:px-8 py-3.5 sm:py-4 bg-white border-2 border-[var(--color-border-light)] text-[var(--color-text)] font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 shadow-sm hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-md transition-all active:scale-95 text-sm sm:text-base relative"

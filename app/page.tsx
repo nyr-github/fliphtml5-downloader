@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
-
+export const revalidate = 86400; // Cache for 24 hours
 export default async function FlipDownloader({ searchParams }: PageProps) {
   // Get page from URL search params
   const params = await searchParams;
