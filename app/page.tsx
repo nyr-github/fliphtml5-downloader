@@ -27,12 +27,16 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; [key: string]: string | undefined }>;
 }
 export const revalidate = 86400; // Cache for 24 hours
+
 export default async function FlipDownloader({ searchParams }: PageProps) {
-  // Get page from URL search params
+  // SECURITY: Only whitelist known params to prevent cache poisoning attacks
+  // Attackers might pass random params like ?page=1&random=xyz to create infinite cache entries
   const params = await searchParams;
+
+  // Only extract whitelisted params, ignore everything else
   const page = parseInt(params.page || "1");
   const pageSize = 24;
 
