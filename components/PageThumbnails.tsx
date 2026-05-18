@@ -253,7 +253,6 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
                 fill
                 className="object-cover"
                 referrerPolicy="no-referrer"
-                unoptimized
               />
               {/* Page Number Overlay */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
@@ -354,7 +353,6 @@ export default function PageThumbnails({ id1, id2 }: PageThumbnailsProps) {
                       fill
                       className="object-contain"
                       referrerPolicy="no-referrer"
-                      unoptimized
                       priority
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 70vw"
                     />

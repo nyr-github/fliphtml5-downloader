@@ -86,7 +86,6 @@ export default function ReaderModal({
                     src={task.imageUrls[pageIndex]}
                     alt={`Page ${pageIndex + 1}`}
                     fill
-                    unoptimized={true}
                     className="object-contain"
                     referrerPolicy="no-referrer"
                   />

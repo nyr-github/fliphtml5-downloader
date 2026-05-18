@@ -38,7 +38,6 @@ export default function BookCard({
           src={thumbnailUrl}
           alt={book.title}
           fill
-          unoptimized={true}
           className="object-cover transition-transform duration-700 group-hover:scale-110"
           referrerPolicy="no-referrer"
         />
@@ -76,7 +75,6 @@ export default function BookCard({
             src={thumbnailUrl}
             alt={book.title}
             fill
-            unoptimized={true}
             className="object-cover transition-transform duration-700 group-hover:scale-110"
             referrerPolicy="no-referrer"
           />
@@ -121,7 +119,6 @@ export default function BookCard({
             src={thumbnailUrl}
             alt={book.title}
             fill
-            unoptimized={true}
             className="object-cover transition-transform duration-700 group-hover:scale-110"
             referrerPolicy="no-referrer"
           />

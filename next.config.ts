@@ -8,26 +8,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Allow access to remote image placeholder.
+  // Image optimization disabled - images load directly from source CDN
+  // to avoid Vercel bandwidth charges (76GB+ outgoing traffic)
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-        port: "",
-        pathname: "/**", // This allows any path under the hostname
-      },
-      {
-        protocol: "https",
-        hostname: "online.fliphtml5.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
-    formats: ["image/webp", "image/avif"], // 优化图片格式
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 缓存30天
-    dangerouslyAllowSVG: false,
-    contentDispositionType: "attachment",
+    unoptimized: true, // All images bypass Next.js optimization
   },
   output: "standalone",
   transpilePackages: ["motion"],
