@@ -824,6 +824,7 @@ export default function BookReaderClient({
           </button>
           <Link
             href={downloadUrl}
+            prefetch={false}
             className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl uppercase tracking-wider shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
           >
             <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

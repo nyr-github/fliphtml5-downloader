@@ -223,6 +223,7 @@ export default function Navbar() {
                       <Link
                         key={link.href}
                         href={link.href}
+                        prefetch={false}
                         target={link.external ? "_blank" : "_self"}
                         rel={link.external ? "noopener noreferrer" : undefined}
                         onClick={closeAllDropdowns}

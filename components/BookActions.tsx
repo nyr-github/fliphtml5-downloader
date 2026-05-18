@@ -60,6 +60,7 @@ export default function BookActions({
         </Link>
         <Link
           href={downloadUrl}
+          prefetch={false}
           className="group px-6 sm:px-8 py-3.5 sm:py-4 bg-white border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 shadow-md hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-lg transition-all active:scale-95 text-sm sm:text-base"
         >
           <Download className="w-4 h-4 sm:w-5 sm:h-5" />
