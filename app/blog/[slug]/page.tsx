@@ -30,7 +30,7 @@ export async function generateMetadata({
   const { projectId: urlProjectId } = await searchParams;
 
   // 优先使用URL参数，否则使用环境变量
-  const projectId = urlProjectId || process.env.EXTERNAL_BLOG_PROJECT_ID;
+  const projectId = urlProjectId || process.env.PROJECT_ID;
 
   // 使用统一的获取函数
   const blogContent = await getBlogContent(slug, projectId);
@@ -59,7 +59,7 @@ export default async function BlogPost({ params, searchParams }: Props) {
   const { projectId: urlProjectId } = await searchParams;
 
   // 优先使用URL参数，否则使用环境变量
-  const projectId = urlProjectId || process.env.EXTERNAL_BLOG_PROJECT_ID;
+  const projectId = urlProjectId || process.env.PROJECT_ID;
 
   // 使用统一的获取函数
   const blogContent = await getBlogContent(slug, projectId);

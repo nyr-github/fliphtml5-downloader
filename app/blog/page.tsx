@@ -11,7 +11,7 @@ export default async function BlogList({ searchParams }: Props) {
   const { projectId: urlProjectId, page: pageParam } = await searchParams;
 
   // 优先使用URL参数，否则使用环境变量
-  const projectId = urlProjectId || process.env.EXTERNAL_BLOG_PROJECT_ID;
+  const projectId = urlProjectId || process.env.PROJECT_ID;
   const posts = await getAllBlogs(projectId);
 
   // 计算分页

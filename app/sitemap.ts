@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
-  const projectId = process.env.EXTERNAL_BLOG_PROJECT_ID;
+  const projectId = process.env.PROJECT_ID;
 
   // 静态页面
   const staticPages: MetadataRoute.Sitemap = [
