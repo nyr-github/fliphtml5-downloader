@@ -1,0 +1,20 @@
+name = "fliphtml5-downloader"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 使用 next-on-pages 构建
+[build]
+command = "npx @cloudflare/next-on-pages@1"
+
+# 环境变量配置（需要在Cloudflare Dashboard中实际设置）
+[vars]
+NODE_VERSION = "22"
+
+# Edge 运行时配置
+[placement]
+mode = "smart"
+
+# 如果需要数据库连接，需要配置相应的环境变量
+# DATABASE_URL 应在 Cloudflare Dashboard 中设置 (使用Supabase连接字符串)
+# CRON_SECRET 应在 Cloudflare Dashboard 中设置
+# NEXT_PUBLIC_BASE_URL 应在 Cloudflare Dashboard 中设置

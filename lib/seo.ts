@@ -43,7 +43,7 @@ export async function submitUrlToSearchEngine(
 
     if (!response.ok) {
       console.error(
-        `SEO submission failed for ${description}: ${response.status} ${response.statusText}`,
+        `SEO submission failed for ${url}\t${description}: ${response.status} ${response.statusText}`,
       );
     } else {
       console.log(

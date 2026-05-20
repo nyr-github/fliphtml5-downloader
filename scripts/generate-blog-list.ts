@@ -90,7 +90,14 @@ async function generateBlogList(): Promise<void> {
     for (const blog of newBlogs) {
       const blogUrl = `${baseUrl}/blog/${blog.slug}`;
       console.log(`\n📝 Submitting: ${blog.title}`);
-      await submitUrlToSearchEngine(blogUrl, `blog post "${blog.title}"`);
+      try {
+        await submitUrlToSearchEngine(blogUrl, `blog post "${blog.title}"`);
+      } catch (error) {
+        // SEO提交失败不应阻止构建过程
+        console.warn(
+          `⚠️  SEO submission failed for "${blog.title}": ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     }
 
     console.log(
