@@ -12,14 +12,14 @@ In today's digital workspace, PDF tools have become essential for document manag
 
 ## Quick Comparison Table
 
-| Tool | Best For | Free Tier | Starting Price | Key Strength |
-|------|----------|-----------|----------------|--------------|
-| **PDF.co** | API & Automation | ✅ Limited | Pay-as-you-go | AI-powered parsing |
-| **Smallpdf** | Casual Users | ✅ 2 tasks/day | $10/month | User-friendly UI |
-| **iLovePDF** | Quick Tasks | ✅ Generous | $5/month | Tool variety |
-| **SodaPDF** | All-around Use | ✅ Limited | $9/month | Desktop + Online |
-| **Sejda** | Small Business | ✅ 3 tasks/hour | $7/month | Privacy-focused |
-| **PDF Candy** | Budget Users | ✅ Ad-supported | $4/month | 95+ tools |
+| Tool          | Best For         | Free Tier       | Starting Price | Key Strength       |
+| ------------- | ---------------- | --------------- | -------------- | ------------------ |
+| **PDF.co**    | API & Automation | ✅ Limited      | Pay-as-you-go  | AI-powered parsing |
+| **Smallpdf**  | Casual Users     | ✅ 2 tasks/day  | $10/month      | User-friendly UI   |
+| **iLovePDF**  | Quick Tasks      | ✅ Generous     | $5/month       | Tool variety       |
+| **SodaPDF**   | All-around Use   | ✅ Limited      | $9/month       | Desktop + Online   |
+| **Sejda**     | Small Business   | ✅ 3 tasks/hour | $7/month       | Privacy-focused    |
+| **PDF Candy** | Budget Users     | ✅ Ad-supported | $4/month       | 95+ tools          |
 
 ## Tool Overview
 
@@ -31,6 +31,7 @@ In today's digital workspace, PDF tools have become essential for document manag
 PDF.co is a cloud-based document processing platform offering RESTful APIs for comprehensive PDF operations, from conversion and parsing to AI-powered data extraction.
 
 **Key Features:**
+
 - ✅ **100+ API endpoints** for all PDF operations
 - ✅ **AI Invoice Parser** - automatic data extraction without templates
 - ✅ **Document Parser** - extract fields, tables, barcodes from any document
@@ -41,11 +42,13 @@ PDF.co is a cloud-based document processing platform offering RESTful APIs for c
 - ✅ **Integrations** - Make, Zapier, n8n, and custom workflows
 
 **Pricing:**
+
 - Free tier: Limited credits for testing
 - Pay-as-you-go: Based on API calls
 - Enterprise: Custom pricing
 
 **Pros:**
+
 - 🟢 Most comprehensive API coverage
 - 🟢 AI-powered features lead the industry
 - 🟢 Excellent for automation and developers
@@ -53,6 +56,7 @@ PDF.co is a cloud-based document processing platform offering RESTful APIs for c
 - 🟢 High-quality output
 
 **Cons:**
+
 - 🔴 Requires API knowledge for full potential
 - 🔴 Credit-based system needs monitoring
 - 🔴 Less suitable for one-off casual use
@@ -67,6 +71,7 @@ PDF.co is a cloud-based document processing platform offering RESTful APIs for c
 Smallpdf is one of the most popular online PDF tools, known for its clean interface and ease of use. Perfect for casual users who need quick PDF operations.
 
 **Key Features:**
+
 - ✅ Compress PDF (up to 40% reduction)
 - ✅ Convert PDF to/from Word, Excel, PowerPoint
 - ✅ Merge and split PDFs
@@ -76,15 +81,18 @@ Smallpdf is one of the most popular online PDF tools, known for its clean interf
 - ✅ OCR for scanned documents
 
 **Free Tier Limits:**
+
 - 2 tasks per day
 - File size limit: 5GB
 - Basic features only
 
 **Pricing:**
+
 - Pro: $10/month (billed annually)
 - Teams: Custom pricing
 
 **Pros:**
+
 - 🟢 Extremely intuitive interface
 - 🟢 Mobile-friendly
 - 🟢 Fast processing speed
@@ -92,6 +100,7 @@ Smallpdf is one of the most popular online PDF tools, known for its clean interf
 - 🟢 No registration required for free tier
 
 **Cons:**
+
 - 🔴 Very restrictive free tier
 - 🔴 Limited advanced features
 - 🔴 No API access
@@ -107,6 +116,7 @@ Smallpdf is one of the most popular online PDF tools, known for its clean interf
 iLovePDF offers a comprehensive suite of PDF tools with a generous free tier. Known for its wide range of features and straightforward interface.
 
 **Key Features:**
+
 - ✅ Merge, split, rotate PDFs
 - ✅ Compress PDF files
 - ✅ Convert to/from Office formats
@@ -118,16 +128,19 @@ iLovePDF offers a comprehensive suite of PDF tools with a generous free tier. Kn
 - ✅ PDF to JPG and vice versa
 
 **Free Tier Limits:**
+
 - Multiple tasks per day (varies by tool)
 - File size limit: 100MB (free), 4GB (paid)
 - Ads displayed
 - Some advanced features locked
 
 **Pricing:**
+
 - Premium: $5/month (billed annually)
 - Business: Custom pricing
 
 **Pros:**
+
 - 🟢 Generous free tier
 - 🟢 Wide tool selection (25+ tools)
 - 🟢 Affordable pricing
@@ -135,6 +148,7 @@ iLovePDF offers a comprehensive suite of PDF tools with a generous free tier. Kn
 - 🟢 Good batch processing
 
 **Cons:**
+
 - 🔴 Ads in free version
 - 🔴 Interface can feel cluttered
 - 🔴 Limited customer support on free tier
@@ -150,6 +164,7 @@ iLovePDF offers a comprehensive suite of PDF tools with a generous free tier. Kn
 SodaPDF offers both online and desktop PDF tools, providing flexibility for different workflows. Developed in Canada, it balances professional features with user-friendly design.
 
 **Key Features:**
+
 - ✅ 25+ PDF tools
 - ✅ Full PDF editing (text, images)
 - ✅ OCR text recognition
@@ -160,17 +175,20 @@ SodaPDF offers both online and desktop PDF tools, providing flexibility for diff
 - ✅ Cloud storage integration
 
 **Free Tier Limits:**
+
 - Basic online tools only
 - File size restrictions
 - No batch processing
 - Limited conversions
 
 **Pricing:**
+
 - Online: $9/month
 - Desktop: $99 one-time or subscription
 - Business: Custom pricing
 
 **Pros:**
+
 - 🟢 Both online and desktop versions
 - 🟢 Good balance of features
 - 🟢 Intuitive interface
@@ -178,6 +196,7 @@ SodaPDF offers both online and desktop PDF tools, providing flexibility for diff
 - 🟢 Perpetual license option
 
 **Cons:**
+
 - 🔴 OCR requires subscription
 - 🔴 Desktop version Windows-only
 - 🔴 Some features limited online
@@ -193,6 +212,7 @@ SodaPDF offers both online and desktop PDF tools, providing flexibility for diff
 Sejda focuses on privacy and security, processing files locally when possible and automatically deleting uploaded files after 2 hours. Offers both online and desktop versions.
 
 **Key Features:**
+
 - ✅ 30+ PDF tools
 - ✅ Edit text with font matching
 - ✅ Fill and create forms
@@ -203,17 +223,20 @@ Sejda focuses on privacy and security, processing files locally when possible an
 - ✅ Redact sensitive content
 
 **Free Tier Limits:**
+
 - 3 tasks per hour
 - 50MB file size limit
 - 200 pages max
 - Documents deleted after 2 hours
 
 **Pricing:**
+
 - Online: $7/month (billed annually)
 - Desktop: $63/year
 - Business: Custom pricing
 
 **Pros:**
+
 - 🟢 Strong privacy protection
 - 🟢 Intelligent font matching for edits
 - 🟢 Clean, professional interface
@@ -221,6 +244,7 @@ Sejda focuses on privacy and security, processing files locally when possible an
 - 🟢 Both online and desktop options
 
 **Cons:**
+
 - 🔴 Free tier has strict limits
 - 🔴 No API access
 - 🔴 Limited enterprise features
@@ -236,6 +260,7 @@ Sejda focuses on privacy and security, processing files locally when possible an
 PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by ads. Perfect for users who need variety without breaking the bank.
 
 **Key Features:**
+
 - ✅ 95+ PDF tools (largest selection)
 - ✅ Convert between 25+ formats
 - ✅ Edit PDF content
@@ -246,6 +271,7 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 - ✅ E-signatures
 
 **Free Tier Limits:**
+
 - All tools available
 - Ad-supported
 - File size limits
@@ -253,11 +279,13 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 - One task at a time
 
 **Pricing:**
+
 - Plus: $4/month (billed annually)
 - Premium: $7/month
 - No ads + faster processing
 
 **Pros:**
+
 - 🟢 Largest tool selection
 - 🟢 Most affordable paid plans
 - 🟢 All features in free tier
@@ -265,6 +293,7 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 - 🟢 No registration required
 
 **Cons:**
+
 - 🔴 Heavy ads in free version
 - 🔴 Slower processing speeds
 - 🔴 Quality varies across tools
@@ -279,14 +308,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 1. PDF Conversion Quality
 
-| Tool | To PDF | From PDF | Format Support | Quality |
-|------|--------|----------|----------------|---------|
-| PDF.co | ✅ Excellent | ✅ Excellent | 50+ formats | ⭐⭐⭐⭐⭐ |
-| Smallpdf | ✅ Very Good | ✅ Very Good | 15+ formats | ⭐⭐⭐⭐ |
-| iLovePDF | ✅ Good | ✅ Good | 20+ formats | ⭐⭐⭐⭐ |
-| SodaPDF | ✅ Very Good | ✅ Very Good | 25+ formats | ⭐⭐⭐⭐ |
-| Sejda | ✅ Good | ✅ Good | 15+ formats | ⭐⭐⭐⭐ |
-| PDF Candy | ✅ Good | ✅ Good | 25+ formats | ⭐⭐⭐ |
+| Tool      | To PDF       | From PDF     | Format Support | Quality    |
+| --------- | ------------ | ------------ | -------------- | ---------- |
+| PDF.co    | ✅ Excellent | ✅ Excellent | 50+ formats    | ⭐⭐⭐⭐⭐ |
+| Smallpdf  | ✅ Very Good | ✅ Very Good | 15+ formats    | ⭐⭐⭐⭐   |
+| iLovePDF  | ✅ Good      | ✅ Good      | 20+ formats    | ⭐⭐⭐⭐   |
+| SodaPDF   | ✅ Very Good | ✅ Very Good | 25+ formats    | ⭐⭐⭐⭐   |
+| Sejda     | ✅ Good      | ✅ Good      | 15+ formats    | ⭐⭐⭐⭐   |
+| PDF Candy | ✅ Good      | ✅ Good      | 25+ formats    | ⭐⭐⭐     |
 
 **Winner: PDF.co** - Superior conversion engine with AI optimization
 
@@ -294,14 +323,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 2. OCR Capabilities
 
-| Tool | OCR Quality | Language Support | Speed | Searchable PDF |
-|------|-------------|------------------|-------|----------------|
-| PDF.co | ⭐⭐⭐⭐⭐ | 100+ languages | Fast | ✅ Yes |
-| Smallpdf | ⭐⭐⭐⭐ | 25+ languages | Medium | ✅ Yes |
-| iLovePDF | ⭐⭐⭐ | 10+ languages | Slow | ✅ Yes |
-| SodaPDF | ⭐⭐⭐⭐ | 30+ languages | Medium | ✅ Yes |
-| Sejda | ⭐⭐⭐ | 15+ languages | Medium | ✅ Yes |
-| PDF Candy | ⭐⭐⭐ | 10+ languages | Slow | ✅ Yes |
+| Tool      | OCR Quality | Language Support | Speed  | Searchable PDF |
+| --------- | ----------- | ---------------- | ------ | -------------- |
+| PDF.co    | ⭐⭐⭐⭐⭐  | 100+ languages   | Fast   | ✅ Yes         |
+| Smallpdf  | ⭐⭐⭐⭐    | 25+ languages    | Medium | ✅ Yes         |
+| iLovePDF  | ⭐⭐⭐      | 10+ languages    | Slow   | ✅ Yes         |
+| SodaPDF   | ⭐⭐⭐⭐    | 30+ languages    | Medium | ✅ Yes         |
+| Sejda     | ⭐⭐⭐      | 15+ languages    | Medium | ✅ Yes         |
+| PDF Candy | ⭐⭐⭐      | 10+ languages    | Slow   | ✅ Yes         |
 
 **Winner: PDF.co** - Best-in-class OCR with AI-powered accuracy
 
@@ -309,14 +338,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 3. File Compression
 
-| Tool | Compression Ratio | Quality Retention | Batch Processing | Custom Settings |
-|------|-------------------|-------------------|------------------|-----------------|
-| PDF.co | Up to 90% | ⭐⭐⭐⭐⭐ | ✅ Yes | ✅ Advanced |
-| Smallpdf | Up to 40% | ⭐⭐⭐⭐ | ❌ No | ⚠️ Basic |
-| iLovePDF | Up to 50% | ⭐⭐⭐⭐ | ✅ Yes | ⚠️ Basic |
-| SodaPDF | Up to 60% | ⭐⭐⭐⭐ | ✅ Desktop | ✅ Advanced |
-| Sejda | Up to 45% | ⭐⭐⭐⭐ | ❌ No | ⚠️ Basic |
-| PDF Candy | Up to 50% | ⭐⭐⭐ | ✅ Yes | ❌ No |
+| Tool      | Compression Ratio | Quality Retention | Batch Processing | Custom Settings |
+| --------- | ----------------- | ----------------- | ---------------- | --------------- |
+| PDF.co    | Up to 90%         | ⭐⭐⭐⭐⭐        | ✅ Yes           | ✅ Advanced     |
+| Smallpdf  | Up to 40%         | ⭐⭐⭐⭐          | ❌ No            | ⚠️ Basic        |
+| iLovePDF  | Up to 50%         | ⭐⭐⭐⭐          | ✅ Yes           | ⚠️ Basic        |
+| SodaPDF   | Up to 60%         | ⭐⭐⭐⭐          | ✅ Desktop       | ✅ Advanced     |
+| Sejda     | Up to 45%         | ⭐⭐⭐⭐          | ❌ No            | ⚠️ Basic        |
+| PDF Candy | Up to 50%         | ⭐⭐⭐            | ✅ Yes           | ❌ No           |
 
 **Winner: PDF.co** - Superior compression with quality control
 
@@ -324,14 +353,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 4. API & Automation
 
-| Tool | REST API | Webhooks | Integrations | SDK Support | Documentation |
-|------|----------|----------|--------------|-------------|---------------|
-| PDF.co | ✅ Full | ✅ Yes | Make, Zapier, n8n | ✅ Multiple | ⭐⭐⭐⭐⭐ |
-| Smallpdf | ❌ No | ❌ No | ❌ No | ❌ No | N/A |
-| iLovePDF | ❌ No | ❌ No | ❌ No | ❌ No | N/A |
-| SodaPDF | ⚠️ Limited | ❌ No | ❌ No | ❌ No | ⚠️ Basic |
-| Sejda | ❌ No | ❌ No | ❌ No | ❌ No | N/A |
-| PDF Candy | ❌ No | ❌ No | ❌ No | ❌ No | N/A |
+| Tool      | REST API   | Webhooks | Integrations      | SDK Support | Documentation |
+| --------- | ---------- | -------- | ----------------- | ----------- | ------------- |
+| PDF.co    | ✅ Full    | ✅ Yes   | Make, Zapier, n8n | ✅ Multiple | ⭐⭐⭐⭐⭐    |
+| Smallpdf  | ❌ No      | ❌ No    | ❌ No             | ❌ No       | N/A           |
+| iLovePDF  | ❌ No      | ❌ No    | ❌ No             | ❌ No       | N/A           |
+| SodaPDF   | ⚠️ Limited | ❌ No    | ❌ No             | ❌ No       | ⚠️ Basic      |
+| Sejda     | ❌ No      | ❌ No    | ❌ No             | ❌ No       | N/A           |
+| PDF Candy | ❌ No      | ❌ No    | ❌ No             | ❌ No       | N/A           |
 
 **Winner: PDF.co** - Only tool with comprehensive API ecosystem
 
@@ -339,14 +368,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 5. AI-Powered Features
 
-| Tool | AI Parsing | Smart Extraction | Auto-Classification | Data Intelligence |
-|------|------------|------------------|---------------------|-------------------|
-| PDF.co | ✅ Invoice Parser | ✅ Document Parser | ✅ Classifier | ✅ Advanced |
-| Smallpdf | ❌ No | ❌ No | ❌ No | ❌ No |
-| iLovePDF | ❌ No | ❌ No | ❌ No | ❌ No |
-| SodaPDF | ❌ No | ❌ No | ❌ No | ❌ No |
-| Sejda | ❌ No | ❌ No | ❌ No | ❌ No |
-| PDF Candy | ❌ No | ❌ No | ❌ No | ❌ No |
+| Tool      | AI Parsing        | Smart Extraction   | Auto-Classification | Data Intelligence |
+| --------- | ----------------- | ------------------ | ------------------- | ----------------- |
+| PDF.co    | ✅ Invoice Parser | ✅ Document Parser | ✅ Classifier       | ✅ Advanced       |
+| Smallpdf  | ❌ No             | ❌ No              | ❌ No               | ❌ No             |
+| iLovePDF  | ❌ No             | ❌ No              | ❌ No               | ❌ No             |
+| SodaPDF   | ❌ No             | ❌ No              | ❌ No               | ❌ No             |
+| Sejda     | ❌ No             | ❌ No              | ❌ No               | ❌ No             |
+| PDF Candy | ❌ No             | ❌ No              | ❌ No               | ❌ No             |
 
 **Winner: PDF.co** - Industry-leading AI capabilities
 
@@ -354,14 +383,14 @@ PDF Candy offers an impressive 95+ PDF tools with a freemium model supported by 
 
 ### 6. Privacy & Security
 
-| Tool | File Encryption | Auto-Delete | GDPR Compliance | Data Sharing |
-|------|-----------------|-------------|-----------------|--------------|
-| PDF.co | ✅ Yes | ✅ 1 hour | ✅ Yes | ❌ Never |
-| Smallpdf | ✅ Yes | ✅ 1 hour | ✅ Yes | ⚠️ Analytics |
-| iLovePDF | ✅ Yes | ✅ 2 hours | ✅ Yes | ⚠️ Analytics |
-| SodaPDF | ✅ Yes | ⚠️ Varies | ✅ Yes | ❌ Never |
-| Sejda | ✅ Yes | ✅ 2 hours | ✅ Yes | ❌ Never |
-| PDF Candy | ⚠️ Basic | ✅ 1 hour | ⚠️ Partial | ⚠️ Ad tracking |
+| Tool      | File Encryption | Auto-Delete | GDPR Compliance | Data Sharing   |
+| --------- | --------------- | ----------- | --------------- | -------------- |
+| PDF.co    | ✅ Yes          | ✅ 1 hour   | ✅ Yes          | ❌ Never       |
+| Smallpdf  | ✅ Yes          | ✅ 1 hour   | ✅ Yes          | ⚠️ Analytics   |
+| iLovePDF  | ✅ Yes          | ✅ 2 hours  | ✅ Yes          | ⚠️ Analytics   |
+| SodaPDF   | ✅ Yes          | ⚠️ Varies   | ✅ Yes          | ❌ Never       |
+| Sejda     | ✅ Yes          | ✅ 2 hours  | ✅ Yes          | ❌ Never       |
+| PDF Candy | ⚠️ Basic        | ✅ 1 hour   | ⚠️ Partial      | ⚠️ Ad tracking |
 
 **Winner: Sejda & PDF.co (tie)** - Strong privacy protections
 
@@ -402,6 +431,7 @@ PDF Candy:     $0.04-0.07 per task
 **Recommended: PDF.co**
 
 **Why:**
+
 - Complete API for integration
 - AI-powered document parsing
 - Automation platform integrations
@@ -409,6 +439,7 @@ PDF Candy:     $0.04-0.07 per task
 - Enterprise-grade security
 
 **Example Workflow:**
+
 ```
 Invoice Received → PDF.co AI Parser → Extract Data → Save to ERP → Auto-Approve
 ```
@@ -422,6 +453,7 @@ Invoice Received → PDF.co AI Parser → Extract Data → Save to ERP → Auto-
 **Recommended: PDF.co**
 
 **Why:**
+
 - RESTful API with 100+ endpoints
 - Comprehensive documentation
 - Multiple SDK support
@@ -429,16 +461,17 @@ Invoice Received → PDF.co AI Parser → Extract Data → Save to ERP → Auto-
 - Async processing for large files
 
 **Code Example:**
+
 ```javascript
 // PDF.co API - Convert HTML to PDF
-const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
-  method: 'POST',
+const response = await fetch("https://api.pdf.co/v1/pdf/convert/from/html", {
+  method: "POST",
   headers: {
-    'x-api-key': 'YOUR_API_KEY'
+    "x-api-key": "YOUR_API_KEY",
   },
   body: JSON.stringify({
-    html: '<h1>Report</h1><p>Generated automatically</p>'
-  })
+    html: "<h1>Report</h1><p>Generated automatically</p>",
+  }),
 });
 ```
 
@@ -449,6 +482,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 **Recommended: iLovePDF or PDF Candy**
 
 **Why:**
+
 - Generous free tiers
 - No registration required
 - Easy to use
@@ -456,6 +490,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 - All essential features
 
 **Best Choice:**
+
 - **iLovePDF**: Better quality, fewer ads
 - **PDF Candy**: More tools, cheaper
 
@@ -466,6 +501,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 **Recommended: Sejda or SodaPDF**
 
 **Why:**
+
 - Good balance of features and price
 - Privacy-focused processing
 - Professional output quality
@@ -473,6 +509,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 - Desktop + online options
 
 **Best Choice:**
+
 - **Sejda**: Privacy-first, clean interface
 - **SodaPDF**: More features, desktop available
 
@@ -483,6 +520,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 **Recommended: Sejda**
 
 **Why:**
+
 - Auto-delete after 2 hours
 - Local processing option
 - No data sharing
@@ -496,6 +534,7 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 **Recommended: Smallpdf**
 
 **Why:**
+
 - Fastest processing
 - Simplest interface
 - No learning curve
@@ -508,14 +547,14 @@ const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
 
 Based on testing with a 50-page PDF (15MB):
 
-| Tool | Upload Time | Processing Time | Download Time | Total |
-|------|-------------|-----------------|---------------|-------|
-| PDF.co | 2s | 8s | 3s | **13s** |
-| Smallpdf | 1s | 5s | 2s | **8s** |
-| iLovePDF | 2s | 7s | 3s | **12s** |
-| SodaPDF | 2s | 10s | 3s | **15s** |
-| Sejda | 3s | 9s | 3s | **15s** |
-| PDF Candy | 3s | 12s | 4s | **19s** |
+| Tool      | Upload Time | Processing Time | Download Time | Total   |
+| --------- | ----------- | --------------- | ------------- | ------- |
+| PDF.co    | 2s          | 8s              | 3s            | **13s** |
+| Smallpdf  | 1s          | 5s              | 2s            | **8s**  |
+| iLovePDF  | 2s          | 7s              | 3s            | **12s** |
+| SodaPDF   | 2s          | 10s             | 3s            | **15s** |
+| Sejda     | 3s          | 9s              | 3s            | **15s** |
+| PDF Candy | 3s          | 12s             | 4s            | **19s** |
 
 **Speed Winner: Smallpdf** (but PDF.co offers better quality)
 
@@ -554,6 +593,7 @@ Based on testing with a 50-page PDF (15MB):
 ### Q: How do I choose the right PDF tool?
 
 **A:** Consider your needs:
+
 - **Automation/API**: PDF.co
 - **Casual use**: iLovePDF or Smallpdf
 - **Privacy**: Sejda
@@ -590,17 +630,17 @@ Based on testing with a 50-page PDF (15MB):
 
 ## Comparison Matrix at a Glance
 
-| Feature | PDF.co | Smallpdf | iLovePDF | SodaPDF | Sejda | PDF Candy |
-|---------|--------|----------|----------|---------|-------|-----------|
-| **Free Tier** | ✅ Limited | ✅ 2/day | ✅ Generous | ✅ Limited | ✅ 3/hr | ✅ All tools |
-| **API Access** | ✅ Full | ❌ | ❌ | ⚠️ Limited | ❌ | ❌ |
-| **AI Features** | ✅ Advanced | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **OCR** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Mobile App** | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Batch Process** | ✅ | ❌ | ✅ | ✅ Desktop | ❌ | ✅ |
-| **Integrations** | ✅ Multiple | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Starting Price** | Pay-per-use | $10/mo | $5/mo | $9/mo | $7/mo | $4/mo |
-| **Best For** | Business/Automation | Casual | Freelancers | SMB | Privacy | Budget |
+| Feature            | PDF.co              | Smallpdf | iLovePDF    | SodaPDF    | Sejda   | PDF Candy    |
+| ------------------ | ------------------- | -------- | ----------- | ---------- | ------- | ------------ |
+| **Free Tier**      | ✅ Limited          | ✅ 2/day | ✅ Generous | ✅ Limited | ✅ 3/hr | ✅ All tools |
+| **API Access**     | ✅ Full             | ❌       | ❌          | ⚠️ Limited | ❌      | ❌           |
+| **AI Features**    | ✅ Advanced         | ❌       | ❌          | ❌         | ❌      | ❌           |
+| **OCR**            | ⭐⭐⭐⭐⭐          | ⭐⭐⭐⭐ | ⭐⭐⭐      | ⭐⭐⭐⭐   | ⭐⭐⭐  | ⭐⭐⭐       |
+| **Mobile App**     | ✅                  | ✅       | ✅          | ✅         | ✅      | ❌           |
+| **Batch Process**  | ✅                  | ❌       | ✅          | ✅ Desktop | ❌      | ✅           |
+| **Integrations**   | ✅ Multiple         | ❌       | ❌          | ❌         | ❌      | ❌           |
+| **Starting Price** | Pay-per-use         | $10/mo   | $5/mo       | $9/mo      | $7/mo   | $4/mo        |
+| **Best For**       | Business/Automation | Casual   | Freelancers | SMB        | Privacy | Budget       |
 
 ---
 

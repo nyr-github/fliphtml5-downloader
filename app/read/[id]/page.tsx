@@ -124,18 +124,28 @@ export default async function ReaderPage({
           title={book.title}
           from={from}
         />
-        
+
         {/* PDF.co Promotion Banner */}
         <div className="fixed bottom-0 left-0 right-0 z-50 p-2 sm:p-3 bg-gradient-to-r from-[#e85d26]/95 to-[#f4a261]/95 backdrop-blur-md border-t border-[#f4a261]/40">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
             <div className="flex-1 min-w-0">
               <p className="text-white text-xs sm:text-sm font-medium truncate">
-                <span className="hidden sm:inline">Need PDF OCR or conversion? Try </span>
+                <span className="hidden sm:inline">
+                  Need PDF OCR or conversion? Try{" "}
+                </span>
                 <span className="sm:hidden">Try </span>
-                <a href="https://app.pdf.co/?via=aivaded" target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-[#fef08a]">
+                <a
+                  href="https://app.pdf.co/?via=aivaded"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold underline hover:text-[#fef08a]"
+                >
                   PDF.co
                 </a>
-                <span className="hidden sm:inline"> for advanced document tools</span>
+                <span className="hidden sm:inline">
+                  {" "}
+                  for advanced document tools
+                </span>
               </p>
             </div>
             <a

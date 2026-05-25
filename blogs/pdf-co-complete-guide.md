@@ -23,6 +23,7 @@ PDF.co is a cloud-based document processing platform that offers RESTful APIs fo
 PDF.co excels at converting between multiple document formats:
 
 **To PDF:**
+
 - HTML to PDF conversion
 - Excel (XLS/XLSX) to PDF
 - Word (DOC/DOCX) to PDF
@@ -32,6 +33,7 @@ PDF.co excels at converting between multiple document formats:
 - URLs to PDF
 
 **From PDF:**
+
 - PDF to various formats
 - Extract text and data from PDFs
 - Convert PDF pages to images
@@ -46,6 +48,7 @@ One of PDF.co's standout features is its AI Invoice Parser:
 - **Time Saving**: Process invoices faster than manual methods
 
 The Document Parser can also extract:
+
 - Fields and values from forms
 - Tables and structured data
 - Barcodes from documents
@@ -99,16 +102,16 @@ PDF.co provides straightforward RESTful APIs:
 
 ```javascript
 // Example: Convert HTML to PDF
-const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
-  method: 'POST',
+const response = await fetch("https://api.pdf.co/v1/pdf/convert/from/html", {
+  method: "POST",
   headers: {
-    'x-api-key': 'YOUR_API_KEY',
-    'Content-Type': 'application/json'
+    "x-api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    html: '<h1>Hello World</h1><p>This is a test PDF</p>',
-    name: 'output.pdf'
-  })
+    html: "<h1>Hello World</h1><p>This is a test PDF</p>",
+    name: "output.pdf",
+  }),
 });
 ```
 
@@ -128,12 +131,14 @@ PDF.co integrates with popular automation platforms:
 PDF.co supports both processing modes:
 
 ### Synchronous Mode
+
 - Immediate response
 - Best for quick operations
 - Suitable for small files
 - Simple implementation
 
 ### Asynchronous Mode
+
 - Background job processing
 - Ideal for large files or complex operations
 - Use Job Check API to monitor progress
@@ -197,26 +202,31 @@ PDF.co operates on a credit-based system:
 Check your account balance:
 
 ```javascript
-const balance = await fetch('https://api.pdf.co/v1/account/balance', {
-  headers: { 'x-api-key': 'YOUR_API_KEY' }
+const balance = await fetch("https://api.pdf.co/v1/account/balance", {
+  headers: { "x-api-key": "YOUR_API_KEY" },
 });
 ```
 
 ## Best Practices
 
 ### 1. Use Async for Large Files
+
 For files over 10MB or complex operations, always use async mode to avoid timeouts.
 
 ### 2. Implement Error Handling
+
 Check response codes and handle errors gracefully in your applications.
 
 ### 3. Manage Temporary Files
+
 Remember that temporary files expire after 1 hour. Download or process them promptly.
 
 ### 4. Monitor Credit Usage
+
 Regularly check your balance to avoid service interruptions.
 
 ### 5. Leverage Templates
+
 For recurring document structures, use templates to improve efficiency and consistency.
 
 ## Advanced Features
@@ -224,6 +234,7 @@ For recurring document structures, use templates to improve efficiency and consi
 ### Document Classifier
 
 Automatically categorize documents based on content:
+
 - Sort incoming documents by type
 - Apply appropriate processing templates
 - Route to correct workflows
@@ -231,6 +242,7 @@ Automatically categorize documents based on content:
 ### Email Processing
 
 Extract and process email data:
+
 - Decode email messages
 - Extract attachments
 - Convert emails to PDF
@@ -239,6 +251,7 @@ Extract and process email data:
 ### HTML Templates
 
 Create reusable PDF generation templates:
+
 - Store templates in PDF.co
 - Use variables for dynamic content
 - Generate consistent branded documents
