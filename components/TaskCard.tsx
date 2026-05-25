@@ -72,7 +72,7 @@ export default function TaskCard({
       transition={{ duration: 0.3 }}
       className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 border border-[var(--color-border-light)] shadow-sm relative overflow-hidden group hover-lift"
     >
-      <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+      <div className="flex flex-col gap-4">
         {/* Left: Task Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3 sm:gap-4 mb-3">
@@ -117,58 +117,129 @@ export default function TaskCard({
           <ProgressBar progress={task.progress} status={task.status} />
         </div>
 
-        {/* Right: Action Buttons (Desktop) */}
+        {/* Right: Action Buttons */}
         {task.status === "idle" && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 lg:flex-shrink-0 lg:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
             <button
               onClick={() => onStartDownload(task.url, task.id)}
-              className="flex-1 lg:flex-initial min-w-[150px] sm:min-w-[160px] px-4 sm:px-6 py-3 sm:py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 hover:shadow-lg active:scale-95 transition-all"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-lg active:scale-95 transition-all"
             >
               <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-              Start PDF Conversion
+              <span className="hidden sm:inline">Start PDF Conversion</span>
+              <span className="sm:hidden">Convert</span>
             </button>
             <Link
               href={`/read/${extractIds(task.url)?.id1}_${extractIds(task.url)?.id2}`}
               target="_blank"
-              className="flex-1 lg:flex-initial min-w-[150px] sm:min-w-[140px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
             >
               <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-              Read Online
+              <span className="hidden sm:inline">Read Online</span>
+              <span className="sm:hidden">Read</span>
             </Link>
+            <a
+              href="https://app.pdf.co/?via=aivaded"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[#e85d26] to-[#f4a261] hover:from-[#c94a1a] hover:to-[#e85d26] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all"
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span className="hidden sm:inline">PDF OCR</span>
+              <span className="sm:hidden">OCR</span>
+            </a>
           </div>
         )}
 
         {(task.status === "processing" || task.status === "loading") &&
           task.canReadOnline && (
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 lg:flex-shrink-0 lg:w-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <Link
                 href={`/read/${task.id1}_${task.id2}`}
                 target="_blank"
-                className="flex-1 lg:flex-initial min-w-[150px] sm:min-w-[140px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
+                className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
               >
                 <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-                Read Online
+                <span className="hidden sm:inline">Read Online</span>
+                <span className="sm:hidden">Read</span>
               </Link>
+              <a
+                href="https://app.pdf.co/?via=aivaded"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[#e85d26] to-[#f4a261] hover:from-[#c94a1a] hover:to-[#e85d26] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all"
+              >
+                <svg
+                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span className="hidden sm:inline">PDF OCR</span>
+                <span className="sm:hidden">OCR</span>
+              </a>
             </div>
           )}
 
         {task.status === "done" && (
-          <div className="flex  items-stretch sm:items-center gap-2 sm:gap-3 lg:flex-shrink-0 lg:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
             <button
               onClick={handleDownloadPdf}
-              className="flex-1 lg:flex-initial min-w-[120px] sm:min-w-[130px] px-4 sm:px-6 py-3 sm:py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-lg active:scale-95 transition-all"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-lg active:scale-95 transition-all"
             >
-              <Download className="w-4 h-4" />
-              Download PDF
+              <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Download PDF</span>
+              <span className="sm:hidden">Download</span>
             </button>
             <Link
               href={`/read/${task.id1}_${task.id2}`}
               target="_blank"
-              className="flex-1 lg:flex-initial min-w-[120px] sm:min-w-[120px] px-4 sm:px-6 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-white border-2 border-[var(--color-border)] text-[var(--color-secondary)] text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:border-[var(--color-secondary)] hover:shadow-md active:scale-95 transition-all"
             >
-              <Eye className="w-4 h-4" />
-              Read Online
+              <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Read Online</span>
+              <span className="sm:hidden">Read</span>
             </Link>
+            <a
+              href="https://app.pdf.co/?via=aivaded"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[#e85d26] to-[#f4a261] hover:from-[#c94a1a] hover:to-[#e85d26] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all"
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span className="hidden sm:inline">PDF OCR</span>
+              <span className="sm:hidden">OCR</span>
+            </a>
           </div>
         )}
       </div>

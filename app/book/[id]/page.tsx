@@ -248,6 +248,36 @@ export default async function BookDetailsPage({
                   pageCount={book.pageCount}
                   thumbnail={thumbnailFull}
                 />
+                
+                {/* PDF.co Promotion Card */}
+                <div className="mt-6 p-4 sm:p-5 bg-gradient-to-r from-[#fff5f0] to-[#fef3e8] border border-[#f5d5c0] rounded-xl sm:rounded-2xl shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#e85d26] to-[#f4a261] rounded-lg sm:rounded-xl flex items-center justify-center shadow-md">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)] mb-1">
+                        Need PDF OCR or Format Conversion?
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mb-3">
+                        Try <a href="https://app.pdf.co/?via=aivaded" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#e85d26] hover:text-[#c94a1a] hover:underline">PDF.co</a> for advanced OCR recognition, PDF to Word/Excel conversion, and more powerful document processing tools.
+                      </p>
+                      <a
+                        href="https://app.pdf.co/?via=aivaded"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#e85d26] to-[#f4a261] hover:from-[#c94a1a] hover:to-[#e85d26] text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                      >
+                        <span>Try PDF.co Free</span>
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Source Info - More compact on mobile */}
