@@ -73,7 +73,7 @@ export function getLocalBlogs(): BlogPost[] {
 export async function getExternalBlogs(projectId: string): Promise<BlogPost[]> {
   try {
     const apiUrl = `https://plausible.aivaded.com/api/blogs/${projectId}`;
-    const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // 缓存1小时
+    const response = await fetch(apiUrl); // 缓存1小时
 
     if (!response.ok) {
       console.warn(`⚠️ Failed to fetch external blogs: ${response.status}`);

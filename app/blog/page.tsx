@@ -7,11 +7,14 @@ interface Props {
 
 const POSTS_PER_PAGE = 20;
 
+// ISR缓存配置：1天(86400秒)
+export const revalidate = 86400;
+
 export default async function BlogList({ searchParams }: Props) {
-  const { projectId: urlProjectId, page: pageParam } = await searchParams;
+  const { page: pageParam } = await searchParams;
 
   // 优先使用URL参数，否则使用环境变量
-  const projectId = urlProjectId || process.env.PROJECT_ID;
+  const projectId = process.env.PROJECT_ID;
   const posts = await getAllBlogs(projectId);
 
   // 计算分页

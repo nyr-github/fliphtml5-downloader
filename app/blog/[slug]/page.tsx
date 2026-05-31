@@ -53,7 +53,7 @@ export async function generateMetadata({
 
   return { title: "文章未找到" };
 }
-
+export const revalidate = 864000;
 export default async function BlogPost({ params, searchParams }: Props) {
   const { slug } = await params;
   const { projectId: urlProjectId } = await searchParams;
