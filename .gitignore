@@ -5,3 +5,13 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Cloudflare Workers / OpenNext
+.open-next/
+.wrangler/
+cloudflare-env.d.ts
+.dev.vars
+.tmp-opennext-patch/
+
+# Postgres -> D1 迁移脚本的导出产物（含业务数据，不提交到仓库）
+.tmp-migrate/

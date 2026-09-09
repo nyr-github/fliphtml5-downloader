@@ -1,0 +1,10 @@
+# 本地 preview / wrangler dev 使用的变量。复制为 .dev.vars 后填写真实值。
+# 生产环境变量/机密通过 wrangler secret put 或 Dashboard 设置，不在此文件。
+NEXTJS_ENV=development
+
+# 本地 D1 预览时如需机密/URL 变量，在此补充（不要提交真实值）：
+# 定时任务(cron)需要 CRON_SECRET；/api/cron/daily-stats 强依赖它，否则返回 500。
+# 生产环境用 `wrangler secret put CRON_SECRET` 注入。
+# CRON_SECRET=
+# DISCORD_WEBHOOK_URL=
+# SEO_SUBMIT_URL=

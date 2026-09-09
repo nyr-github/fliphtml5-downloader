@@ -3,7 +3,7 @@
 // 加载环境变量
 import "dotenv/config";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/postgres";
 import { books } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 
@@ -44,7 +44,7 @@ async function checkTags() {
       .where(sql`cardinality(${books.tags}) > 0`)
       .limit(5);
 
-    sampleBooks.forEach((book, i) => {
+    sampleBooks.forEach((book: { id: string; title: string; tags: string[] | null }, i: number) => {
       console.log(`${i + 1}. ${book.title}`);
       console.log(`   标签: ${(book.tags as string[])?.join(", ") || "无"}`);
     });

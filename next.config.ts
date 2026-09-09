@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, // All images bypass Next.js optimization
   },
+  // Cloudflare Workers 无法加载原生 sharp 二进制；将其排除出 server bundle。
+  // 对 Vercel/VPS 无副作用（未安装 sharp 时该项被忽略）。
+  serverExternalPackages: ["sharp"],
   output: "standalone",
   transpilePackages: ["motion"],
   // 性能优化

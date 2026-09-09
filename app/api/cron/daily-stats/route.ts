@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { books } from "@/lib/db/schema";
-import { sql } from "drizzle-orm";
+import { getBooksRepository } from "@/lib/db";
 
 // 设置此API路由为动态渲染
 export const dynamic = "force-dynamic";
@@ -41,14 +39,10 @@ export async function GET(req: NextRequest) {
     yesterdayEnd.setHours(23, 59, 59, 999);
 
     // 查询昨天新增的书本数量
-    const result = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(books)
-      .where(
-        sql`${books.createdAt} >= ${yesterday.toISOString()} AND ${books.createdAt} <= ${yesterdayEnd.toISOString()}`,
-      );
-
-    const newBooksCount = result[0]?.count || 0;
+    const newBooksCount = await getBooksRepository().countBooksCreatedBetween(
+      yesterday,
+      yesterdayEnd,
+    );
 
     // 构建消息
 

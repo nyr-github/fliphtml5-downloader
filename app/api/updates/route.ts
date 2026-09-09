@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { books } from "@/lib/db/schema";
-import { gte, lte, desc, and } from "drizzle-orm";
+import { getBooksRepository } from "@/lib/db";
 
 interface UpdateRecord {
   id: string;
@@ -54,13 +52,10 @@ export async function GET(request: NextRequest) {
     endOfDay.setHours(23, 59, 59, 999);
 
     // Query books added on the specified date
-    const records = await db
-      .select()
-      .from(books)
-      .where(
-        and(gte(books.createdAt, startOfDay), lte(books.createdAt, endOfDay)),
-      )
-      .orderBy(desc(books.createdAt));
+    const records = await getBooksRepository().getBooksCreatedBetween(
+      startOfDay,
+      endOfDay,
+    );
 
     // Transform response
     const updates: UpdateRecord[] = records.map((record) => ({

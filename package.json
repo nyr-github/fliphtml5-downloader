@@ -11,12 +11,24 @@
     "db:push": "drizzle-kit push",
     "generate-blog-list": "tsx scripts/generate-blog-list.ts",
     "tag-books": "tsx scripts/tag-books-cli.ts",
-    "tag-books:dry-run": "tsx scripts/tag-books-cli.ts --dry-run"
+    "tag-books:dry-run": "tsx scripts/tag-books-cli.ts --dry-run",
+    "preview": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "db:d1:migrate:local": "wrangler d1 migrations apply flipbook-db --local",
+    "db:d1:migrate:remote": "wrangler d1 migrations apply flipbook-db --remote",
+    "migrate:pg-to-d1": "tsx scripts/migrate-pg-to-d1.ts",
+    "migrate:pg-to-d1:export": "tsx scripts/migrate-pg-to-d1.ts --export-only",
+    "migrate:pg-to-d1:local": "tsx scripts/migrate-pg-to-d1.ts --target=local",
+    "migrate:pg-to-d1:preview": "tsx scripts/migrate-pg-to-d1.ts --dry-run",
+    "migrate:pg-to-d1:check": "tsx scripts/migrate-pg-to-d1.ts --check"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",
     "@neondatabase/serverless": "^1.1.0",
+    "@opennextjs/cloudflare": "^1.20.6",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@vercel/postgres": "latest",
@@ -64,6 +76,6 @@
     "tw-animate-css": "^1.4.0",
     "typescript": "5.9.3",
     "vercel": "^54.2.0",
-    "wrangler": "^4.93.0"
+    "wrangler": "^4.125.0"
   }
 }

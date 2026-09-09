@@ -136,3 +136,50 @@ A: 检查 `NEXT_PUBLIC_BASE_URL` 是否正确配置
 1. Cloudflare Pages构建日志
 2. 运行时错误（通过Cloudflare Analytics）
 3. 数据库连接状态
+
+---
+
+## 【最新】Cloudflare Workers (OpenNext) 定时任务
+
+> 上文为早期 `@cloudflare/next-on-pages` / Pages 方案，已废弃。当前 Workers 部署使用
+> `@opennextjs/cloudflare` (OpenNext) + D1，定时任务机制如下。
+
+### 机制
+
+- Vercel 的定时任务仍由 [vercel.json](vercel.json) 的 `crons` 提供，保持不变。
+- Cloudflare Workers 侧：`@opennextjs/cloudflare` 生成的 `.open-next/worker.js` **只导出 `fetch`**，
+  没有 Cloudflare Cron Triggers 需要的 `scheduled`。为此新增构建后注入脚本
+  [scripts/inject-cron-handler.ts](scripts/inject-cron-handler.ts)，在 `.open-next/` 内生成包装入口
+  `cron-worker.mjs`：透出原 `fetch`，并新增 `scheduled`，在同一次调用内直接
+  `worker.fetch(new Request(NEXT_PUBLIC_BASE_URL + "/api/cron/..."))` 触发既有路由（复用同一 `env`，含 D1 绑定），
+  按 `event.cron` 精确分发。
+- [wrangler.jsonc](wrangler.jsonc)：`main` 指向 `.open-next/cron-worker.mjs`，`triggers.crons` 配置计划（UTC）。
+- 注入已并入 `pnpm preview` / `deploy` / `upload`（在 `opennextjs-cloudflare build` 与 `prune-cf-assets` 之后执行），
+  无需单独运行。
+
+### 当前任务（与 vercel.json 对齐）
+
+| Cron (UTC)   | 路由                    | 作用                         |
+| ------------ | ----------------------- | ---------------------------- |
+| `30 0 * * *` | `/api/cron/daily-stats` | 统计昨日新增书籍并发 Discord |
+| `0 1 * * *`  | `/api/cron/tag-books`   | 为未标签书籍做 AI 标签分析   |
+
+### 上线前必做
+
+1. 生产机密：`wrangler secret put CRON_SECRET`（`daily-stats` 强依赖，否则返回 500）。
+2. `NEXT_PUBLIC_BASE_URL`、`DISCORD_WEBHOOK_URL` 已在 `wrangler.jsonc` 的 `vars` 中；按需用 `wrangler secret put` 覆盖敏感项。
+3. 若增删任务：同步修改 `wrangler.jsonc` 的 `triggers.crons`、`scripts/inject-cron-handler.ts` 的 `CRON_MAP`，三者保持一致。
+
+### 本地验证
+
+```bash
+# 构建产物 + 注入包装入口
+pnpm exec opennextjs-cloudflare build
+pnpm exec tsx scripts/prune-cf-assets.ts
+pnpm exec tsx scripts/inject-cron-handler.ts
+# 以可手动触发 scheduled 的模式启动本地 Worker（.dev.vars 已含本地 CRON_SECRET）
+pnpm exec wrangler dev --test-scheduled --ip 127.0.0.1 --port 8787
+# 另一个终端：模拟某个 cron 表达式触发
+curl "http://127.0.0.1:8787/cdn-cgi/handler/scheduled?cron=30+0+*+*+*"
+# 观察终端日志出现：[cron] /api/cron/daily-stats ... -> 200
+```

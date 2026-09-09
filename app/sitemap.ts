@@ -1,7 +1,5 @@
 import { MetadataRoute } from "next";
-import { db } from "@/lib/db";
-import { books } from "@/lib/db/schema";
-import { sql } from "drizzle-orm";
+import { getBooksRepository } from "@/lib/db";
 import blogList from "@/lib/blog-list.json";
 import { getExternalBlogs } from "@/lib/blog-utils";
 
@@ -40,14 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // 限制书籍数量以避免sitemap过大 (最多50000个URL)
-  const allBooks = await db
-    .select({
-      id: books.id,
-      updatedAt: books.updatedAt,
-    })
-    .from(books)
-    .orderBy(sql`${books.downloadCount} DESC`)
-    .limit(10000); // 限制查询数量
+  const allBooks = await getBooksRepository().getSitemapBooks(10000); // 限制查询数量
 
   // 书籍详情页和阅读页
   const bookPages: MetadataRoute.Sitemap = allBooks.map((book) => ({

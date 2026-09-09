@@ -1,48 +1,22 @@
-import { db } from "@/lib/db";
-import { books } from "@/lib/db/schema";
-import { desc, eq, count, like, or, sql, asc } from "drizzle-orm";
+import { getBooksRepository } from "@/lib/db";
 import { unstable_cache } from "next/cache";
-import { getPrimaryEntity } from "./nlp-utils";
+import type {
+  ExploreBook,
+  PaginatedBooks,
+  RelatedBooksResult,
+} from "@/lib/db/repository.types";
 
-export interface ExploreBook {
-  id: string;
-  title: string;
-  description?: string;
-  tags?: string[];
-  thumbnail: string;
-  pageCount: number;
-  downloadCount: number;
-  id1: string;
-  id2: string;
-}
-
-export interface PaginatedBooks {
-  books: ExploreBook[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+// 保持对外类型导出兼容（components 从 "@/lib/actions" 导入 ExploreBook 等）
+export type {
+  ExploreBook,
+  PaginatedBooks,
+  RelatedBooksResult,
+} from "@/lib/db/repository.types";
 
 export const getExploreBooks = unstable_cache(
   async (): Promise<ExploreBook[]> => {
     try {
-      const results = await db
-        .select()
-        .from(books)
-        .orderBy(desc(books.downloadCount))
-        .limit(50);
-      return results.map((b) => ({
-        id: b.id,
-        title: b.title,
-        description: b.description ?? undefined,
-        tags: b.tags ?? [],
-        thumbnail: b.thumbnail,
-        pageCount: b.pageCount,
-        downloadCount: b.downloadCount,
-        id1: b.id1,
-        id2: b.id2,
-      }));
+      return await getBooksRepository().getExploreBooks();
     } catch (error) {
       console.error("Error fetching explore books:", error);
       return [];
@@ -55,39 +29,7 @@ export const getExploreBooks = unstable_cache(
 export const getBooksPaginated = unstable_cache(
   async (page: number = 1, pageSize: number = 12): Promise<PaginatedBooks> => {
     try {
-      const offset = (page - 1) * pageSize;
-
-      // Get total count
-      const totalResult = await db.select({ count: count() }).from(books);
-      const total = totalResult[0]?.count || 0;
-
-      // Get paginated books
-      const results = await db
-        .select()
-        .from(books)
-        .orderBy(desc(books.createdAt))
-        .limit(pageSize)
-        .offset(offset);
-
-      const booksData = results.map((b) => ({
-        id: b.id,
-        title: b.title,
-        description: b.description ?? undefined,
-        tags: b.tags ?? [],
-        thumbnail: b.thumbnail,
-        pageCount: b.pageCount,
-        downloadCount: b.downloadCount,
-        id1: b.id1,
-        id2: b.id2,
-      }));
-
-      return {
-        books: booksData,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      };
+      return await getBooksRepository().getBooksPaginated(page, pageSize);
     } catch (error) {
       console.error("Error fetching paginated books:", error);
       return {
@@ -109,23 +51,7 @@ export const getBooksPaginated = unstable_cache(
  */
 export async function getBookByIdDB(id: string): Promise<ExploreBook | null> {
   try {
-    const result = await db.query.books.findFirst({
-      where: eq(books.id, id),
-    });
-
-    if (!result) return null;
-
-    return {
-      id: result.id,
-      title: result.title,
-      description: result.description ?? undefined,
-      tags: result.tags ?? [],
-      thumbnail: result.thumbnail,
-      pageCount: result.pageCount,
-      downloadCount: result.downloadCount,
-      id1: result.id1,
-      id2: result.id2,
-    };
+    return await getBooksRepository().getBookByIdDB(id);
   } catch (error) {
     console.error("Error fetching book by id:", error);
     return null;
@@ -155,12 +81,6 @@ export async function revalidateBookCache(id: string) {
   revalidateTag(`book-by-id-${id}`);
 }
 
-export interface RelatedBooksResult {
-  books: ExploreBook[];
-  total: number;
-  hasMore: boolean;
-}
-
 /**
  * 基于标题实体搜索相关书籍（带缓存）
  * @param title 当前书籍标题
@@ -174,77 +94,11 @@ export const getRelatedBooks = unstable_cache(
     limit: number = 4,
   ): Promise<RelatedBooksResult> => {
     try {
-      // 使用NLP提取第一个主要实体
-      const primaryEntity = getPrimaryEntity(title);
-
-      if (!primaryEntity) {
-        // 如果没有提取到实体，返回最近的书籍（按下载量）
-        const results = await db
-          .select()
-          .from(books)
-          .where(sql`${books.id} != ${currentBookId}`)
-          .orderBy(desc(books.downloadCount))
-          .limit(limit + 1); // 多取一个用于判断hasMore
-
-        const booksData = results.slice(0, limit).map((b) => ({
-          id: b.id,
-          title: b.title,
-          description: b.description ?? undefined,
-          tags: b.tags ?? [],
-          thumbnail: b.thumbnail,
-          pageCount: b.pageCount,
-          downloadCount: b.downloadCount,
-          id1: b.id1,
-          id2: b.id2,
-        }));
-
-        return {
-          books: booksData,
-          total: booksData.length,
-          hasMore: results.length > limit,
-        };
-      }
-
-      // 基于实体进行模糊搜索（使用ILIKE进行不区分大小写的匹配）
-      const searchPattern = `%${primaryEntity}%`;
-
-      // 获取总数（不包括当前书籍）
-      const totalResult = await db
-        .select({ count: count() })
-        .from(books)
-        .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
-        );
-
-      const total = totalResult[0]?.count || 0;
-
-      // 获取相关书籍（限制数量）
-      const results = await db
-        .select()
-        .from(books)
-        .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
-        )
-        .orderBy(desc(books.downloadCount))
-        .limit(limit + 1); // 多取一个用于判断hasMore
-
-      const booksData = results.slice(0, limit).map((b) => ({
-        id: b.id,
-        title: b.title,
-        description: b.description ?? undefined,
-        tags: b.tags ?? [],
-        thumbnail: b.thumbnail,
-        pageCount: b.pageCount,
-        downloadCount: b.downloadCount,
-        id1: b.id1,
-        id2: b.id2,
-      }));
-
-      return {
-        books: booksData,
-        total,
-        hasMore: results.length > limit,
-      };
+      return await getBooksRepository().getRelatedBooks(
+        title,
+        currentBookId,
+        limit,
+      );
     } catch (error) {
       console.error("Error fetching related books:", error);
       return {
@@ -275,99 +129,14 @@ export const getAllRelatedBooks = unstable_cache(
     sortOrder: "asc" | "desc" = "asc",
   ): Promise<PaginatedBooks> => {
     try {
-      const offset = (page - 1) * pageSize;
-
-      // 使用NLP提取第一个主要实体
-      const primaryEntity = getPrimaryEntity(title);
-
-      // 确定排序字段和顺序
-      const orderByColumn =
-        sortBy === "name" ? books.title : books.downloadCount;
-      const orderByDirection = sortOrder === "asc" ? "asc" : "desc";
-
-      if (!primaryEntity) {
-        // 如果没有提取到实体，返回所有书籍（不包括当前书籍）
-        const totalResult = await db
-          .select({ count: count() })
-          .from(books)
-          .where(sql`${books.id} != ${currentBookId}`);
-
-        const total = totalResult[0]?.count || 0;
-
-        const results = await db
-          .select()
-          .from(books)
-          .where(sql`${books.id} != ${currentBookId}`)
-          .orderBy(
-            orderByDirection === "asc"
-              ? asc(orderByColumn)
-              : desc(orderByColumn),
-          )
-          .limit(pageSize)
-          .offset(offset);
-
-        const booksData = results.map((b) => ({
-          id: b.id,
-          title: b.title,
-          thumbnail: b.thumbnail,
-          pageCount: b.pageCount,
-          downloadCount: b.downloadCount,
-          id1: b.id1,
-          id2: b.id2,
-        }));
-
-        return {
-          books: booksData,
-          total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
-        };
-      }
-
-      // 基于实体进行模糊搜索
-      const searchPattern = `%${primaryEntity}%`;
-
-      // 获取总数（不包括当前书籍）
-      const totalResult = await db
-        .select({ count: count() })
-        .from(books)
-        .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
-        );
-
-      const total = totalResult[0]?.count || 0;
-
-      // 获取分页的相关书籍
-      const results = await db
-        .select()
-        .from(books)
-        .where(
-          sql`${books.id} != ${currentBookId} AND ${books.title} ILIKE ${searchPattern}`,
-        )
-        .orderBy(
-          orderByDirection === "asc" ? asc(orderByColumn) : desc(orderByColumn),
-        )
-        .limit(pageSize)
-        .offset(offset);
-
-      const booksData = results.map((b) => ({
-        id: b.id,
-        title: b.title,
-        thumbnail: b.thumbnail,
-        pageCount: b.pageCount,
-        downloadCount: b.downloadCount,
-        id1: b.id1,
-        id2: b.id2,
-      }));
-
-      return {
-        books: booksData,
-        total,
+      return await getBooksRepository().getAllRelatedBooks(
+        title,
+        currentBookId,
         page,
         pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      };
+        sortBy,
+        sortOrder,
+      );
     } catch (error) {
       console.error("Error fetching all related books:", error);
       return {
@@ -391,44 +160,7 @@ export const getBooksByTag = unstable_cache(
     pageSize: number = 12,
   ): Promise<PaginatedBooks> => {
     try {
-      const offset = (page - 1) * pageSize;
-
-      // 获取总数
-      const totalResult = await db
-        .select({ count: count() })
-        .from(books)
-        .where(sql`${books.tags} @> ARRAY[${tag}]::varchar[]`);
-
-      const total = totalResult[0]?.count || 0;
-
-      // 获取分页数据
-      const results = await db
-        .select()
-        .from(books)
-        .where(sql`${books.tags} @> ARRAY[${tag}]::varchar[]`)
-        .orderBy(desc(books.downloadCount))
-        .limit(pageSize)
-        .offset(offset);
-
-      const booksData = results.map((b) => ({
-        id: b.id,
-        title: b.title,
-        description: b.description ?? undefined,
-        tags: b.tags ?? [],
-        thumbnail: b.thumbnail,
-        pageCount: b.pageCount,
-        downloadCount: b.downloadCount,
-        id1: b.id1,
-        id2: b.id2,
-      }));
-
-      return {
-        books: booksData,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      };
+      return await getBooksRepository().getBooksByTag(tag, page, pageSize);
     } catch (error) {
       console.error("Error fetching books by tag:", error);
       return {

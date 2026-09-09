@@ -1,0 +1,55 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "fliphtml5-downloader",
+    // 构建产物入口。scripts/inject-cron-handler.ts 会在构建后直接向本文件注入 scheduled 处理器
+    // （保留 OpenNext 对 .build/durable-objects/* 的外部化解析，不能换成外部包装入口）。
+    "main": ".open-next/worker.js",
+    "compatibility_date": "2025-09-01",
+    "compatibility_flags": [
+        "nodejs_compat",
+        "global_fetch_strictly_public"
+    ],
+    "assets": {
+        "directory": ".open-next/assets",
+        "binding": "ASSETS"
+    },
+    "observability": {
+        "enabled": true
+    },
+    // Cloudflare Cron Triggers（UTC）。需与 scripts/inject-cron-handler.ts 的 CRON_MAP
+    // 以及 vercel.json 的 Vercel Cron 计划保持一致。
+    "triggers": {
+        "crons": [
+            "30 0 * * *",
+            "0 1 * * *"
+        ]
+    },
+    "routes": [
+        {
+            "pattern": "fliphtml5.aivaded.com",
+            "custom_domain": true,
+        },
+    ],
+    // 在 Cloudflare 创建 D1 后，把真实 database_id 回填到这里。
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "flipbook-db",
+            "database_id": "b2683b18-ee97-44c6-8bcf-63181686dc44",
+            "migrations_dir": "drizzle/d1"
+        }
+    ],
+    // Workers 运行时环境变量。数据库驱动选择 + 非明文配置。
+    // 机密（CRON_SECRET / DISCORD_WEBHOOK_URL / SEO_SUBMIT_URL 等）请用 `wrangler secret put`，不要写在这里。
+    "vars": {
+        "DB_DRIVER": "d1",
+        "NEXT_PUBLIC_BASE_URL": "https://fliphtml5.aivaded.com",
+        "PROJECT_ID": "fliphtml5-downloader",
+        "NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL": "https://plausible.aivaded.com/api/loader/fliphtml5-downloader.js",
+        "DISCORD_WEBHOOK_URL": "https://plausible.aivaded.com/api/discord/webhook/fliphtml5-downloader",
+        "SEO_SUBMIT_URL": "https://plausible.aivaded.com/api/seo/submit/fliphtml5-downloader",
+        "POLLINATION_API_KEY": "plln_sk_LgJL2b4cbNSXAwYbzpc3BBtkDtpCJodq",
+        "CRON_SECRET": "aaa"
+    }
+    // 多账号时需指定: "account_id": "<your-account-id>"
+}

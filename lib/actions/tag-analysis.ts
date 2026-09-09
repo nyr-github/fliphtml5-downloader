@@ -1,6 +1,4 @@
-import { db } from "@/lib/db";
-import { books } from "@/lib/db/schema";
-import { eq, sql, asc } from "drizzle-orm";
+import { getBooksRepository } from "@/lib/db";
 import { BOOK_TAGS } from "@/lib/constants";
 import { chatCompletion } from "@/lib/pollinations";
 
@@ -154,21 +152,7 @@ export async function getUntaggedBooks(options?: {
   limit?: number;
 }): Promise<BookToTag[]> {
   try {
-    const baseQuery = db
-      .select({
-        id: books.id,
-        title: books.title,
-        description: books.description,
-      })
-      .from(books)
-      .where(sql`cardinality(${books.tags}) = 0 OR ${books.tags} IS NULL`)
-      .orderBy(asc(books.createdAt));
-
-    // 如果指定了limit,添加限制(用于Cron任务避免超时)
-    const query = options?.limit ? baseQuery.limit(options.limit) : baseQuery;
-    const untaggedBooks = await query;
-
-    return untaggedBooks;
+    return await getBooksRepository().getUntaggedBooks(options);
   } catch (error) {
     console.error("Error fetching untagged books:", error);
     return [];
@@ -178,13 +162,7 @@ export async function getUntaggedBooks(options?: {
 // 为单本书添加标签
 export async function tagBook(bookId: string, tags: string[]): Promise<void> {
   try {
-    await db
-      .update(books)
-      .set({
-        tags: tags,
-        updatedAt: new Date(),
-      })
-      .where(eq(books.id, bookId));
+    await getBooksRepository().tagBook(bookId, tags);
 
     console.log(`✓ Tagged book ${bookId} with: ${tags.join(", ")}`);
   } catch (error) {
