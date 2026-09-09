@@ -32,19 +32,19 @@ import path from "path";
 // cron 表达式 -> 目标路由。必须与 wrangler.jsonc 的 triggers.crons 保持一致，
 // 并与 vercel.json 的 Vercel Cron 计划对齐（均为 UTC）。
 const CRON_MAP: Record<string, string> = {
-  "30 0 * * *": "/api/cron/daily-stats",
-  "0 1 * * *": "/api/cron/tag-books",
+    "30 0 * * *": "/api/cron/daily-stats",
+    "0 1 * * *": "/api/cron/tag-books",
 };
 
 const MARKER = "__CRON_INJECTED__";
 const DEFAULT_ENTRY_OPEN = "export default {";
 
 function buildFooter(): string {
-  const entries = Object.entries(CRON_MAP)
-    .map(([cron, p]) => `  ${JSON.stringify(cron)}: ${JSON.stringify(p)},`)
-    .join("\n");
+    const entries = Object.entries(CRON_MAP)
+        .map(([cron, p]) => `  ${JSON.stringify(cron)}: ${JSON.stringify(p)},`)
+        .join("\n");
 
-  return `
+    return `
 
 // ${MARKER} by scripts/inject-cron-handler.ts —— 请勿直接编辑，构建后自动生成。
 const __CRON_PATHS = {
@@ -79,45 +79,45 @@ export default __worker;
 }
 
 async function main() {
-  const root = process.cwd();
-  const workerJs = path.join(root, ".open-next", "worker.js");
-  const staleWrapper = path.join(root, ".open-next", "cron-worker.mjs");
+    const root = process.cwd();
+    const workerJs = path.join(root, ".open-next", "worker.js");
+    const staleWrapper = path.join(root, ".open-next", "cron-worker.mjs");
 
-  let content: string;
-  try {
-    content = await fs.readFile(workerJs, "utf8");
-  } catch {
-    console.error(
-      `[inject-cron] 未找到 ${path.relative(root, workerJs)}，请先执行 opennextjs-cloudflare build。`,
+    let content: string;
+    try {
+        content = await fs.readFile(workerJs, "utf8");
+    } catch {
+        console.error(
+            `[inject-cron] 未找到 ${path.relative(root, workerJs)}，请先执行 opennextjs-cloudflare build。`,
+        );
+        process.exit(1);
+    }
+
+    // 清理早期版本可能遗留的包装入口文件。
+    await fs.rm(staleWrapper, { force: true }).catch(() => { });
+
+    if (content.includes(MARKER)) {
+        console.log("[inject-cron] 检测到已注入标记，跳过（幂等）。");
+        return;
+    }
+
+    if (!content.includes(DEFAULT_ENTRY_OPEN)) {
+        console.error(
+            `[inject-cron] 未在 worker.js 中找到 "${DEFAULT_ENTRY_OPEN}"，构建产物结构可能已变化，请检查 @opennextjs/cloudflare 版本。`,
+        );
+        process.exit(1);
+    }
+
+    // 仅替换首个默认导出对象为具名常量，末尾再统一导出并挂上 scheduled。
+    const patched = content.replace(DEFAULT_ENTRY_OPEN, "const __worker = {");
+    await fs.writeFile(workerJs, patched + buildFooter(), "utf8");
+
+    console.log(
+        `[inject-cron] 已向 ${path.relative(root, workerJs)} 注入 scheduled 处理器，转发路由：${Object.values(CRON_MAP).join(", ")}。`,
     );
-    process.exit(1);
-  }
-
-  // 清理早期版本可能遗留的包装入口文件。
-  await fs.rm(staleWrapper, { force: true }).catch(() => {});
-
-  if (content.includes(MARKER)) {
-    console.log("[inject-cron] 检测到已注入标记，跳过（幂等）。");
-    return;
-  }
-
-  if (!content.includes(DEFAULT_ENTRY_OPEN)) {
-    console.error(
-      `[inject-cron] 未在 worker.js 中找到 "${DEFAULT_ENTRY_OPEN}"，构建产物结构可能已变化，请检查 @opennextjs/cloudflare 版本。`,
-    );
-    process.exit(1);
-  }
-
-  // 仅替换首个默认导出对象为具名常量，末尾再统一导出并挂上 scheduled。
-  const patched = content.replace(DEFAULT_ENTRY_OPEN, "const __worker = {");
-  await fs.writeFile(workerJs, patched + buildFooter(), "utf8");
-
-  console.log(
-    `[inject-cron] 已向 ${path.relative(root, workerJs)} 注入 scheduled 处理器，转发路由：${Object.values(CRON_MAP).join(", ")}。`,
-  );
 }
 
 main().catch((err) => {
-  console.error("[inject-cron] 执行失败:", err);
-  process.exit(1);
+    console.error("[inject-cron] 执行失败:", err);
+    process.exit(1);
 });

@@ -13,10 +13,10 @@ import { d1BooksRepository } from "@/lib/db/repositories/d1-repo";
  * D1 仅在方法内部惰性获取绑定），因此在任一平台上安全 import 本文件。
  */
 export function getBooksRepository(): BooksRepository {
-  if (process.env.DB_DRIVER === "d1") {
-    return d1BooksRepository;
-  }
-  return postgresBooksRepository;
+    if (process.env.DB_DRIVER === "d1") {
+        return d1BooksRepository;
+    }
+    return postgresBooksRepository;
 }
 
 export * from "@/lib/db/repository.types";
