@@ -149,13 +149,17 @@ A: 检查 `NEXT_PUBLIC_BASE_URL` 是否正确配置
 - Vercel 的定时任务仍由 [vercel.json](vercel.json) 的 `crons` 提供，保持不变。
 - Cloudflare Workers 侧：`@opennextjs/cloudflare` 生成的 `.open-next/worker.js` **只导出 `fetch`**，
   没有 Cloudflare Cron Triggers 需要的 `scheduled`。为此新增构建后注入脚本
-  [scripts/inject-cron-handler.ts](scripts/inject-cron-handler.ts)，在 `.open-next/` 内生成包装入口
-  `cron-worker.mjs`：透出原 `fetch`，并新增 `scheduled`，在同一次调用内直接
-  `worker.fetch(new Request(NEXT_PUBLIC_BASE_URL + "/api/cron/..."))` 触发既有路由（复用同一 `env`，含 D1 绑定），
-  按 `event.cron` 精确分发。
-- [wrangler.jsonc](wrangler.jsonc)：`main` 指向 `.open-next/cron-worker.mjs`，`triggers.crons` 配置计划（UTC）。
-- 注入已并入 `pnpm preview` / `deploy` / `upload`（在 `opennextjs-cloudflare build` 与 `prune-cf-assets` 之后执行），
-  无需单独运行。
+  [scripts/inject-cron-handler.ts](scripts/inject-cron-handler.ts)：**就地改写** `.open-next/worker.js`
+  （把 `export default {` 改成 `const __worker = {`，末尾追加 `scheduled`，按 `event.cron` 直接
+  `__worker.fetch(new Request(NEXT_PUBLIC_BASE_URL + "/api/cron/..."))` 触发既有路由（复用同一 `env`，含 D1 绑定））。
+  不能改用「外部包装入口 import worker.js」：`worker.js` 顶部的
+  `export { DOQueueHandler } from "./.build/durable-objects/queue.js"` 依赖 OpenNext 的 wrangler 插件，
+  而该插件只在 `worker.js` 本身是 `main` 入口时才会把这些文件外部化；一旦被别处 import 就强制
+  esbuild 去 resolve 磁盘上不存在的文件而 Build failed。
+- [wrangler.jsonc](wrangler.jsonc)：`main` 保持 `.open-next/worker.js`，`triggers.crons` 配置计划（UTC）。
+- 注入已并入 `pnpm preview` / `deploy` / `deploy:cf` / `upload`（在 `opennextjs-cloudflare build` 与
+  `prune-cf-assets` 之后执行），无需单独运行。注入以 `__CRON_INJECTED__` 标记保证幂等，
+  重复执行会直接跳过。
 
 ### 当前任务（与 vercel.json 对齐）
 
@@ -183,3 +187,50 @@ pnpm exec wrangler dev --test-scheduled --ip 127.0.0.1 --port 8787
 curl "http://127.0.0.1:8787/cdn-cgi/handler/scheduled?cron=30+0+*+*+*"
 # 观察终端日志出现：[cron] /api/cron/daily-stats ... -> 200
 ```
+
+---
+
+## 部署路径（R2 增量缓存 / ISR）
+
+[open-next.config.ts](open-next.config.ts) 把 Next.js 的数据缓存（`unstable_cache`）与 ISR 落在 R2
+（绑定 `NEXT_INC_CACHE_R2_BUCKET` → bucket `flipbook-next-cache`），时间型再验证走 Durable Object 队列
+（`NEXT_CACHE_DO_QUEUE` + 必需的 `WORKER_SELF_REFERENCE` 自服务绑定）。两种部署命令：
+
+| 命令 | 最后一步 | 说明 |
+| --- | --- | --- |
+| `pnpm run deploy` | `opennextjs-cloudflare deploy` | 部署前把构建期的 ISR 条目**预填充**进远端 R2。要求本机能访问 `*.workers.dev`（预填充经由临时 helper Worker `open-next-cache-populate.<account>.workers.dev`）。 |
+| `pnpm run deploy:cf` | `tsx scripts/deploy-cf.ts` | 跳过预填充，直接 `wrangler deploy`（内部设 `OPEN_NEXT_DEPLOY=true` 防止 wrangler 反向委托造成递归）。缓存由线上首请求懒写入。 |
+
+两者前三步（`opennextjs-cloudflare build` → `prune-cf-assets` → `inject-cron-handler`）完全一致。
+
+### 预填充失败长什么样
+
+```
+ERROR Attempt 15 to write "incremental-cache/<buildId>/xxxx.fetch" failed with a
+  retryable error: Failed to send request to R2 worker: The operation was aborted due to timeout.
+Error: Failed to populate remote R2 bucket "flipbook-next-cache" ...
+```
+
+看到这个说明是**本机到不了 workers.dev**，不是缓存配置写错：`wrangler deploy` 排在预填充之后，
+所以此时线上并未变更（不会出现半部署）。改用 `pnpm run deploy:cf` 即可。同一网络限制下
+`wrangler tail` 也会 `ETIMEDOUT`，别把它误判成 Worker 故障。
+
+另：每次部署 `buildId` 变化会让 R2 里旧前缀的条目变成孤儿（各路由需各自回源一次）。条目都很小，
+需要清理时按 `incremental-cache/<旧buildId>/` 前缀删对象即可。
+
+### 验证缓存到底有没有命中
+
+本地：`pnpm run preview`（端口以 package.json 为准），并在 `.dev.vars` 里打开 `NEXT_PRIVATE_DEBUG_CACHE=1`，
+日志会出现 `[R2IncrementalCache] get/set <key>`——首请求 `get→set`，之后只剩 `get` 就是命中（0 行 D1）。
+
+线上：不方便开日志，用响应头里的 Worker 真实耗时（排除客户端 RTT 与带宽噪声）：
+
+```powershell
+# 挑一个部署后从未被访问过的书籍 id
+(Invoke-WebRequest https://fliphtml5.aivaded.com/book/<id> -Method Head).Headers['Server-Timing']
+# Server-Timing: cfEdge;dur=...,cfOrigin;dur=0,cfWorker;dur=861   <- 冷（真打 D1）
+# 连续再请求，cfWorker 降到 ~350 说明走了 R2；若一直停在冷值，说明远端写入没成功。
+```
+
+参考实测量级（D1 共 34,322 行）：`/sitemap.xml`（20,487 条 URL）从「每请求 1 万行」降为「每小时 1 万行」；
+`/book/{id}` 命中后 0 次 D1 查询。

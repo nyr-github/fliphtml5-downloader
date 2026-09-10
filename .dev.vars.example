@@ -8,3 +8,14 @@ NEXTJS_ENV=development
 # CRON_SECRET=
 # DISCORD_WEBHOOK_URL=
 # SEO_SUBMIT_URL=
+
+# ---- 缓存相关（本地 preview） ----
+# Next.js 数据缓存 / ISR 的读写日志。排查「unstable_cache 到底有没有命中」时打开：
+# 会在 preview 日志里看到 [R2IncrementalCache] get/set <key> 这类行。
+# NEXT_PRIVATE_DEBUG_CACHE=1
+# R2 缓存键前缀，缺省 incremental-cache；一般不需要改。
+# NEXT_INC_CACHE_R2_PREFIX=
+#
+# 说明：R2 bucket（NEXT_INC_CACHE_R2_BUCKET）、Durable Object（NEXT_CACHE_DO_QUEUE）、
+# WORKER_SELF_REFERENCE 都在 wrangler.jsonc 里声明，miniflare 会在 .wrangler/state
+# 下自动建本地实例，本地无需任何机密配置。

@@ -1,8 +1,10 @@
 import { MetadataRoute } from "next";
-import { getBooksRepository } from "@/lib/db";
+import { getSitemapBooks } from "@/lib/actions";
 import blogList from "@/lib/blog-list.json";
 import { getExternalBlogs } from "@/lib/blog-utils";
 
+// 必须保持动态：否则 next build 会在构建期预渲染本文件，而构建环境没有 D1 上下文。
+// 1 万行的书籍查询由 getSitemapBooks 上的 unstable_cache 吸收（命中即 0 行 D1）。
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -38,7 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // 限制书籍数量以避免sitemap过大 (最多50000个URL)
-  const allBooks = await getBooksRepository().getSitemapBooks(10000); // 限制查询数量
+  // 走带 1 小时数据缓存的版本：未缓存时才是那 1 万行查询
+  const allBooks = await getSitemapBooks(10000); // 限制查询数量
 
   // 书籍详情页和阅读页
   const bookPages: MetadataRoute.Sitemap = allBooks.map((book) => ({

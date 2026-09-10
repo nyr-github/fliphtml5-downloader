@@ -4,6 +4,7 @@ import type {
   ExploreBook,
   PaginatedBooks,
   RelatedBooksResult,
+  SitemapBook,
 } from "@/lib/db/repository.types";
 
 // 保持对外类型导出兼容（components 从 "@/lib/actions" 导入 ExploreBook 等）
@@ -174,4 +175,26 @@ export const getBooksByTag = unstable_cache(
   },
   ["books-by-tag"],
   { revalidate: 86400 }, // 24 hours
+);
+
+/**
+ * sitemap 用的极简列表（只有 id + updated_at）。
+ *
+ * 这条查询本身就是 sitemap 的量级（1 万行），索引无法再收敛，只能靠数据缓存：
+ * 命中后每次请求 0 行 D1。
+ *
+ * 这里**故意不 try/catch**：回源失败时不写入缓存条目（否则会把一份只有 4 条 URL 的
+ * 空 sitemap 缓存 1 小时，反而伤 SEO），下个请求会自动重试。
+ *
+ * 注意 app/sitemap.ts 是 `force-dynamic` 路由，`unstable_cache` 依然生效：
+ * `force-dynamic` 只关掉路由级缓存，不改 `workStore.fetchCache`，
+ * 而保留 `force-dynamic` 是必需的——否则 `next build` 会在构建期预渲染 sitemap，
+ * 那时没有 D1 上下文（只有 Worker 运行时才能 getCloudflareContext）。
+ */
+export const getSitemapBooks = unstable_cache(
+  async (limit: number = 10000): Promise<SitemapBook[]> => {
+    return getBooksRepository().getSitemapBooks(limit);
+  },
+  ["sitemap-books"],
+  { revalidate: 60 * 60 }, // 1 hour
 );

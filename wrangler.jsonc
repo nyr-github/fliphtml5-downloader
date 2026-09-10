@@ -39,6 +39,41 @@
             "migrations_dir": "drizzle/d1"
         }
     ],
+    // Next.js 的数据缓存（unstable_cache / ISR 落盘处）。绑定名必须与
+    // open-next.config.ts 里 r2IncrementalCache 期望的 NEXT_INC_CACHE_R2_BUCKET 一致。
+    // bucket 由 `wrangler r2 bucket create flipbook-next-cache` 创建。
+    "r2_buckets": [
+        {
+            "binding": "NEXT_INC_CACHE_R2_BUCKET",
+            "bucket_name": "flipbook-next-cache"
+        }
+    ],
+    // 时间型再验证（页面里的 `export const revalidate`）需要队列去重与重试。
+    // DOQueueHandler 由 OpenNext 编译进 .open-next/worker.js（顶部 export 已存在），
+    // 这里只需声明绑定与 migration；绑定名须为 NEXT_CACHE_DO_QUEUE。
+    "durable_objects": {
+        "bindings": [
+            {
+                "name": "NEXT_CACHE_DO_QUEUE",
+                "class_name": "DOQueueHandler"
+            }
+        ]
+    },
+    "migrations": [
+        {
+            "tag": "v1",
+            "new_sqlite_classes": [
+                "DOQueueHandler"
+            ]
+        }
+    ],
+    // DO 队列通过 self-reference 回头请求本 Worker 完成再验证（缺它则再验证直接跳过）。
+    "services": [
+        {
+            "binding": "WORKER_SELF_REFERENCE",
+            "service": "fliphtml5-downloader"
+        }
+    ],
     // Workers 运行时环境变量。数据库驱动选择 + 非明文配置。
     // 机密（CRON_SECRET / DISCORD_WEBHOOK_URL / SEO_SUBMIT_URL 等）请用 `wrangler secret put`，不要写在这里。
     "vars": {

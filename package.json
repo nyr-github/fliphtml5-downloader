@@ -14,6 +14,7 @@
     "tag-books:dry-run": "tsx scripts/tag-books-cli.ts --dry-run",
     "preview": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare deploy",
+    "deploy:cf": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && tsx scripts/deploy-cf.ts",
     "upload": "opennextjs-cloudflare build && tsx scripts/prune-cf-assets.ts && tsx scripts/inject-cron-handler.ts && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "db:migrate:local": "wrangler d1 migrations apply flipbook-db --local",
