@@ -13,8 +13,26 @@
         "directory": ".open-next/assets",
         "binding": "ASSETS"
     },
-    "observability": {
+    // Workers Cache：Cloudflare 在调用 Worker 前先查边缘缓存，命中时 Worker 完全不执行
+    // （0 CPU、不读 R2、不打 D1）。可缓存性由响应的 Cache-Control 决定，各前端页面的
+    // max-age（1 小时 / 1 天 / 1 周三档）由 scripts/inject-cron-handler.ts 在构建后注入。
+    // 注意：开启后静态资产请求也开始按 Workers 请求数计费（CPU 不计费）。
+    // 不设 cross_version_cache，保留「每次部署自动失效」这个默认逃生口。
+    "cache": {
         "enabled": true
+    },
+    "observability": {
+        "logs": {
+            "enabled": true,
+            "head_sampling_rate": 1,
+            "invocation_logs": true,
+            "persist": true
+        },
+        "traces": {
+            "enabled": true,
+            "head_sampling_rate": 1,
+            "persist": true
+        }
     },
     // Cloudflare Cron Triggers（UTC）。需与 scripts/inject-cron-handler.ts 的 CRON_MAP
     // 以及 vercel.json 的 Vercel Cron 计划保持一致。

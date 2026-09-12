@@ -41,7 +41,7 @@ YOUR RESPONSE (JSON array with at least 1 tag):`;
 
     // 使用chatCompletion API调用Pollinations AI
     const response = await chatCompletion({
-      model: "openai",
+      model: "amazon/nova-micro-v1",
       messages: [
         {
           role: "user",

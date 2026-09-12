@@ -64,13 +64,7 @@ export async function getBookByIdDB(id: string): Promise<ExploreBook | null> {
  * 缓存key包含书籍ID，以便在创建/更新时可以针对性清理
  */
 export function getBookById(id: string) {
-  return unstable_cache(
-    async (): Promise<ExploreBook | null> => {
-      return getBookByIdDB(id);
-    },
-    [`book-by-id-${id}`], // 缓存key包含书籍ID
-    { revalidate: 86400 }, // 1天缓存
-  )();
+  return getBookByIdDB(id);
 }
 
 /**
