@@ -1,5 +1,5 @@
 import React from "react";
-import { getBookById } from "@/lib/actions";
+import { getBookById, getBookByIdDB } from "@/lib/actions";
 import { notFound } from "next/navigation";
 import BookReaderClient from "@/components/BookReaderClient";
 import { buildThumbnailUrl } from "@/lib/utils";
@@ -78,7 +78,7 @@ export default async function ReaderPage({
 }) {
   const { id } = await params;
   const { from } = await searchParams;
-  const book = await getBookById(id);
+  const book = await getBookByIdDB(id);
 
   if (!book) {
     notFound();

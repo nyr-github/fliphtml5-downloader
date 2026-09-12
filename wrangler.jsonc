@@ -14,7 +14,8 @@
         "binding": "ASSETS"
     },
     // Workers Cache：Cloudflare 在调用 Worker 前先查边缘缓存，命中时 Worker 完全不执行
-    // （0 CPU、不读 R2、不打 D1）。可缓存性由响应的 Cache-Control 决定，各前端页面的
+    // （0 CPU、不打 D1）。本项目不做数据层缓存（见 open-next.config.ts），整页缓存全靠这层。
+    // 可缓存性由响应的 Cache-Control 决定，各前端页面的
     // max-age（1 小时 / 1 天 / 1 周三档）由 scripts/inject-cron-handler.ts 在构建后注入。
     // 注意：开启后静态资产请求也开始按 Workers 请求数计费（CPU 不计费）。
     // 不设 cross_version_cache，保留「每次部署自动失效」这个默认逃生口。
@@ -55,41 +56,6 @@
             "database_name": "flipbook-db",
             "database_id": "b2683b18-ee97-44c6-8bcf-63181686dc44",
             "migrations_dir": "drizzle/d1"
-        }
-    ],
-    // Next.js 的数据缓存（unstable_cache / ISR 落盘处）。绑定名必须与
-    // open-next.config.ts 里 r2IncrementalCache 期望的 NEXT_INC_CACHE_R2_BUCKET 一致。
-    // bucket 由 `wrangler r2 bucket create flipbook-next-cache` 创建。
-    "r2_buckets": [
-        {
-            "binding": "NEXT_INC_CACHE_R2_BUCKET",
-            "bucket_name": "flipbook-next-cache"
-        }
-    ],
-    // 时间型再验证（页面里的 `export const revalidate`）需要队列去重与重试。
-    // DOQueueHandler 由 OpenNext 编译进 .open-next/worker.js（顶部 export 已存在），
-    // 这里只需声明绑定与 migration；绑定名须为 NEXT_CACHE_DO_QUEUE。
-    "durable_objects": {
-        "bindings": [
-            {
-                "name": "NEXT_CACHE_DO_QUEUE",
-                "class_name": "DOQueueHandler"
-            }
-        ]
-    },
-    "migrations": [
-        {
-            "tag": "v1",
-            "new_sqlite_classes": [
-                "DOQueueHandler"
-            ]
-        }
-    ],
-    // DO 队列通过 self-reference 回头请求本 Worker 完成再验证（缺它则再验证直接跳过）。
-    "services": [
-        {
-            "binding": "WORKER_SELF_REFERENCE",
-            "service": "fliphtml5-downloader"
         }
     ],
     // Workers 运行时环境变量。数据库驱动选择 + 非明文配置。
