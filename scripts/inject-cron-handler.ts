@@ -41,7 +41,7 @@ import path from "path";
 // 并与 vercel.json 的 Vercel Cron 计划对齐（均为 UTC）。
 const CRON_MAP: Record<string, string> = {
   "30 0 * * *": "/api/cron/daily-stats",
-  "0 1 * * *": "/api/cron/tag-books",
+  // "0 1 * * *": "/api/cron/tag-books",
 };
 
 const MARKER = "__WORKER_PATCHES_INJECTED__";

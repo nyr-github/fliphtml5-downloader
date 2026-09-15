@@ -6,7 +6,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import BookCard from "@/components/BookCard";
 import RelatedBooksControls from "@/components/RelatedBooksControls";
 import { Metadata } from "next";
-
+export const revalidate = 86400; 
 // 动态生成 metadata
 export async function generateMetadata({
   params,

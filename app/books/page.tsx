@@ -67,6 +67,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
             {/* All Button */}
             <Link
               href="/books"
+              prefetch={false}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 isAllMode
                   ? "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white shadow-lg scale-105"

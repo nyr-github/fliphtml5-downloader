@@ -115,6 +115,7 @@ export default async function DailyBooksPage({ params }: PageProps) {
             {/* Previous Day Button */}
             {previousDate ? (
               <Link
+                prefetch={false}
                 href={`/books/date/${previousDate}`}
                 className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-white rounded-xl border-2 border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)] hover:shadow-md transition-all"
               >
@@ -155,6 +156,8 @@ export default async function DailyBooksPage({ params }: PageProps) {
             {/* Next Day Button */}
             {nextDate ? (
               <Link
+                prefetch={false}
+              
                 href={`/books/date/${nextDate}`}
                 className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-white rounded-xl border-2 border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)] hover:shadow-md transition-all"
               >

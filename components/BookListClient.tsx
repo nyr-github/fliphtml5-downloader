@@ -81,6 +81,7 @@ export default function BookListClient({
       <div className="flex items-center justify-center gap-2 mt-8 sm:mt-12">
         {currentPage > 1 ? (
           <Link
+            prefetch={false}
             href={getPaginationLink(currentPage - 1)}
             className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-white rounded-lg border border-[var(--color-border)] text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-colors"
           >
@@ -98,12 +99,12 @@ export default function BookListClient({
           {getPageNumbers().map((pageNum) => (
             <Link
               key={pageNum}
+              prefetch={false}
               href={getPaginationLink(pageNum)}
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center ${
-                currentPage === pageNum
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-white border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg)]"
-              }`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center ${currentPage === pageNum
+                ? "bg-[var(--color-primary)] text-white"
+                : "bg-white border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg)]"
+                }`}
             >
               {pageNum}
             </Link>

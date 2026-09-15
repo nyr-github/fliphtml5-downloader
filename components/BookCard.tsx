@@ -31,6 +31,7 @@ export default function BookCard({
   if (variant === "compact") {
     return (
       <Link
+        prefetch={false}
         href={`/book/${book.id}`}
         className="group relative aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-md border border-[var(--color-border-light)] hover-lift"
       >

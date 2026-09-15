@@ -95,6 +95,7 @@ export default async function BooksByTagPage({
               <div className="flex items-center justify-center gap-2">
                 {/* Previous Button */}
                 <Link
+                  prefetch={false}
                   href={`/books/${tagSlug}?page=${currentPage - 1}`}
                   className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     currentPage === 1

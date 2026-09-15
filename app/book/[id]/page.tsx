@@ -28,6 +28,8 @@ import { buildThumbnailUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import { tagToSlug } from "@/lib/constants";
 
+
+export const revalidate = 86400; // Revalidate every 24 hours
 // 动态生成 metadata
 export async function generateMetadata({
   params,
@@ -95,7 +97,7 @@ export default async function BookDetailsPage({
   }
 
   // 获取相关书籍（默认4本）
-  const relatedBooksResult = await getRelatedBooks(book.title, id, 6);
+  // const relatedBooksResult = await getRelatedBooks(book.title, id, 6);
 
   const bookUrl = `https://fliphtml5.com/${book.id1}/${book.id2}`;
   const thumbnailFull = buildThumbnailUrl(book.thumbnail, book.id1, book.id2);
@@ -339,12 +341,12 @@ export default async function BookDetailsPage({
           </div>
 
           {/* Related Books Section */}
-          <RelatedBooks
+          {/* <RelatedBooks
             books={relatedBooksResult.books}
             total={relatedBooksResult.total}
             hasMore={relatedBooksResult.hasMore}
             currentBookId={id}
-          />
+          /> */}
         </div>
       </div>
     </>
