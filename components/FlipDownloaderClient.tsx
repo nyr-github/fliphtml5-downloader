@@ -311,20 +311,6 @@ export default function FlipDownloaderClient({
           pdfBlobUrl: blobUrl,
           imageUrls: imageUrls,
         });
-
-        // Auto save on first completion
-        const safeTitle = bookTitle.replace(/[/\\?%*:|"<>]/g, "_") || "book";
-        const finalFileName = `${safeTitle}.pdf`;
-
-        const autoLink = document.createElement("a");
-        autoLink.href = blobUrl;
-        autoLink.download = finalFileName;
-        autoLink.style.display = "none";
-        document.body.appendChild(autoLink);
-        autoLink.click();
-        setTimeout(() => {
-          document.body.removeChild(autoLink);
-        }, 100);
       } catch (err: any) {
         updateTask(taskId, { status: "error", errorMessage: err.message });
       }

@@ -111,11 +111,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://www.aidirectori.es" target="_blank">
-                  <img
-                    src="https://cdn.aidirectori.es/ai-tools/badges/no-background.png"
-                    alt="Featured on AI Directories"
-                  />
+                <a href="https://www.aidirectori.es/ai-tools/fliphtml5-downloader" target="_blank">
+                  Featured on AI Directories
                 </a>
               </li>
             </ul>

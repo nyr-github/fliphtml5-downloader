@@ -75,9 +75,7 @@
         "PROJECT_ID": "fliphtml5-downloader",
         "NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL": "https://plausible.aivaded.com/api/loader/fliphtml5-downloader.js",
         "DISCORD_WEBHOOK_URL": "https://plausible.aivaded.com/api/discord/webhook/fliphtml5-downloader",
-        "SEO_SUBMIT_URL": "https://plausible.aivaded.com/api/seo/submit/fliphtml5-downloader",
-        "POLLINATION_API_KEY": "plln_sk_LgJL2b4cbNSXAwYbzpc3BBtkDtpCJodq",
-        "CRON_SECRET": "aaa"
+        "SEO_SUBMIT_URL": "https://plausible.aivaded.com/api/seo/submit/fliphtml5-downloader"
     }
     // 多账号时需指定: "account_id": "<your-account-id>"
 }
