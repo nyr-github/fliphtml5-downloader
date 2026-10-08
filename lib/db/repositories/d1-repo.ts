@@ -8,6 +8,7 @@ import {
 } from "@/lib/db/schema.d1";
 import { desc, eq, asc, and, gte, gt, lt, lte, sql } from "drizzle-orm";
 import { getPrimaryEntity } from "@/lib/nlp-utils";
+import { cachedQuery, cacheKey } from "@/lib/db/repositories/d1-cache";
 import type {
   BooksRepository,
   ExploreBook,
@@ -244,42 +245,49 @@ export const d1BooksRepository: BooksRepository = {
     currentBookId: string,
     limit = 4,
   ): Promise<RelatedBooksResult> {
-    const db = await getDb();
-    const phrase = ftsPhrase(getPrimaryEntity(title));
+    // countTitleMatches 代价 = FTS 命中集大小（约 190 本时 1,330 行），非索引可固定 → 缓存（1 天）
+    return cachedQuery(
+      cacheKey("related", title, currentBookId, limit),
+      86400,
+      async () => {
+        const db = await getDb();
+        const phrase = ftsPhrase(getPrimaryEntity(title));
 
-    // 没有可用实体（或实体短于 trigram 索引下限）时，退化为热门书籍
-    if (!phrase) {
-      const results = await db
-        .select(bookListCols)
-        .from(booksD1)
-        .where(sql`${booksD1.id} != ${currentBookId}`)
-        .orderBy(desc(booksD1.downloadCount))
-        .limit(limit + 1)
-        .all();
-      const booksData = results.slice(0, limit).map(mapBook);
-      return {
-        books: booksData,
-        total: booksData.length,
-        hasMore: results.length > limit,
-      };
-    }
+        // 没有可用实体（或实体短于 trigram 索引下限）时，退化为热门书籍
+        if (!phrase) {
+          const results = await db
+            .select(bookListCols)
+            .from(booksD1)
+            .where(sql`${booksD1.id} != ${currentBookId}`)
+            .orderBy(desc(booksD1.downloadCount))
+            .limit(limit + 1)
+            .all();
+          const booksData = results.slice(0, limit).map(mapBook);
+          return {
+            books: booksData,
+            total: booksData.length,
+            hasMore: results.length > limit,
+          };
+        }
 
-    const totalRow = await db.get(countTitleMatches(phrase, currentBookId));
-    const total = Number((totalRow as { c?: number } | undefined)?.c ?? 0);
+        const totalRow = await db.get(countTitleMatches(phrase, currentBookId));
+        const total = Number((totalRow as { c?: number } | undefined)?.c ?? 0);
 
-    const results = await db
-      .select(bookListCols)
-      .from(booksD1)
-      .where(and(sql`${booksD1.id} != ${currentBookId}`, titleMatches(phrase)))
-      .orderBy(desc(booksD1.downloadCount))
-      .limit(limit + 1)
-      .all();
+        const results = await db
+          .select(bookListCols)
+          .from(booksD1)
+          .where(and(sql`${booksD1.id} != ${currentBookId}`, titleMatches(phrase)))
+          .orderBy(desc(booksD1.downloadCount))
+          .limit(limit + 1)
+          .all();
 
-    return {
-      books: results.slice(0, limit).map(mapBook),
-      total,
-      hasMore: results.length > limit,
-    };
+        return {
+          books: results.slice(0, limit).map(mapBook),
+          total,
+          hasMore: results.length > limit,
+        };
+      },
+    );
   },
 
   async getAllRelatedBooks(
@@ -290,62 +298,69 @@ export const d1BooksRepository: BooksRepository = {
     sortBy: "name" | "downloads" = "name",
     sortOrder: "asc" | "desc" = "asc",
   ): Promise<PaginatedBooks> {
-    const db = await getDb();
-    const offset = Math.max(0, (page - 1) * pageSize);
-    const phrase = ftsPhrase(getPrimaryEntity(title));
+    // 同 getRelatedBooks：FTS 命中计数读量随命中集增长 → 缓存（1 天），key 含全部分页/排序参数
+    return cachedQuery(
+      cacheKey("all-related", title, currentBookId, page, pageSize, sortBy, sortOrder),
+      86400,
+      async () => {
+        const db = await getDb();
+        const offset = Math.max(0, (page - 1) * pageSize);
+        const phrase = ftsPhrase(getPrimaryEntity(title));
 
-    // 实体不可用时无筛选条件，直接按排序列走索引取分页
-    if (!phrase) {
-      const total = await readStat(db, "total");
-      if (offset >= total) {
-        return { books: [], total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
-      }
-      const orderByColumn =
-        sortBy === "name" ? booksD1.title : booksD1.downloadCount;
-      const results = await db
-        .select(bookListCols)
-        .from(booksD1)
-        .where(sql`${booksD1.id} != ${currentBookId}`)
-        .orderBy(
-          sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn)
-        )
-        .limit(pageSize)
-        .offset(offset)
-        .all();
-      return {
-        books: results.map(mapBook),
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      };
-    }
+        // 实体不可用时无筛选条件，直接按排序列走索引取分页
+        if (!phrase) {
+          const total = await readStat(db, "total");
+          if (offset >= total) {
+            return { books: [], total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+          }
+          const orderByColumn =
+            sortBy === "name" ? booksD1.title : booksD1.downloadCount;
+          const results = await db
+            .select(bookListCols)
+            .from(booksD1)
+            .where(sql`${booksD1.id} != ${currentBookId}`)
+            .orderBy(
+              sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn)
+            )
+            .limit(pageSize)
+            .offset(offset)
+            .all();
+          return {
+            books: results.map(mapBook),
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+          };
+        }
 
-    const totalRow = await db.get(countTitleMatches(phrase, currentBookId));
-    const total = Number((totalRow as { c?: number } | undefined)?.c ?? 0);
-    // 越界页不再付出「命中集 + 排序」的代价
-    if (offset >= total) {
-      return { books: [], total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
-    }
+        const totalRow = await db.get(countTitleMatches(phrase, currentBookId));
+        const total = Number((totalRow as { c?: number } | undefined)?.c ?? 0);
+        // 越界页不再付出「命中集 + 排序」的代价
+        if (offset >= total) {
+          return { books: [], total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+        }
 
-    const orderByColumn =
-      sortBy === "name" ? booksD1.title : booksD1.downloadCount;
-    const results = await db
-      .select(bookListCols)
-      .from(booksD1)
-      .where(and(sql`${booksD1.id} != ${currentBookId}`, titleMatches(phrase)))
-      .orderBy(sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn))
-      .limit(pageSize)
-      .offset(offset)
-      .all();
+        const orderByColumn =
+          sortBy === "name" ? booksD1.title : booksD1.downloadCount;
+        const results = await db
+          .select(bookListCols)
+          .from(booksD1)
+          .where(and(sql`${booksD1.id} != ${currentBookId}`, titleMatches(phrase)))
+          .orderBy(sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn))
+          .limit(pageSize)
+          .offset(offset)
+          .all();
 
-    return {
-      books: results.map(mapBook),
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    };
+        return {
+          books: results.map(mapBook),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      },
+    );
   },
 
   async getBooksByTag(
@@ -401,38 +416,44 @@ export const d1BooksRepository: BooksRepository = {
   },
 
   async getAvailableDates(): Promise<AvailableDatesResult> {
-    const db = await getDb();
-    // 直接读日期清单：行数 = 有书的天数（当前约 140），而非全表去重
-    const results = await db
-      .select({ date: bookDatesD1.date })
-      .from(bookDatesD1)
-      .orderBy(desc(bookDatesD1.date))
-      .all();
-    return { dates: results.map((r) => r.date) };
+    // 日期清单无 LIMIT、随天数线性增长，读全表 → 缓存收敛（1 小时，与既有 revalidate 对齐）
+    return cachedQuery(cacheKey("available-dates"), 3600, async () => {
+      const db = await getDb();
+      // 直接读日期清单：行数 = 有书的天数（当前约 140），而非全表去重
+      const results = await db
+        .select({ date: bookDatesD1.date })
+        .from(bookDatesD1)
+        .orderBy(desc(bookDatesD1.date))
+        .all();
+      return { dates: results.map((r) => r.date) };
+    });
   },
 
   async getBooksByDate(date: string): Promise<DailyBooksResult> {
-    const db = await getDb();
-    const range = dayRange(date);
-    if (!range) return { date, books: [] };
+    // 读量 = 当日书籍数，随单日收录增长 → 缓存（1 小时）
+    return cachedQuery(cacheKey("books-by-date", date), 3600, async () => {
+      const db = await getDb();
+      const range = dayRange(date);
+      if (!range) return { date, books: [] };
 
-    // created_at 半开区间，走 books_created_at_idx（原 DATE(created_at)=? 无法用索引）
-    const results = await db
-      .select({ ...bookListCols, createdAt: booksD1.createdAt })
-      .from(booksD1)
-      .where(
-        and(gte(booksD1.createdAt, range.start), lt(booksD1.createdAt, range.endExclusive))
-      )
-      .orderBy(desc(booksD1.createdAt))
-      .all();
+      // created_at 半开区间，走 books_created_at_idx（原 DATE(created_at)=? 无法用索引）
+      const results = await db
+        .select({ ...bookListCols, createdAt: booksD1.createdAt })
+        .from(booksD1)
+        .where(
+          and(gte(booksD1.createdAt, range.start), lt(booksD1.createdAt, range.endExclusive))
+        )
+        .orderBy(desc(booksD1.createdAt))
+        .all();
 
-    return {
-      date,
-      books: results.map((b) => ({
-        ...mapBook(b),
-        createdAt: fromDb(b.createdAt ?? null),
-      })),
-    };
+      return {
+        date,
+        books: results.map((b) => ({
+          ...mapBook(b),
+          createdAt: fromDb(b.createdAt ?? null),
+        })),
+      };
+    });
   },
 
   async recordBookDownload(
@@ -548,14 +569,17 @@ export const d1BooksRepository: BooksRepository = {
   },
 
   async getSitemapBooks(limit: number): Promise<SitemapBook[]> {
-    const db = await getDb();
-    // 覆盖索引 books_dc_cover_idx 含 (download_count, id, updated_at)：免回表，只读 limit 个索引项
-    const allBooks = await db
-      .select({ id: booksD1.id, updatedAt: booksD1.updatedAt })
-      .from(booksD1)
-      .orderBy(desc(booksD1.downloadCount))
-      .limit(limit)
-      .all();
-    return allBooks.map((b) => ({ id: b.id, updatedAt: fromDb(b.updatedAt ?? null) }));
+    // 1 万行是 sitemap 本身的量级，索引无法收敛 → 靠 KV 缓存吸收（1 小时）
+    return cachedQuery(cacheKey("sitemap", limit), 3600, async () => {
+      const db = await getDb();
+      // 覆盖索引 books_dc_cover_idx 含 (download_count, id, updated_at)：免回表，只读 limit 个索引项
+      const allBooks = await db
+        .select({ id: booksD1.id, updatedAt: booksD1.updatedAt })
+        .from(booksD1)
+        .orderBy(desc(booksD1.downloadCount))
+        .limit(limit)
+        .all();
+      return allBooks.map((b) => ({ id: b.id, updatedAt: fromDb(b.updatedAt ?? null) }));
+    });
   },
 };

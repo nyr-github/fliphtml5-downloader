@@ -62,9 +62,6 @@ export default function PrivacyPolicyPage() {
               <li>
                 Account registration information (email address, username)
               </li>
-              <li>
-                Payment information (processed securely by our payment provider)
-              </li>
               <li>Communication data when you contact our support team</li>
               <li>Reading history and downloaded flipbook records</li>
             </ul>
@@ -140,8 +137,8 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc list-inside text-[var(--color-text-secondary)] leading-relaxed ml-4 mb-4">
               <li>
                 <strong>Service providers:</strong> Third-party companies that
-                assist us in operating our Service (payment processors, hosting
-                providers, analytics services)
+                assist us in operating our Service (hosting providers, analytics
+                services)
               </li>
               <li>
                 <strong>Legal requirements:</strong> When required by law,

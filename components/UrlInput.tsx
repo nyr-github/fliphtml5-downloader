@@ -2,7 +2,7 @@
 
 import React from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
-
+import Script from "next/script";
 interface UrlInputProps {
   value: string;
   onChange: (value: string) => void;

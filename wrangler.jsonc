@@ -58,6 +58,15 @@
             "migrations_dir": "drizzle/d1"
         }
     ],
+    // D1 结果缓存：仅缓存「读行数随结果集增长、索引无法收敛」的重查询
+    // （sitemap / 相关书籍 / 日期清单 / 单日书籍），见 lib/db/repositories/d1-cache.ts。
+    // 由 `wrangler kv namespace create BOOKS_CACHE` 创建。
+    "kv_namespaces": [
+        {
+            "binding": "BOOKS_CACHE",
+            "id": "851bf04daf57435b91a951f7bcc0282d"
+        }
+    ],
     // Workers 运行时环境变量。数据库驱动选择 + 非明文配置。
     // 机密（CRON_SECRET / DISCORD_WEBHOOK_URL / SEO_SUBMIT_URL 等）请用 `wrangler secret put`，不要写在这里。
     "vars": {

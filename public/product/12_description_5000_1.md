@@ -916,7 +916,7 @@ const [newBook] = await db
   .insert(booksTable)
   .values({
     title: 'Example Book',
-    url: 'https://online.fliphtml5.com/xxxxx/xxxxx/',
+    url: 'https://books.fliphtml5.com/xxxxx/xxxxx/',
     pages: 50
   })
   .returning();
@@ -1394,7 +1394,7 @@ Add a new book to the database.
 ```json
 {
   "title": "Book Title",
-  "url": "https://online.fliphtml5.com/xxx/xxx/",
+  "url": "https://books.fliphtml5.com/xxx/xxx/",
   "pages": 50
 }
 ```

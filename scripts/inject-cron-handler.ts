@@ -67,7 +67,7 @@ const EDGE_CACHE_RULES: { re: string; ttl: number }[] = [
   { re: "^/books(/.*)?$", ttl: ONE_HOUR },
   { re: "^/blog$", ttl: ONE_HOUR },
   // 纯壳/法务页
-  { re: "^/(policy|pricing|qa|refund|terms-and-conditions|all-apps|history)$", ttl: ONE_DAY },
+  { re: "^/(policy|qa|terms-and-conditions|all-apps|history)$", ttl: ONE_DAY },
 ];
 
 function buildEdgeCacheBlock(): string {

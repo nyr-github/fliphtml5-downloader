@@ -116,7 +116,7 @@ That's literally it. No complicated setup. No learning curve. No technical knowl
 
 **Step 2: Copy the URL**
 - Copy the complete URL from your browser's address bar
-- Example: `https://online.fliphtml5.com/xxxxx/xxxxx/`
+- Example: `https://books.fliphtml5.com/xxxxx/xxxxx/`
 - Make sure you get the full URL including all parts
 
 **Step 3: Visit Our Tool**

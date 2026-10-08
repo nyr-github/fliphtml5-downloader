@@ -44,7 +44,7 @@ Navigate to any FlipHTML5 publication you want to save. For example:
 
 **Example URL:**
 ```
-https://online.fliphtml5.com/abcd/efgh/
+https://books.fliphtml5.com/abcd/efgh/
 ```
 
 #### Step 2: Copy the URL

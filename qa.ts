@@ -28,7 +28,7 @@ export const qaData: QAItem[] = [
   {
     question: "What FlipHTML5 URLs are supported?",
     answer:
-      "All standard FlipHTML5 publication URLs in the format: https://online.fliphtml5.com/[id1]/[id2]/",
+      "All standard FlipHTML5 publication URLs in the format: https://books.fliphtml5.com/[id1]/[id2]/",
   },
   {
     question: "Can I download multiple flipbooks at once?",

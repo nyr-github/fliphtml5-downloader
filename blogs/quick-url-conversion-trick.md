@@ -87,7 +87,7 @@ This trick works with all standard FlipHTML5 publication URLs, including:
 The method works with both URL formats:
 
 - `https://fliphtml5.com/[username]/[book-id]/`
-- `https://online.fliphtml5.com/[username]/[book-id]/`
+- `https://books.fliphtml5.com/[username]/[book-id]/`
 
 Simply replace the domain part with `fliphtml5.aivaded.com` or `online.fliphtml5.aivaded.com`.
 

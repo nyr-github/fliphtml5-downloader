@@ -29,7 +29,7 @@ export async function loadBookConfig(
   firstPageThumb?: string;
   isEncryptionBook: boolean;
 }> {
-  const configUrl = `https://online.fliphtml5.com/${id1}/${id2}/javascript/config.js`;
+  const configUrl = `https://books.fliphtml5.com/${id1}/${id2}/javascript/config.js`;
   const res = await fetch(configUrl);
   const text = await res.text();
 
@@ -47,7 +47,7 @@ export async function loadBookConfig(
     pageData = config.fliphtml5_pages;
   }
 
-  const baseUrl = `https://online.fliphtml5.com/${id1}/${id2}/`;
+  const baseUrl = `https://books.fliphtml5.com/${id1}/${id2}/`;
   //   console.log(pageData);
   //   debugger;
   const imageUrls = pageData.map((p) => {

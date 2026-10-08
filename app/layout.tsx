@@ -90,6 +90,7 @@ export default function RootLayout({
           name="impact-site-verification"
           content="2c7610d2-20d5-4076-a41b-53e2718927f6"
         />
+        
       </head>
       <body
         suppressHydrationWarning

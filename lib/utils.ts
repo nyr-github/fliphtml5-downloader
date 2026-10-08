@@ -29,5 +29,5 @@ export function buildThumbnailUrl(
   if (thumbnail.startsWith("http")) {
     return thumbnail;
   }
-  return `https://online.fliphtml5.com/${id1}/${id2}/${cleanUrl(thumbnail)}`;
+  return `https://books.fliphtml5.com/${id1}/${id2}/${cleanUrl(thumbnail)}`;
 }

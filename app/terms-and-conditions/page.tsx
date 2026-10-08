@@ -108,42 +108,23 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              5. Subscription and Payment
+              5. Service and Usage
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed mb-4">
-              We offer the following subscription plans:
-            </p>
-            <ul className="list-disc list-inside text-[var(--color-text-secondary)] leading-relaxed ml-4 mb-4">
-              <li>Monthly Plan: $10 USD per month</li>
-              <li>Semi-Annual Plan: $50 USD per 6 months</li>
-              <li>Annual Plan: $80 USD per year</li>
-            </ul>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed mb-4">
-              All payments are processed securely through our payment provider.
-              Subscriptions automatically renew unless cancelled before the
-              renewal date.
+              The Service is currently provided free of charge for personal,
+              non-commercial use. We may introduce optional paid features or
+              plans in the future; any such changes will be announced in advance
+              and governed by the terms in effect at that time.
             </p>
             <p className="text-[var(--color-text-secondary)] leading-relaxed">
-              Prices are subject to change with 30 days advance notice to
-              existing subscribers.
+              We reserve the right to modify, suspend, or discontinue any part of
+              the Service at any time.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              6. Refund Policy
-            </h2>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed">
-              We offer a 2-day unconditional money-back guarantee for all paid
-              subscriptions. If you are not satisfied with our Service, you may
-              request a full refund within 2 days of your purchase. Please refer
-              to our dedicated Refund Policy page for more details.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              7. Intellectual Property
+              6. Intellectual Property
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed mb-4">
               The Service and its original content, features, and functionality
@@ -160,7 +141,7 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              8. Prohibited Uses
+              7. Prohibited Uses
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed mb-4">
               You agree not to use the Service:
@@ -192,7 +173,7 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              9. Disclaimer of Warranties
+              8. Disclaimer of Warranties
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed">
               The Service is provided on an "AS IS" and "AS AVAILABLE" basis
@@ -206,7 +187,7 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              10. Limitation of Liability
+              9. Limitation of Liability
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed">
               In no event shall FlipHTML5 Downloader, its directors, employees,
@@ -220,7 +201,7 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              11. Changes to Terms
+              10. Changes to Terms
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed">
               We reserve the right to modify or replace these Terms at any time.
@@ -232,7 +213,7 @@ export default function TermsAndConditionsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
-              12. Contact Information
+              11. Contact Information
             </h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed">
               If you have any questions about these Terms, please contact us at:
