@@ -40,6 +40,7 @@ import path from "path";
 // cron 表达式 -> 目标路由。必须与 wrangler.jsonc 的 triggers.crons 保持一致，
 // 并与 vercel.json 的 Vercel Cron 计划对齐（均为 UTC）。
 const CRON_MAP: Record<string, string> = {
+  "0 0 * * *": "/api/cron/discord-code",
   "30 0 * * *": "/api/cron/daily-stats",
   // "0 1 * * *": "/api/cron/tag-books",
 };

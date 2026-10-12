@@ -89,7 +89,7 @@ export default async function FlipDownloader({ searchParams }: PageProps) {
               className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--color-text)] mb-3 sm:mb-4 leading-[1.1] text-balance"
               suppressHydrationWarning
             >
-              Transform Fliphtml5s to
+              Transform Fliphtml5 to
               <span className="block text-gradient mt-1 sm:mt-2">
                 Beautiful PDFs
               </span>

@@ -3,13 +3,28 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { jsPDF } from "jspdf";
 import { motion } from "motion/react";
+import { Sparkles } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getBlob, extractPdfPages, isZipUrl } from "@/lib/pdf-handler";
 import { extractIdsFromUrl, loadBookConfig } from "@/hooks/useBookConfig";
 import UrlInput from "./UrlInput";
 import TaskList from "./TaskList";
+import PayModal, {
+  getPendingOrder,
+  clearPendingOrder,
+  checkOrderStatus,
+  finalizePaidOrder,
+  isDailyFreeEnabled,
+  type PendingOrder,
+} from "./PayModal";
 import { getAndClearPendingDownloadUrl } from "@/lib/download-storage";
+import {
+  paymentDB,
+  consumeOrCheckFreeToday,
+  hasActiveWeeklyPass,
+  getWeeklyPassExpiresAt,
+} from "@/lib/payment-db";
 
 interface DownloadTask {
   id: string;
@@ -26,6 +41,42 @@ interface DownloadTask {
   id1?: string;
   id2?: string;
   canReadOnline?: boolean;
+}
+
+// 任务持久化：只存可序列化的字段（jsPDF 实例与 blob URL 刷新后必然失效）。
+type SavedTask = Omit<DownloadTask, "pdfData" | "pdfBlobUrl" | "imageUrls">;
+const TASKS_STORAGE_KEY = "fbl_tasks";
+const MAX_SAVED_TASKS = 10;
+
+function loadSavedTasks(): DownloadTask[] {
+  try {
+    const raw = localStorage.getItem(TASKS_STORAGE_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as SavedTask[];
+    return list.slice(0, MAX_SAVED_TASKS).map((t) => ({
+      ...t,
+      // 刷新会中断转换：错误保留现场，其余（含已完成）统一恢复为可重新开始的 idle
+      status: t.status === "error" ? "error" : "idle",
+      progress: t.status === "error" ? t.progress : 0,
+      currentPage: 0,
+      totalPages: t.status === "error" ? t.totalPages : 0,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// 周卡剩余时长的紧凑展示：6d 12h 5m 30s / 12h 5m 30s / 5m 30s / 30s
+function formatRemaining(ms: number): string {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(totalSeconds / 86400);
+  const h = Math.floor((totalSeconds % 86400) / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (d > 0) return `${d}d ${h}h ${m}m ${s}s`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
 // Helper for concurrency
@@ -66,10 +117,42 @@ export default function FlipDownloaderClient({
 
   const [mounted, setMounted] = useState(false);
   const [urlInput, setUrlInput] = useState(pendingUrlFromStorage || "");
-  const [tasks, setTasks] = useState<DownloadTask[]>([]);
+  const [tasks, setTasks] = useState<DownloadTask[]>(() =>
+    typeof window !== "undefined" ? loadSavedTasks() : [],
+  );
+  // 周卡生效中则持有到期时间 ISO 字符串，用于页面提示
+  const [weekPassUntil, setWeekPassUntil] = useState<string | null>(() =>
+    typeof window !== "undefined" ? getWeeklyPassExpiresAt() : null,
+  );
+  const [nowTick, setNowTick] = useState<number>(() => Date.now());
+  const refreshWeekPass = useCallback(() => {
+    setNowTick(Date.now());
+    setWeekPassUntil(getWeeklyPassExpiresAt());
+  }, []);
+
+  // 周卡生效期间每秒对时：倒计时实时跳动，到期后 weekPassUntil 自动置空隐藏提示条
+  useEffect(() => {
+    if (!weekPassUntil) return;
+    const timer = setInterval(() => {
+      setNowTick(Date.now());
+      setWeekPassUntil(getWeeklyPassExpiresAt());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [weekPassUntil]);
+  const [payTarget, setPayTarget] = useState<{
+    bookKey: string;
+    url: string;
+    taskId: string;
+    resumeOrder: PendingOrder | null;
+  } | null>(null);
   const searchParams = useSearchParams();
   const initialUrlProcessed = React.useRef(false);
   const pendingUrlRef = React.useRef<string | null>(pendingUrlFromStorage);
+  const payTargetRef = React.useRef<typeof payTarget>(null);
+
+  useEffect(() => {
+    payTargetRef.current = payTarget;
+  }, [payTarget]);
 
   const updateTask = useCallback(
     (id: string, updates: Partial<DownloadTask>) => {
@@ -88,6 +171,31 @@ export default function FlipDownloaderClient({
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // 任务变化时快照最近 MAX_SAVED_TASKS 条（tasks 新任务在前），刷新后恢复。
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      const slim: SavedTask[] = tasks
+        .slice(0, MAX_SAVED_TASKS)
+        .map((t) => ({
+          id: t.id,
+          url: t.url,
+          status: t.status,
+          progress: t.progress,
+          currentPage: t.currentPage,
+          totalPages: t.totalPages,
+          title: t.title,
+          errorMessage: t.errorMessage,
+          id1: t.id1,
+          id2: t.id2,
+          canReadOnline: t.canReadOnline,
+        }));
+      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(slim));
+    } catch {
+      // 存储满或隐私模式下写入失败，不影响页面功能
+    }
+  }, [tasks, mounted]);
 
   const extractIds = extractIdsFromUrl;
 
@@ -177,6 +285,21 @@ export default function FlipDownloaderClient({
         setUrlInput("");
       } else {
         updateTask(taskId, { status: "loading", errorMessage: undefined });
+      }
+
+      // 付费墙：周卡有效 → 直接放行；否则看单书授权与每日免费额度。
+      // 服务端 FREE_ONCE_EVERYDAY=false 时取消每日免费额度，未解锁文件一律弹窗。
+      // 服务端 PAYMENT_ENABLE=false 时弹窗只保留免费券兑换（暂时只能走 Discord / X 领码）。
+      if (!hasActiveWeeklyPass()) {
+        const bookKey = `${ids.id1}_${ids.id2}`;
+        const licensed = await paymentDB.hasLicense(bookKey);
+        const freeOk =
+          (await isDailyFreeEnabled()) && consumeOrCheckFreeToday(bookKey);
+        if (!licensed && !freeOk) {
+          updateTask(taskId, { status: "idle" });
+          setPayTarget({ bookKey, url, taskId, resumeOrder: null });
+          return;
+        }
       }
 
       try {
@@ -326,6 +449,82 @@ export default function FlipDownloaderClient({
     ],
   );
 
+  // 支付成功（许可已写入 IndexedDB）后，重新进入 startDownload：
+  // 此时 hasLicense 为 true，付费墙直接放行并继续处理。
+  const handlePaySuccess = useCallback(
+    (_bookKey: string, url: string) => {
+      const target = payTargetRef.current;
+      clearPendingOrder();
+      setPayTarget(null);
+      refreshWeekPass();
+      if (target) {
+        startDownload(url, target.taskId);
+      }
+    },
+    [startDownload, refreshWeekPass],
+  );
+
+  // callback 回跳/刷新后，若存在未确认的待支付订单：先核验一次，
+  // 已支付则写入授权并立即开始下载；仍未确认才回到弹窗轮询兜底。
+  const resumeCheckedRef = React.useRef(false);
+  useEffect(() => {
+    if (!mounted || resumeCheckedRef.current) return;
+    const pending = getPendingOrder();
+    if (!pending) return;
+    resumeCheckedRef.current = true;
+    (async () => {
+      const licensed = await paymentDB.hasLicense(pending.bookKey);
+      if (licensed) {
+        clearPendingOrder();
+        return;
+      }
+      const ids = extractIds(pending.url);
+      if (!ids) {
+        clearPendingOrder();
+        return;
+      }
+      const status = await checkOrderStatus(pending);
+      if (status === "paid") {
+        await finalizePaidOrder(pending);
+        refreshWeekPass();
+        // 复用同 URL 的已恢复任务（若有），立即进入下载流程
+        const restored = loadSavedTasks().find((t) => t.url === pending.url);
+        startDownload(pending.url, restored?.id);
+        return;
+      }
+      if (status === "failed") {
+        clearPendingOrder();
+        toast.error("Payment failed", { description: "Please try again." });
+        return;
+      }
+      // 未确认：复用或新建任务，恢复等待弹窗并继续轮询
+      const existing = loadSavedTasks().find((t) => t.url === pending.url);
+      const taskId = existing ? existing.id : `${Date.now()}`;
+      if (!existing) {
+        setTasks((prev) => [
+          {
+            id: taskId,
+            url: pending.url,
+            status: "idle",
+            progress: 0,
+            currentPage: 0,
+            totalPages: 0,
+            title: ids.id2,
+            id1: ids.id1,
+            id2: ids.id2,
+          },
+          ...prev,
+        ]);
+      }
+      setPayTarget({
+        bookKey: pending.bookKey,
+        url: pending.url,
+        taskId,
+        resumeOrder: pending,
+      });
+    })();
+  }, [mounted, extractIds, startDownload, refreshWeekPass]);
+
   useEffect(() => {
     // Priority 1: localStorage pending URL (already read during component init)
     const pendingUrl = pendingUrlRef.current;
@@ -340,12 +539,15 @@ export default function FlipDownloaderClient({
       initialUrlProcessed.current = true;
       setUrlInput(finalUrl);
 
+      // 刷新会重跑本逻辑（URL 参数仍在）：若同 URL 任务已被恢复则复用，避免重复建卡。
+      const existingTask = loadSavedTasks().find((t) => t.url === finalUrl);
+
       if (autoStart) {
-        setTimeout(() => startDownload(finalUrl), 0);
+        setTimeout(() => startDownload(finalUrl, existingTask?.id), 0);
       } else {
         // Create idle task
         const ids = extractIds(finalUrl);
-        if (ids) {
+        if (ids && !existingTask) {
           const taskId = `${Date.now()}`;
           const idleTask: DownloadTask = {
             id: taskId,
@@ -358,7 +560,10 @@ export default function FlipDownloaderClient({
             id1: ids.id1,
             id2: ids.id2,
           };
-          setTimeout(() => setTasks([idleTask]), 0);
+          setTimeout(
+            () => setTasks((prev) => [idleTask, ...prev]),
+            0,
+          );
         }
       }
     }
@@ -372,6 +577,31 @@ export default function FlipDownloaderClient({
 
   return (
     <div className="space-y-8">
+      {/* Weekly pass status */}
+      {weekPassUntil && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-primary-dark)]/10 border border-[var(--color-primary)]/20 px-4 py-2.5 text-xs sm:text-sm font-semibold text-[var(--color-primary-dark)]"
+        >
+          <Sparkles className="w-4 h-4 flex-shrink-0" />
+          <span>
+            Weekly pass active — unlimited downloads until{" "}
+            {new Date(weekPassUntil).toLocaleString(undefined, {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            {" · "}
+            {formatRemaining(
+              new Date(weekPassUntil).getTime() - nowTick,
+            )}{" "}
+            left
+          </span>
+        </motion.div>
+      )}
+
       {/* Input Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -412,6 +642,19 @@ export default function FlipDownloaderClient({
         onRemove={removeTask}
         onStartDownload={startDownload}
         extractIds={extractIds}
+      />
+
+      <PayModal
+        key={payTarget ? payTarget.taskId : "pay-none"}
+        open={!!payTarget}
+        bookKey={payTarget?.bookKey ?? ""}
+        url={payTarget?.url ?? ""}
+        resumeOrder={payTarget?.resumeOrder ?? null}
+        onSuccess={handlePaySuccess}
+        onClose={() => {
+          clearPendingOrder();
+          setPayTarget(null);
+        }}
       />
     </div>
   );

@@ -108,3 +108,19 @@ export const bookStatsD1 = sqliteTable(
  * 命中它，语义与原先的 `title LIKE '%关键词%'` 完全一致（已用全量数据比对命中数）。
  */
 export const BOOKS_TITLE_FTS_TABLE = "books_title_fts";
+
+/**
+ * Discord 社区通行证兑换码（后台批量生成；每张码最多可用 max_uses 次）。
+ * 仅由 lib/discord-pass.ts 用原生 SQL 读写，不走 BooksRepository。
+ */
+export const discordPassCodesD1 = sqliteTable(
+  "discord_pass_codes",
+  {
+    code: text("code").primaryKey(),
+    createdAt: text("created_at").notNull(), // 'YYYY-MM-DD HH:MM:SS' UTC
+    sentAt: text("sent_at"),
+    maxUses: integer("max_uses").notNull().default(5),
+    usedCount: integer("used_count").notNull().default(0),
+  },
+  (t) => [index("discord_pass_codes_created_idx").on(t.createdAt, t.code)]
+);

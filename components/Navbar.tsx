@@ -21,7 +21,7 @@ import {
   FileText,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { BOOK_TAGS, tagToSlug } from "@/lib/constants";
+import { BOOK_TAGS, DISCORD_INVITE_URL, tagToSlug } from "@/lib/constants";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -71,7 +71,7 @@ export default function Navbar() {
     },
     {
       name: "Join Discord Community",
-      href: "https://discord.gg/5EZ3u4pe",
+      href: DISCORD_INVITE_URL,
       icon: MessageCircle,
       external: true,
     },
@@ -278,7 +278,7 @@ export default function Navbar() {
                   Leave a Comment on X
                 </a>
                 <a
-                  href="https://discord.gg/5EZ3u4pe"
+                  href={DISCORD_INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}

@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/discord-code",
+      "schedule": "0 0 * * *"
+    },
+    {
       "path": "/api/cron/daily-stats",
       "schedule": "30 0 * * *"
     },

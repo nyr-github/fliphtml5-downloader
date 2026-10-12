@@ -39,6 +39,7 @@
     // 以及 vercel.json 的 Vercel Cron 计划保持一致。
     "triggers": {
         "crons": [
+            "0 0 * * *",
             "30 0 * * *",
             // "0 1 * * *"
         ]
@@ -67,6 +68,14 @@
             "id": "851bf04daf57435b91a951f7bcc0282d"
         }
     ],
+    // Cloudflare Email Sending：Workers 原生发送绑定（无需 API key），代码经 getCloudflareContext().env.EMAIL 调用。
+    // 前提：发件域名须先开通 Email Sending（`npx wrangler email sending enable aivaded.com`）并配好 SPF/DKIM，
+    // 否则发送会以 E_SENDER_NOT_VERIFIED 失败（best-effort 静默跳过，后台仍可手动复制码发送）。
+    "send_email": [
+        {
+            "name": "EMAIL"
+        }
+    ],
     // Workers 运行时环境变量。数据库驱动选择 + 非明文配置。
     // 机密（CRON_SECRET / DISCORD_WEBHOOK_URL / SEO_SUBMIT_URL 等）请用 `wrangler secret put`，不要写在这里。
     "vars": {
@@ -75,7 +84,28 @@
         "PROJECT_ID": "fliphtml5-downloader",
         "NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL": "https://plausible.aivaded.com/api/loader/fliphtml5-downloader.js",
         "DISCORD_WEBHOOK_URL": "https://plausible.aivaded.com/api/discord/webhook/fliphtml5-downloader",
-        "SEO_SUBMIT_URL": "https://plausible.aivaded.com/api/seo/submit/fliphtml5-downloader"
+        "SEO_SUBMIT_URL": "https://plausible.aivaded.com/api/seo/submit/fliphtml5-downloader",
+        // PayPal 支付网关（仅 /api/payment/* 服务端使用）。填入平台分配的 sk_xxx 密钥后即可生效；
+        // 也可改用 `wrangler secret put PAYMENT_API_KEY`。
+        "PAYMENT_BASE_URL": "https://payment.aivaded.com",
+        "PAY_DEBUG": "false",
+        // FREE_ONCE_EVERYDAY=false 时取消「每天首次下载免费」额度，所有文件都需解锁（付费或 Discord 兑换码）。
+        "FREE_ONCE_EVERYDAY": "false",
+        // FREE_CODE_ENABLE=false 时前端隐藏免费券（Discord / X 码）兑换入口，仅隐藏 UI，兑换接口仍可用。
+        "FREE_CODE_ENABLE": "true",
+        // PAYMENT_ENABLE=false 时关闭支付入口：弹窗隐藏付费按钮、/api/payment/create-order 不再接受下单。
+        // 搭配 FREE_CODE_ENABLE=true 表示暂时只支持通过 Discord / X 获取免费券解锁。
+        "PAYMENT_ENABLE": "false",
+        // Discord/X 免费券运营参数（运行时生效，改动无需重新构建；留空或删除则回退代码默认值）。
+        // WEEK_PASS_DAYS：每次激活的周卡天数；DISCORD_PASS_MAX_USES：每张码可激活次数；
+        // DISCORD_PASS_BATCH_SIZE：每日 00:00 UTC cron 固定发放的码数量（不受 MAX 限制）；DISCORD_PASS_BATCH_MAX：后台手动单批生成的数量上限。
+        "WEEK_PASS_DAYS": "1",
+        "DISCORD_PASS_MAX_USES": "1",
+        "DISCORD_PASS_BATCH_SIZE": "10",
+        "DISCORD_PASS_BATCH_MAX": "10",
+        // Twitter 发帖换券：后台审核通过后经 Cloudflare Email Sending 向用户邮箱发送兑换码的发件地址（须是已开通 Email Sending 的域名）。
+        // 留空则不自动发信，后台页可复制兑换码手动发送。
+        "FREE_PASS_EMAIL_FROM": "hello@aivaded.com"
     }
     // 多账号时需指定: "account_id": "<your-account-id>"
 }

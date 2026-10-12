@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DISCORD_INVITE_URL } from "@/lib/constants";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -101,7 +102,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://discord.gg/5EZ3u4pe"
+                  href={DISCORD_INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"

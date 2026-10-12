@@ -9,6 +9,33 @@ NEXTJS_ENV=development
 # DISCORD_WEBHOOK_URL=
 # SEO_SUBMIT_URL=
 
+# ---- 支付（PayPal 网关）本地 preview ----
+# /api/payment/create-order 与 /api/payment/status 服务端使用，切勿提交真实密钥。
+PAYMENT_BASE_URL=https://payment.aivaded.com
+# PAYMENT_API_KEY=
+# PAY_DEBUG=true 时两个交易金额降为 $0.10，仅用于测试支付链路。
+# PAY_DEBUG=
+# FREE_ONCE_EVERYDAY=false 时取消每天首次下载免费额度（所有文件都要解锁）。
+# FREE_ONCE_EVERYDAY=
+# FREE_CODE_ENABLE=false 时隐藏前端免费券兑换入口。
+# FREE_CODE_ENABLE=
+# PAYMENT_ENABLE=false 时关闭支付入口（弹窗隐藏付费按钮、create-order 不再接受下单）；搭配 FREE_CODE_ENABLE=true 表示只靠免费券解锁。
+# PAYMENT_ENABLE=
+
+# Discord 社区通行证后台：路径令牌（留空则 /admin/* 一律 404）。本地 preview 需在 D1 先执行 drizzle/d1/0002、0003 迁移。
+# ADMIN_TOKEN=
+
+# ---- Discord/X 免费券运营参数（留空则用代码默认值：7/5/10/50）----
+# WEEK_PASS_DAYS=7
+# DISCORD_PASS_MAX_USES=5
+# DISCORD_PASS_BATCH_SIZE=10
+# DISCORD_PASS_BATCH_MAX=50
+
+# ---- Twitter/X 发帖换免费券 ----
+# 后台 /admin/<ADMIN_TOKEN>/requests 审核通过后经 Cloudflare Email Sending（Workers send_email 绑定）向用户邮箱发兑换码的发件地址；
+# 留空则不自动发信，后台页复制码手动发送（已在 wrangler.jsonc vars 中默认 noreply@aivaded.com，如需本地改这里覆盖）。
+# FREE_PASS_EMAIL_FROM=
+
 # ---- 缓存相关（本地 preview） ----
 # Next.js 数据缓存 / ISR 的读写日志。排查「unstable_cache 到底有没有命中」时打开：
 # 会在 preview 日志里看到 [R2IncrementalCache] get/set <key> 这类行。

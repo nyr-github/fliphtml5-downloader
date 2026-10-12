@@ -1,8 +1,12 @@
 import React from "react";
-import { qaData } from "@/qa";
+import { getQaData } from "@/qa";
 import { Metadata } from "next";
 import Accordion from "@/components/ui/Accordion";
 import { HelpCircle } from "lucide-react";
+import { DISCORD_INVITE_URL } from "@/lib/constants";
+
+// FAQ 文案里的免费券天数/次数/每日发放数量随运行时 env 变化，故按请求渲染而非构建期写死。
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions - FlipHTML5 Downloader",
@@ -24,6 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default function QAPage() {
+  const qaData = getQaData();
   // FAQ Schema for SEO
   const jsonLd = {
     "@context": "https://schema.org",
@@ -89,7 +94,7 @@ export default function QAPage() {
                 Leave a Comment on X
               </a>
               <a
-                href="https://discord.gg/5EZ3u4pe"
+                href={DISCORD_INVITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"

@@ -10,6 +10,7 @@ import {
   X,
   FileText,
   Eye,
+  RefreshCw,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -162,6 +163,19 @@ export default function TaskCard({
                 <span className="sm:hidden">Read</span>
               </Link>
             )}
+          </div>
+        )}
+
+        {task.status === "error" && (
+          <div className="lg:shrink-0">
+            <button
+              onClick={() => onStartDownload(task.url, task.id)}
+              className="w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-lg active:scale-95 transition-all"
+            >
+              <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Retry Conversion</span>
+              <span className="sm:hidden">Retry</span>
+            </button>
           </div>
         )}
 
