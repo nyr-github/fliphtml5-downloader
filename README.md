@@ -20,16 +20,19 @@ An elegant online tool that converts FlipHTML5 publications into high-quality PD
 
 ### Frontend
 
-- **Next.js 15** - React framework
+- **Next.js 15** - React framework (App Router)
+- **React 19** - UI library
 - **Tailwind CSS 4** - Styling system
 - **Framer Motion** - Animations
 - **Lucide React** - Icon library
 - **jsPDF** - PDF generation
+- **pdf.js** - Page rendering
 
 ### Backend & Data
 
 - **Neon** - Serverless PostgreSQL
 - **Drizzle ORM** - Database ORM
+- **Cloudflare Workers** - Optional deploy target via OpenNext
 
 ## How It Works
 
@@ -95,7 +98,7 @@ The encryption uses byte-inversion algorithms in the WASM module. Decrypted data
 ### Requirements
 
 - Node.js 20+
-- pnpm 8+
+- pnpm 10+ (pnpm 11 recommended)
 
 ### Installation
 
@@ -103,13 +106,32 @@ The encryption uses byte-inversion algorithms in the WASM module. Decrypted data
 pnpm install
 ```
 
+> **pnpm 11+ users:** pnpm refuses to finish an install while any dependency
+> has an unreviewed build script, failing with `ERR_PNPM_IGNORED_BUILDS`
+> (exit code 1). This repo already declares the required decisions in
+> `pnpm-workspace.yaml` under `allowBuilds`, so the command above works out of
+> the box. If you add a dependency whose install script is blocked, run
+> `pnpm approve-builds` and commit the updated `pnpm-workspace.yaml`.
+
 ### Environment Configuration
 
-Copy `.env.example` to `.env` and configure:
+Copy `.env.example` to `.env.local` and fill in what you need:
+
+```bash
+cp .env.example .env.local
+```
+
+The only variable required to run the app fully is the database URL:
 
 ```env
-DATABASE_URL=your_neon_database_url
+DATABASE_URL=postgresql://user:password@host/database
 ```
+
+`DB_DRIVER` stays empty for PostgreSQL (Vercel / VPS / local). Set it to `d1`
+only when running on Cloudflare D1, where it is injected by `wrangler.jsonc`.
+
+Without `DATABASE_URL` the app still boots and renders pages, but book
+queries fail with `ECONNREFUSED` (logged, not fatal).
 
 ### Development
 
@@ -117,7 +139,7 @@ DATABASE_URL=your_neon_database_url
 pnpm dev
 ```
 
-Visit http://localhost:3000
+Visit http://localhost:10022 — the dev script binds port **10022**, not 3000.
 
 ### Build
 
@@ -125,6 +147,58 @@ Visit http://localhost:3000
 pnpm build
 pnpm start
 ```
+
+`pnpm build` first regenerates `lib/blog-list.json` from the Markdown files in
+`blogs/`, then runs `next build`.
+
+## Deploy
+
+### Cloudflare Workers
+
+```bash
+pnpm preview     # build + local Workers preview
+pnpm deploy:cf   # build + deploy
+```
+
+See [`CLOUDFLARE_DEPLOY.md`](./CLOUDFLARE_DEPLOY.md) for environment variables
+and Dashboard settings, and [`DATABASE_SETUP.md`](./DATABASE_SETUP.md) for
+database setup and migrations (`pnpm db:push`).
+
+## Troubleshooting
+
+**`ERR_PNPM_IGNORED_BUILDS` during `pnpm install`**
+
+pnpm 11 treats unreviewed build scripts as errors. Run `pnpm approve-builds`,
+or set explicit `true` / `false` values for each package under `allowBuilds`
+in `pnpm-workspace.yaml`. Never leave the placeholder text
+`set this to true or false` — it is a string, so the package stays blocked and
+the install keeps failing.
+
+**`EPERM: operation not permitted, symlink` at the end of `pnpm build` (Windows)**
+
+`next build` produces `output: "standalone"`, which copies traced files using
+symlinks. Windows only allows symlinks with Developer Mode enabled or from an
+elevated terminal (junctions are not affected). Enable *Settings → System →
+For developers → Developer mode*, or run the build as administrator.
+
+**`Warning: Next.js inferred your workspace root, but it may not be correct`**
+
+A lockfile above the project directory (for example `~/pnpm-lock.yaml`) makes
+Next.js pick the wrong root, so the standalone output nests under an extra
+folder. Either remove the stray lockfile or pin the root explicitly in
+`next.config.ts`:
+
+```typescript
+const nextConfig: NextConfig = {
+  outputFileTracingRoot: __dirname,
+  // ...
+};
+```
+
+**`ECONNREFUSED` when loading books**
+
+`DATABASE_URL` is missing or unreachable. See
+[`DATABASE_SETUP.md`](./DATABASE_SETUP.md).
 
 ## Usage
 
