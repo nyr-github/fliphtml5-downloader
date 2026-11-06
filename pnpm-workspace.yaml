@@ -1,2 +1,21 @@
-ignoredBuiltDependencies:
-  - bufferutil
+# pnpm 11 exige que cada dependência com script de build seja classificada
+# explicitamente como true (roda o script) ou false (bloqueia).
+# Sem isso, o install falha com ERR_PNPM_IGNORED_BUILDS, pois strictDepBuilds
+# (padrão no v11) trata builds não revisados como erro.
+#
+# true  = precisa do script para funcionar: esbuild (tsx/drizzle-kit/wrangler),
+#         @tailwindcss/oxide (Tailwind v4), sharp e workerd (binários nativos
+#         servidos via pacotes opcionais já baixados) e unrs-resolver (eslint).
+# false = dependência nativa/opcional que NÃO deve compilar aqui: exigiria
+#         MSVC/node-gyp no Windows ou é apenas cosmética.
+allowBuilds:
+  '@tailwindcss/oxide': true
+  bufferutil: false
+  canvas: false
+  core-js: false
+  esbuild: true
+  protobufjs: false
+  re2: false
+  sharp: true
+  unrs-resolver: true
+  workerd: true
