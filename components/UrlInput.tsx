@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { BookOpen, ArrowRight } from "lucide-react";
-import Script from "next/script";
+import { ArrowRight, BookOpen } from "lucide-react";
+
 interface UrlInputProps {
   value: string;
   onChange: (value: string) => void;
@@ -11,41 +10,20 @@ interface UrlInputProps {
 
 export default function UrlInput({ value, onChange, onSubmit }: UrlInputProps) {
   return (
-    <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-[var(--color-border-light)] mb-6 sm:mb-8">
-      <div className="relative group">
-        <div className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]">
-          <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-        </div>
-        <input
-          type="text"
-          placeholder="Paste FlipHTML5 book URL here..."
-          className="w-full pl-11 sm:pl-14 pr-14 sm:pr-16 py-4 sm:py-5 md:py-6 bg-[var(--color-bg)] border-2 border-[var(--color-border-light)] rounded-xl sm:rounded-2xl focus:bg-white focus:border-[var(--color-primary)]/40 focus:ring-4 focus:ring-[var(--color-primary)]/10 transition-all outline-none text-sm sm:text-base md:text-lg font-body"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-        />
-        <button
-          onClick={onSubmit}
-          disabled={!value}
-          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2   md:bg-gradient-to-br md:from-[var(--color-primary)] md:to-[var(--color-primary-dark)] text-[var(--color-primary)] md:text-white rounded-full sm:rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale disabled:hover:scale-100 w-12 aspect-square"
-        >
-          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+    <form onSubmit={(event) => { event.preventDefault(); onSubmit(); }}
+      className="rounded-2xl border border-[var(--color-border)] bg-white p-4 shadow-lg sm:p-6">
+      <label htmlFor="publication-url" className="mb-2 block text-sm font-semibold">Publication URL</label>
+      <div className="relative">
+        <BookOpen className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]" size={20} />
+        <input id="publication-url" type="url" required autoComplete="off" spellCheck={false}
+          placeholder="https://fliphtml5.com/author/publication/"
+          className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] py-4 pl-12 pr-16 text-base outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+          value={value} onChange={(event) => onChange(event.target.value)} />
+        <button type="submit" disabled={!value.trim()} aria-label="Convert to PDF"
+          className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white disabled:opacity-30">
+          <ArrowRight size={20} />
         </button>
       </div>
-      <p className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-[var(--color-text-muted)] text-center px-2">
-        Example:{" "}
-        <button
-          type="button"
-          onClick={() =>
-            onChange(
-              "https://fliphtml5.com/REZIDE/The-Glasshouse_merged/The_Glasshouse/",
-            )
-          }
-          className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] hover:underline transition-colors cursor-pointer break-all"
-        >
-          https://fliphtml5.com/REZIDE/The-Glasshouse_merged/The_Glasshouse/
-        </button>
-      </p>
-    </div>
+    </form>
   );
 }

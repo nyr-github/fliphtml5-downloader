@@ -1,26 +1,22 @@
 export interface FlipPage {
   n: string[];
-  t: string;
+  t?: string;
 }
 
 export interface FlipConfig {
   fliphtml5_pages: FlipPage[] | string;
   meta?: {
     title?: string;
-    description?: string;
     pageWidth?: number;
     pageHeight?: number;
   };
-  loadingConfig?: {
-    isEncryptionBook?: boolean;
-  };
+  loadingConfig?: { isEncryptionBook?: boolean };
 }
 
 declare global {
   interface Window {
-    htmlConfig: FlipConfig;
-    allocateUTF8?: (str: string) => any;
-    Module?: { _DeString: (ptr: any) => any };
-    UTF8ToString?: (ptr: any) => string;
+    allocateUTF8?: (str: string) => number;
+    Module?: { isReady?: boolean; _DeString: (ptr: number) => number };
+    UTF8ToString?: (ptr: number) => string;
   }
 }

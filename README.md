@@ -1,138 +1,74 @@
-# Fliphtml5 Downloader
+# FlipHTML5 Downloader - Local Edition
 
-An elegant online tool that converts FlipHTML5 publications into high-quality PDF files.
+A stripped-down browser-only adaptation of [nyr-github/fliphtml5-downloader](https://github.com/nyr-github/fliphtml5-downloader), based on upstream commit `4f607be`.
 
-**[Try Online](https://fliphtml5.aivaded.com/)**
+## Run locally
 
-**[Leave a Comment on X](https://x.com/aivaded/status/2046677803987517552)**
+Requires **Node.js 22.13+** and npm. No account, `.env`, API key, database, or application backend is required.
 
-## Features
-
-- **URL Parsing**: Automatically detect and parse FlipHTML5 links
-- **PDF Generation**: Convert flipbook pages into beautifully formatted PDF documents
-- **Batch Support**: Handle multiple download tasks simultaneously
-- **ZIP Compatibility**: Support for ZIP-compressed page resources
-- **Discovery**: Browse popular publications downloaded by the community
-- **Reading Progress**: Automatically save and restore your reading position using IndexedDB
-- **Reading History**: Track and manage all your recently read books with progress indicators
-
-## Tech Stack
-
-### Frontend
-
-- **Next.js 15** - React framework
-- **Tailwind CSS 4** - Styling system
-- **Framer Motion** - Animations
-- **Lucide React** - Icon library
-- **jsPDF** - PDF generation
-
-### Backend & Data
-
-- **Neon** - Serverless PostgreSQL
-- **Drizzle ORM** - Database ORM
-
-## How It Works
-
-### Decryption Process
-
-The tool decrypts FlipHTML5's encrypted configuration data through a three-phase process:
-
-**1. Script Loading**
-
-```typescript
-await loadScript(
-  "https://static.fliphtml5.com/resourceFiles/html5_templates/js/jquery-4.0.0.min.js",
-);
-await loadScript(
-  "https://static.fliphtml5.com/resourceFiles/html5_templates/js/deString.js",
-);
+```sh
+npm ci
+npm run dev
 ```
 
-Loads FlipHTML5's official jQuery and decryption engine scripts.
+Open <http://127.0.0.1:10022>. Paste a public publication URL, convert, then click **Download PDF**.
 
-**2. Engine Initialization**
-Waits for three global variables via polling:
+## Static production build
 
-- `window.allocateUTF8` - Allocates UTF-8 string memory
-- `window.Module._DeString` - Main decryption function
-- `window.UTF8ToString` - Converts memory pointer to JavaScript string
-
-**3. Decryption Execution**
-
-```typescript
-const q = window.allocateUTF8(encrypted); // Write encrypted string to WASM memory
-const p = window.Module._DeString(q); // Call decryption function
-let y = window.UTF8ToString(p); // Read decrypted result
-// Truncate to last "]" to remove trailing garbage
-resolve(JSON.parse(y)); // Parse as JSON
+```sh
+npm run build
+npm start
 ```
 
-The encryption uses byte-inversion algorithms in the WASM module. Decrypted data contains `fliphtml5_pages` configuration with page URLs and metadata.
+`out/` contains the complete static site. The convenience preview command requires Python 3. `npm start` serves these files on loopback; it is a static file server, not an API/backend. The site can also be served by any ordinary static web server. Use HTTP rather than opening `index.html` via `file://`.
 
-## Project Structure
+If you have a prebuilt archive containing `out/`, you can preview it without installing Node dependencies. A GitHub source ZIP does not include the build output; build it first using the commands above.
 
-```
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   └── books/        # Book-related APIs
-│   └── page.tsx          # Home page
-├── components/            # React components
-│   ├── FlipDownloaderClient.tsx   # Downloader core component
-│   ├── BookListClient.tsx         # Book list component
-│   └── ...
-├── lib/                   # Core logic
-│   ├── decryption.ts      # Page decryption
-│   ├── pdf-handler.ts    # PDF handling
-│   ├── actions.ts        # Server actions
-│   ├── reading-progress-db.ts  # IndexedDB for reading progress
-│   └── db/               # Database configuration
-├── hooks/                 # Custom Hooks
-└── public/                # Static assets
+```sh
+python3 -m http.server 10022 --bind 127.0.0.1 --directory out
 ```
 
-## Quick Start
+## What remains
 
-### Requirements
+- Direct browser fetching of public FlipHTML5 configuration and page images.
+- Upstream public page-list decoding and ZIP/PDF page-resource support.
+- Browser-side PDF assembly, ordered pages, progress, retry, and cancellation.
+- Up to ten recent task URLs/titles in **localStorage**, with **Clear tasks** and per-task removal.
+- A locally served PDF.js worker, copied from the installed dependency before dev/build.
 
-- Node.js 20+
-- pnpm 8+
+## What was removed
 
-### Installation
+- All API routes, server actions, middleware, dynamic catalogue/reader pages, admin and discovery features.
+- Neon/PostgreSQL, Cloudflare D1, Drizzle, migrations, and deployment jobs.
+- Payment/free-pass services, tracking/analytics, AI tagging, and third-party promotions.
+- Database-backed and IndexedDB storage. No generated PDF is persisted by the app.
 
-```bash
-pnpm install
+## Network and privacy
+
+There is no proxy. Publication configuration and page resources must allow **CORS** access from your browser. Authentication, private/password-protected publications, and source access restrictions are not bypassed. A failed page stops conversion rather than silently saving an incomplete PDF.
+
+The app still needs internet access to fetch source content. Encoded public page lists also use the upstream official FlipHTML5 jQuery/decoder scripts from `static.fliphtml5.com`. It does not send a download record, payment request, or analytics event to an application server. Task URLs/titles remain in this browser; clearing them does not remove any PDF you saved to disk.
+
+After refresh, generated blob URLs are gone, so restored tasks must be converted again. Large publications may be limited by browser memory. Only convert material you own or are permitted to download.
+
+## Checks
+
+```sh
+npm test
+npm run lint
+npm run typecheck
+npm run build
 ```
 
-### Environment Configuration
+Unit tests use synthetic configurations/resources, not third-party publications.
 
-Copy `.env.example` to `.env` and configure:
+### Browser smoke tests
 
-```env
-DATABASE_URL=your_neon_database_url
+With the built static site running via `npm start` in another terminal:
+
+```sh
+npx playwright install chromium
+npm run test:browser
 ```
 
-### Development
-
-```bash
-pnpm dev
-```
-
-Visit http://localhost:3000
-
-### Build
-
-```bash
-pnpm build
-pnpm start
-```
-
-## Usage
-
-1. Paste a FlipHTML5 link into the input box on the home page
-2. Click the download button to start conversion
-3. Wait for processing to complete, PDF will download automatically
-4. Browse popular publications downloaded by other users below
-
-## License
-
-MIT
+Alternatively, set `BROWSER_CHANNEL=chrome` to use an installed Chrome in a fresh, isolated browser profile. The smoke tests intercept **every** remote response with synthetic fixtures, check image and ZIP/PDF conversion, downloads, errors, retry, cancellation, persistence and mobile layout, and assert that no application API is called. They do not download any real publication. Artifacts go to the ignored `test-results/` directory.
