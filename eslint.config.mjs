@@ -1,11 +1,13 @@
-import { defineConfig } from "eslint/config";
-import next from "eslint-config-next";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export default defineConfig([{
-    extends: [...next],
-}]);
+export default [
+  ...nextVitals,
+  ...nextTypescript,
+  {
+    rules: {
+      // Restore browser-local state after the static HTML has hydrated.
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
+];
